@@ -4,11 +4,11 @@ weRequest.init({
     // 存在localStorage的session名称，且CGI请求的data中会自动带上以此为名称的session值；可不传，默认为session
     sessionName: "session",
     // 请求URL的固定前缀；可不传，默认为空
-    urlPerfix: "https://payapp.weixin.qq.com/wxmaterial/",
+    urlPerfix: "https://www.example.com/",
     // 触发重新登录的条件，res为CGI返回的数据
     loginTrigger: function (res) {
-        // 此处例子：当返回数据中的字段errcode等于0x10040009，会自动触发重新登录
-        return res.errcode == 0x10040009;
+        // 此处例子：当返回数据中的字段errcode等于-1，会自动触发重新登录
+        return res.errcode == -1;
     },
     // 用code换取session的CGI配置
     codeToSession: {
