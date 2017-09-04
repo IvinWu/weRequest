@@ -15,6 +15,8 @@ var errorCallback = null;
 //global data
 var session = '';
 var sessionIsFresh = false;
+// 正在登录中，其他请求轮询稍后，避免重复调用登录接口
+var logining = false;
 
 function checkSession(callback, obj) {
     if (!sessionIsFresh) {
@@ -41,19 +43,17 @@ function checkSession(callback, obj) {
 }
 
 function doLogin(callback, obj) {
-    // 如果运行时Storage中通过其他业务种下了session，但是本控件不知道的，这时候尝试读取Storage
-    if(!session) {
-        try {
-            session = wx.getStorageSync(sessionName) || '';
-        } catch (e) {}
-    }
-    //TODO: 不能这样，否则session失效时无法清掉
-
     if (session || obj.isLogin) {
         // 缓存中有session，或者是登录接口
         typeof callback == "function" && callback();
+    } else if(logining) {
+        // 正在登录中，请求轮询稍后，避免重复调用登录接口
+        setTimeout(function() {
+            doLogin(callback, obj);
+        }, 300)
     } else {
         // 缓存中无session
+        logining = true;
         obj.count ++;
         wx.login({
             complete: function () {
@@ -89,6 +89,7 @@ function doLogin(callback, obj) {
                         complete: function() {
                             obj.count --;
                             typeof obj.complete == "function" && obj.count == 0 && obj.complete();
+                            logining = false;
                         }
                     });
                 } else {
@@ -98,6 +99,8 @@ function doLogin(callback, obj) {
                         showCancel: false
                     })
                     console.error(res);
+                    // 登录失败，解除锁，防止死循环
+                    logining = false;
                 }
             },
             fail: function (res) {
@@ -107,6 +110,8 @@ function doLogin(callback, obj) {
                     showCancel: false
                 })
                 console.error(res);
+                // 登录失败，解除锁，防止死循环
+                logining = false;
             }
         })
     }
@@ -195,7 +200,19 @@ function request(obj) {
                     })
                 } else if (successTrigger(res.data) && typeof obj.success == "function") {
                     // 接口返回成功码
-                    obj.success(successData(res.data));
+                    var realData = null;
+                    try {
+                        realData = successData(res.data);
+                    } catch (e) {
+                        console.error("Function successData occur error: " + e);
+                    }
+                    obj.success(realData);
+                    if(obj.cache === true || (typeof obj.cache == "function" && obj.cache(realData))) {
+                        wx.setStorage({
+                            key: obj.url,
+                            data: realData
+                        })
+                    }
                 } else {
                     // 接口返回失败码
                     fail(obj, res);
@@ -318,6 +335,26 @@ function fail(obj, res) {
     console.error(res);
 }
 
+function getCache(obj, callback) {
+    if(obj.cache) {
+        wx.getStorage({
+            key: obj.url,
+            success: function(res) {
+                if(typeof obj.cache == "function" && obj.cache(res.data)) {
+                    typeof obj.success == "function" && obj.success(res.data);
+                } else if(obj.cache === true) {
+                    typeof obj.success == "function" && obj.success(res.data);
+                }
+            },
+            fail: function() {
+                callback();
+            }
+        })
+    } else {
+        callback();
+    }
+}
+
 function init(params) {
     sessionName = params.sessionName || 'session';
     loginTrigger = params.loginTrigger || function () { return false };
@@ -341,9 +378,11 @@ function init(params) {
 
 function requestWrapper(obj) {
     obj = preDo(obj);
-    checkSession(function () {
-        request(obj);
-    }, obj)
+    getCache(obj, function() {
+        checkSession(function () {
+            request(obj);
+        }, obj)}
+    )
 }
 
 function uploadFileWrapper(obj) {
@@ -353,8 +392,14 @@ function uploadFileWrapper(obj) {
     }, obj)
 }
 
+function setSession(s) {
+    session = s;
+    sessionIsFresh = true;
+}
+
 module.exports = {
     init: init,
     request: requestWrapper,
-    uploadFile: uploadFileWrapper
+    uploadFile: uploadFileWrapper,
+    setSession: setSession
 };
