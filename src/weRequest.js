@@ -11,17 +11,28 @@ var errorTitle = "操作失败";
 var errorContent = function(res) {return res};
 var reLoginLimit = 3;
 var errorCallback = null;
+var reportCGI = false;
+var mockJson = false;
+var globalData = false;
 
 //global data
 var session = '';
 var sessionIsFresh = false;
 // 正在登录中，其他请求轮询稍后，避免重复调用登录接口
 var logining = false;
+// 正在查询session有效期中，避免重复调用接口
+var isCheckingSession = false;
 
 function checkSession(callback, obj) {
-    if (!sessionIsFresh) {
+    if(isCheckingSession) {
+        setTimeout(function() {
+            checkSession(callback, obj)
+        }, 500);
+    } else if (!sessionIsFresh && session) {
+        isCheckingSession = true;
         obj.count ++;
         // 如果还没检验过session是否有效，则需要检验一次
+        obj._checkSessionStartTime = new Date().getTime();
         wx.checkSession({
             success: function () {
                 // 登录态有效，且在本生命周期内无须再检验了
@@ -32,7 +43,12 @@ function checkSession(callback, obj) {
                 session = '';
             },
             complete: function () {
+                isCheckingSession = false;
                 obj.count --;
+                obj._checkSessionEndTime = new Date().getTime();
+                if(typeof reportCGI == "function") {
+                    reportCGI('wx_checkSession', obj._checkSessionStartTime, obj._checkSessionEndTime, request);
+                }
                 doLogin(callback, obj);
             }
         })
@@ -50,14 +66,21 @@ function doLogin(callback, obj) {
         // 正在登录中，请求轮询稍后，避免重复调用登录接口
         setTimeout(function() {
             doLogin(callback, obj);
-        }, 300)
+        }, 500)
     } else {
         // 缓存中无session
         logining = true;
         obj.count ++;
+        // 记录调用wx.login前的时间戳
+        obj._loginStartTime = new Date().getTime();
         wx.login({
             complete: function () {
                 obj.count --;
+                // 记录wx.login返回数据后的时间戳，用于上报
+                obj._loginEndTime = new Date().getTime();
+                if(typeof reportCGI == "function") {
+                    reportCGI('wx_login', obj._loginStartTime, obj._loginEndTime, request);
+                }
                 typeof obj.complete == "function" && obj.count == 0 && obj.complete();
             },
             success: function (res) {
@@ -77,6 +100,7 @@ function doLogin(callback, obj) {
                         data: data,
                         method: codeToSession.method,
                         isLogin: true,
+                        report: codeToSession.report || codeToSession.url,
                         success: function (s) {
                             session = s;
                             sessionIsFresh = true;
@@ -90,27 +114,20 @@ function doLogin(callback, obj) {
                             obj.count --;
                             typeof obj.complete == "function" && obj.count == 0 && obj.complete();
                             logining = false;
-                        }
+                        },
+                        fail: codeToSession.fail || null
                     });
                 } else {
-                    wx.showModal({
-                        title: '登录失败',
-                        content: '请稍后重试',
-                        showCancel: false
-                    })
+                    fail(obj, res);
                     console.error(res);
-                    // 登录失败，解除锁，防止死循环
+                    // 登录失败，解除锁，防止死锁
                     logining = false;
                 }
             },
             fail: function (res) {
-                wx.showModal({
-                    title: '登录失败',
-                    content: res.errMsg || '请稍后重试',
-                    showCancel: false
-                })
+                fail(obj, res);
                 console.error(res);
-                // 登录失败，解除锁，防止死循环
+                // 登录失败，解除锁，防止死锁
                 logining = false;
             }
         })
@@ -151,21 +168,47 @@ function request(obj) {
         obj.data = {};
     }
 
-    if (obj.url != codeToSession.url) {
+    if (obj.url != codeToSession.url && session) {
         obj.data[sessionName] = session;
     }
+
+    // 如果有全局参数，则添加
+    var gd = {};
+    if(typeof globalData == "function") {
+        gd = globalData();
+    } else if(typeof globalData == "object") {
+        gd = globalData;
+    }
+    obj.data = Object.assign({}, gd, obj.data);
 
     obj.method = obj.method || 'GET';
 
     // 如果请求的URL中不是http开头的，则自动添加配置中的前缀
     var url = obj.url.startsWith('http') ? obj.url : (urlPerfix + obj.url);
-    // 如果请求不是GET，则在URL中自动加上登录态
+    // 如果请求不是GET，则在URL中自动加上登录态和全局参数
     if(obj.method != "GET") {
-        if(url.indexOf('?') >= 0) {
-            url += '&' + sessionName + '=' + session;
-        } else {
-            url += '?' + sessionName + '=' + session;
+
+        if(session) {
+            if(url.indexOf('?') >= 0) {
+                url += '&' + sessionName + '=' + session;
+            } else {
+                url += '?' + sessionName + '=' + session;
+            }
         }
+
+        // 如果有全局参数，则在URL中添加
+        for(var i in gd) {
+            if(url.indexOf('?') >= 0) {
+                url += '&' + i + '=' + gd[i];
+            } else {
+                url += '?' + i + '=' + gd[i];
+            }
+        }
+    }
+
+    // 如果有上报字段配置，则记录请求发出前的时间戳
+    if(obj.report) {
+        obj._reportStartTime = new Date().getTime();
     }
 
     wx.request({
@@ -176,6 +219,13 @@ function request(obj) {
         dataType: obj.dataType || 'json',
         success: function (res) {
             if (res.statusCode == 200) {
+
+                // 如果有上报字段配置，则记录请求返回后的时间戳，并进行上报
+                if(obj.report && typeof reportCGI == "function") {
+                    obj._reportEndTime = new Date().getTime();
+                    reportCGI(obj.report, obj._reportStartTime, obj._reportEndTime, request);
+                }
+
                 if (obj.isLogin) {
                     // 登录请求
                     var s = "";
@@ -222,12 +272,8 @@ function request(obj) {
             }
         },
         fail: function (res) {
-            wx.showModal({
-                title: "请求失败",
-                content: res.errMsg,
-                showCancel: false
-            })
             fail(obj, res);
+            console.error(res);
         },
         complete: function () {
             obj.count --;
@@ -244,15 +290,57 @@ function uploadFile(obj) {
     }
     obj.formData[sessionName] = session;
 
+    // 如果有全局参数，则添加
+    var gd = {};
+    if(typeof globalData == "function") {
+        gd = globalData();
+    } else if(typeof globalData == "object") {
+        gd = globalData;
+    }
+    obj.formData = Object.assign({}, gd, obj.formData);
+
     obj.dataType = obj.dataType || 'json';
 
+    // 如果请求的URL中不是http开头的，则自动添加配置中的前缀
+    var url = obj.url.startsWith('http') ? obj.url : (urlPerfix + obj.url);
+
+    // 在URL中自动加上登录态和全局参数
+    if(session) {
+        if(url.indexOf('?') >= 0) {
+            url += '&' + sessionName + '=' + session;
+        } else {
+            url += '?' + sessionName + '=' + session;
+        }
+    }
+
+    // 如果有全局参数，则在URL中添加
+    for(var i in gd) {
+        if(url.indexOf('?') >= 0) {
+            url += '&' + i + '=' + gd[i];
+        } else {
+            url += '?' + i + '=' + gd[i];
+        }
+    }
+
+    // 如果有上报字段配置，则记录请求发出前的时间戳
+    if(obj.report) {
+        obj._reportStartTime = new Date().getTime();
+    }
+
     wx.uploadFile({
-        url: urlPerfix + obj.url,
+        url: url,
         filePath: obj.filePath || '',
         name: obj.name || '',
         formData: obj.formData,
         success: function (res) {
             if (res.statusCode == 200 && res.errMsg == 'uploadFile:ok') {
+
+                // 如果有上报字段配置，则记录请求返回后的时间戳，并进行上报
+                if(obj.report && typeof reportCGI == "function") {
+                    obj.endTime = new Date().getTime();
+                    reportCGI(obj.report, obj._reportStartTime, obj._reportEndTime, request);
+                }
+
                 if(obj.dataType == 'json') {
                     try {
                         res.data = JSON.parse(res.data);
@@ -284,12 +372,8 @@ function uploadFile(obj) {
             }
         },
         fail: function (res) {
-            wx.showModal({
-                title: "请求失败",
-                content: res.errMsg,
-                showCancel: false
-            })
             fail(obj, res);
+            console.error(res);
         },
         complete: function () {
             obj.count --;
@@ -321,8 +405,8 @@ function fail(obj, res) {
         }
 
         wx.showModal({
-            title: title || "操作失败",
-            content: content || "服务器异常，请稍后重试",
+            title: title,
+            content: content || "网络或服务异常，请稍后重试",
             showCancel: false
         })
     }
@@ -355,13 +439,14 @@ function getCache(obj, callback) {
     }
 }
 
+function login(callback) {
+    checkSession(callback, {})
+}
+
 function init(params) {
     sessionName = params.sessionName || 'session';
     loginTrigger = params.loginTrigger || function () { return false };
-    codeToSession = Object.assign({}, {
-        method: 'GET',
-        codeName: 'code'
-    }, params.codeToSession);
+    codeToSession = params.codeToSession || {};
     successTrigger = params.successTrigger || function () { return true };
     urlPerfix = params.urlPerfix || "";
     successData = params.successData || function (res) { return res };
@@ -370,6 +455,9 @@ function init(params) {
     reLoginLimit = params.reLoginLimit || 3;
     errorCallback = params.errorCallback || null;
     sessionIsFresh = params.doNotCheckSession || false;
+    reportCGI = params.reportCGI || false;
+    mockJson = params.mockJson || false;
+    globalData = params.globalData || false;
 
     try {
         session = wx.getStorageSync(sessionName) || '';
@@ -378,11 +466,16 @@ function init(params) {
 
 function requestWrapper(obj) {
     obj = preDo(obj);
-    getCache(obj, function() {
-        checkSession(function () {
-            request(obj);
-        }, obj)}
-    )
+    if(mockJson && mockJson[obj.url]) {
+        // mock 模式
+        mock(obj);
+    } else {
+        getCache(obj, function() {
+            checkSession(function () {
+                request(obj);
+            }, obj)}
+        )
+    }
 }
 
 function uploadFileWrapper(obj) {
@@ -397,9 +490,23 @@ function setSession(s) {
     sessionIsFresh = true;
 }
 
+function mock(obj) {
+    var res = {
+        data: mockJson[obj.url]
+    };
+    if (successTrigger(res.data) && typeof obj.success == "function") {
+        // 接口返回成功码
+        obj.success(successData(res.data));
+    } else {
+        // 接口返回失败码
+        fail(obj, res);
+    }
+}
+
 module.exports = {
     init: init,
     request: requestWrapper,
     uploadFile: uploadFileWrapper,
-    setSession: setSession
+    setSession: setSession,
+    login: login
 };
