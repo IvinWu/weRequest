@@ -52,10 +52,6 @@ weRequest.init({
     errorCallback: function(obj, res) {
         // do some report
     },
-	// 当出现CGI错误时，统一的回调函数，这里可以做统一的错误上报等处理
-    errorCallback: function(obj, res) {
-        // do some report
-    },
     // 是否需要调用checkSession，验证小程序的登录态过期，可不配置，默认为false
     doNotCheckSession: true,
 	// 上报耗时的函数，name为上报名称，startTime为接口调用开始时的时间戳，endTime为接口返回时的时间戳
