@@ -5,5 +5,8 @@
   "main": "./src/weRequest.js",
   "dependencies": {
     "webpack": "latest"
+  },
+  "devDependencies": {
+    "webpack-cli": "^2.1.3"
   }
 }

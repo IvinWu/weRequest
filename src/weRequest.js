@@ -1,4 +1,5 @@
 const loading = require('./loading');
+const flow = require('./lib/flow');
 
 //params
 var sessionName    = "session";
@@ -33,14 +34,16 @@ var isCheckingSession = false;
 
 function checkSession(callback, obj) {
     if (isCheckingSession) {
-        setTimeout(function () {
+        flow.wait('checkSessionFinished', function () {
             checkSession(callback, obj)
-        }, 500);
+        })
     } else if (!sessionIsFresh && session) {
         isCheckingSession = true;
         obj.count++;
         // 如果还没检验过session是否有效，则需要检验一次
         obj._checkSessionStartTime = new Date().getTime();
+
+        console.log('wx.checkSession');
         wx.checkSession({
             success: function () {
                 // 登录态有效，且在本生命周期内无须再检验了
@@ -58,6 +61,7 @@ function checkSession(callback, obj) {
                     reportCGI('wx_checkSession', obj._checkSessionStartTime, obj._checkSessionEndTime, request);
                 }
                 doLogin(callback, obj);
+                flow.emit('checkSessionFinished');
             }
         })
     } else {
@@ -72,15 +76,16 @@ function doLogin(callback, obj) {
         typeof callback === "function" && callback();
     } else if (logining) {
         // 正在登录中，请求轮询稍后，避免重复调用登录接口
-        setTimeout(function () {
+        flow.wait('doLoginFinished', function () {
             doLogin(callback, obj);
-        }, 500)
+        })
     } else {
         // 缓存中无session
         logining = true;
         obj.count++;
         // 记录调用wx.login前的时间戳
         obj._loginStartTime = new Date().getTime();
+        console.log('wx.login');
         wx.login({
             complete: function () {
                 obj.count--;
@@ -122,6 +127,7 @@ function doLogin(callback, obj) {
                             obj.count--;
                             typeof obj.complete === "function" && obj.count == 0 && obj.complete();
                             logining = false;
+                            flow.emit('doLoginFinished');
                         },
                         fail: codeToSession.fail || null
                     });
@@ -130,6 +136,7 @@ function doLogin(callback, obj) {
                     console.error(res);
                     // 登录失败，解除锁，防止死锁
                     logining = false;
+                    flow.emit('doLoginFinished');
                 }
             },
             fail: function (res) {
@@ -137,6 +144,7 @@ function doLogin(callback, obj) {
                 console.error(res);
                 // 登录失败，解除锁，防止死锁
                 logining = false;
+                flow.emit('doLoginFinished');
             }
         })
     }
