@@ -1,28 +1,24 @@
 var store = {};
 
-function emit (key,data){
+function emit (key){
     var flow = getFlow(key);
-    flow.result = data || true;
-    flow.waitingList.forEach(function(callback){
-        callback(data);
-    });
-    flow.waitingList.length = 0 ;
+    console.log("waitingList Length: " + flow.waitingList.length);
+    var currentLength = flow.waitingList.length;
+    for (var i = 0; i < currentLength; i ++) {
+        var callback = flow.waitingList.shift();
+        typeof callback == "function" && callback();
+    }
 }
 
 function wait (key,callback){
     var flow = getFlow(key);
-    if(flow.result){
-        callback(flow.result)
-    }else{
-        flow.waitingList.push(callback)
-    }
+    flow.waitingList.push(callback)
 }
 
 function getFlow(key){
     if(!store[key]){
         store[key] = {
-            waitingList:[],
-            result:null
+            waitingList:[]
         }
     }
 
