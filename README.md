@@ -4,7 +4,6 @@
 
 _解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。_
 
-[![Travis](https://img.shields.io/travis/rust-lang/rust.svg)]()
 [![Github All Releases](https://img.shields.io/github/downloads/IvinWu/weRequest/total.svg)]()
 [![GitHub forks](https://img.shields.io/github/forks/IvinWu/weRequest.svg?style=social&label=Fork)]()
 [![GitHub stars](https://img.shields.io/github/stars/IvinWu/weRequest.svg?style=social&label=Stars)]()
@@ -66,21 +65,18 @@ weRequest.request({
 ## 演示DEMO
 
 ### 自动带上登录态参数
-![自动带上登录态参数](https://raw.githubusercontent.com/IvinWu/weRequest/master/image/auto_session.png)
 
 可以看到，通过`weRequest`发出的请求，将会自动带上登录态参数。
 对应的流程为下图中**红色**的指向：
 ![自动带上登录态参数](https://raw.githubusercontent.com/IvinWu/weRequest/master/image/flow1.png)
 
 ### 没有登录态时，自动登录
-![没有登录态时，自动登录](https://raw.githubusercontent.com/IvinWu/weRequest/master/image/autoLogin.gif)
 
 当本地没有登录态时，按照流程图，`weRequest`将会自动执行`wx.login()`后的一系列流程，得到`code`并调用后台接口换取`session`，储存在localStorage之后，重新发起业务请求。
 对应的流程为下图中**红色**的指向：
 ![没有登录态时，自动登录](https://raw.githubusercontent.com/IvinWu/weRequest/master/image/flow2.png)
 
 ### 登录态过期时，自动重新登录
-![登录态过期时，自动重新登录](https://raw.githubusercontent.com/IvinWu/weRequest/master/image/relogin.gif)
 
 对后台数据进行预解析之后，发现登录态过期，于是重新执行登录流程，获取新的`session`之后，重新发起请求。
 对应的流程为下图中**红色**的指向：
