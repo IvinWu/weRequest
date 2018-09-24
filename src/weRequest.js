@@ -23,6 +23,12 @@ var errorCallback  = null;
 var reportCGI      = false;
 var mockJson       = false;
 var globalData     = false;
+// session在本地缓存的有效时间
+var sessionExpireTime = null;
+// session在本地缓存的key
+var sessionExpireKey = "sessionExpireKey";
+// session过期的时间点
+var sessionExpire = Infinity;
 
 //global data
 var session           = '';
@@ -71,9 +77,18 @@ function checkSession(callback, obj) {
 }
 
 function doLogin(callback, obj) {
-    if (session || obj.isLogin) {
-        // 缓存中有session，或者是登录接口
+    if (obj.isLogin) {
+        // 登录接口，直接放过
         typeof callback === "function" && callback();
+    } else if(session) {
+        // 缓存中有session
+        if(sessionExpireTime && new Date().getTime() > sessionExpire) {
+            // 如果有设置本地session缓存时间，且缓存时间已到
+            session = '';
+            doLogin(callback, obj);
+        } else {
+            typeof callback === "function" && callback();
+        }
     } else if (logining) {
         // 正在登录中，请求轮询稍后，避免重复调用登录接口
         flow.wait('doLoginFinished', function () {
@@ -117,6 +132,14 @@ function doLogin(callback, obj) {
                         success: function (s) {
                             session        = s;
                             sessionIsFresh = true;
+                            // 如果有设置本地session过期时间
+                            if(sessionExpireTime) {
+                                sessionExpire = new Date().getTime() + sessionExpireTime;
+                                wx.setStorage({
+                                    key: sessionExpireKey,
+                                    data: sessionExpire
+                                })
+                            }
                             typeof callback === "function" && callback();
                             wx.setStorage({
                                 key: sessionName,
@@ -492,9 +515,16 @@ function init(params) {
     reportCGI      = params.reportCGI || false;
     mockJson       = params.mockJson || false;
     globalData     = params.globalData || false;
+    sessionExpireTime = params.sessionExpireTime || null;
+    sessionExpireKey = params.sessionExpireKey || "sessionExpireKey";
 
     try {
         session = wx.getStorageSync(sessionName) || '';
+        sessionExpire = wx.getStorageSync(sessionExpireKey) || Infinity;
+        // 如果有设置本地session过期时间，且验证已过期，则直接清空session
+        if(new Date().getTime() > sessionExpire) {
+            session = '';
+        }
     } catch (e) {
     }
 }
@@ -548,7 +578,10 @@ function getSession() {
 
 function getConfig() {
     return {
-        'urlPerfix': urlPerfix
+        urlPerfix: urlPerfix,
+        sessionExpireTime: sessionExpireTime,
+        sessionExpireKey: sessionExpireKey,
+        sessionExpire: sessionExpire
     }
 }
 

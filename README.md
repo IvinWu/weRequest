@@ -105,6 +105,8 @@ weRequest.request({
 |reportCGI|Function|否||接口返回成功之后，会执行统一的回调函数，这里可以做统一的耗时上报等处理|
 |mockJson|Object|否||可为接口提供mock数据|
 |globalData|Object/Function|否||所有请求都会自动带上这里的参数|
+|sessionExpireTime|Int|否|null|为用户登陆态设置本地缓存时间（单位为ms），一旦过期，直接废弃缓存中的登陆态|
+|sessionExpireKey|String|否|sessionExpireKey|如果为用户登陆态设置了本地缓存时间，则过期时间将以此值为key存储在Storage中|
 
 ##### codeToSession参数说明
 
@@ -261,7 +263,14 @@ weRequest.request({
 ### .getConfig()
 
 [return Object]
-获取weRequest的配置。目前Object仅包含urlPerfix字段
+获取weRequest的配置。返回的Object内容如下：
+
+|参数名|类型|说明|
+| :-------- | :-------| :------ |
+|urlPerfix|String|在组件初始化时传入的请求URL的固定前缀|
+|sessionExpireTime|Int|在组件初始化时传入的用户登陆态设置本地缓存时间|
+|sessionExpireKey|String|在组件初始化时传入的用户登陆态本地缓存时间Storage的key|
+|sessionExpire|Int|用户登陆态本地缓存过期的时间戳|
 
 ### .login()
 
