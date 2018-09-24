@@ -10,29 +10,6 @@ _解决繁琐的小程序会话管理，一款自带登录态管理的网络请�
 [![GitHub watchers](https://img.shields.io/github/watchers/IvinWu/weRequest.svg?style=social&label=Watch)]()
 [![Packagist](https://img.shields.io/packagist/l/doctrine/orm.svg)]()
 
-## 简介
-
-![登录时序图](http://mp.weixin.qq.com/debug/wxadoc/dev/image/login.png)
-
-上图是小程序官方文档中的**登录时序图**。此图涵盖了前后端，详细讲解了包括登录态的生成，维护，传输等各方面的问题。
-
-具体到业务开发过程中的前端来说，我认为上图还不够完整，于是我画了下面这张以**前端逻辑**为出发点的、包含循环的**流程图**。
-我认为前端每一次**发起网络请求**，跟后台进行数据交互，都适用于下图的**流程**：
-![](https://raw.githubusercontent.com/IvinWu/weRequest/master/image/flow_login.png)
-
-- **hasChecked：** 用一状态标识本生命周期内是否执行过`wx.checkSession`，判断该标识，若否，开始执行`wx.checkSession`，若是，进入下一步
-- **wx.checkSession()：** 调用接口判断登录态是否过期，若是，重新登录；若否，进入下一步
-> wx.checkSession()是小程序提供的检测登录态是否过期的接口，生命周期内只需调用一次即可。用户越久未使用小程序，用户登录态越有可能失效。反之如果用户一直在使用小程序，则用户登录态一直保持有效。具体时效逻辑由微信维护，对开发者透明
-
-- **wx.getStorage(session)：** 尝试获取本地的`session`。如果之前曾经登录过，则能获取到；否则，本地无`session`
-- **wx.login()：** 小程序提供的接口，用于获取`code`（code有效期为5分钟）
-- **wx.request(code)：** 将`code`通过后台提供的接口，换取`session`
-- **wx.setStorage(session)：** 将后台接口返回的`session`存入到localStorage，以备后续使用
-- **wx.request(session)：** 真正发起业务请求，请求中带上`session`
-- **parse(data)：** 对后台返回的数据进行预解析，若发现登录态失效，则重新执行登录；若成功，则真正获取到业务数据
-
-只要遵循上图的流程，我们就无需在业务逻辑中关注登录态的问题了，相当于把登录态的管理问题**耦合**到了发起网络请求当中，本组件则完成了上述流程的封装，让开发者不用再关心以上逻辑，把精力放回在业务的开发上。
-
 ## 目标
 让业务逻辑更专注，不用再关注底层登录态问题。小程序对比以往的H5，登录态管理逻辑要复杂很多。通过`weRequest`这个组件，希望能帮助开发者把更多精力放在业务逻辑上，而登录态管理问题只需通过一次简单配置，以后就不用再花精力管理了。
 
@@ -61,6 +38,29 @@ weRequest.request({
 - 引入`weRequest`组件
 - 初始化组件配置
 - **就像使用`wx.request`那样去使用它**
+
+## 为什么需要它
+
+![登录时序图](http://mp.weixin.qq.com/debug/wxadoc/dev/image/login.png)
+
+上图是小程序官方文档中的**登录时序图**。此图涵盖了前后端，详细讲解了包括登录态的生成，维护，传输等各方面的问题。
+
+具体到业务开发过程中的前端来说，我认为上图还不够完整，于是我画了下面这张以**前端逻辑**为出发点的、包含循环的**流程图**。
+我认为前端每一次**发起网络请求**，跟后台进行数据交互，都适用于下图的**流程**：
+![](https://raw.githubusercontent.com/IvinWu/weRequest/master/image/flow_login.png)
+
+- **hasChecked：** 用一状态标识本生命周期内是否执行过`wx.checkSession`，判断该标识，若否，开始执行`wx.checkSession`，若是，进入下一步
+- **wx.checkSession()：** 调用接口判断登录态是否过期，若是，重新登录；若否，进入下一步
+> wx.checkSession()是小程序提供的检测登录态是否过期的接口，生命周期内只需调用一次即可。用户越久未使用小程序，用户登录态越有可能失效。反之如果用户一直在使用小程序，则用户登录态一直保持有效。具体时效逻辑由微信维护，对开发者透明
+
+- **wx.getStorage(session)：** 尝试获取本地的`session`。如果之前曾经登录过，则能获取到；否则，本地无`session`
+- **wx.login()：** 小程序提供的接口，用于获取`code`（code有效期为5分钟）
+- **wx.request(code)：** 将`code`通过后台提供的接口，换取`session`
+- **wx.setStorage(session)：** 将后台接口返回的`session`存入到localStorage，以备后续使用
+- **wx.request(session)：** 真正发起业务请求，请求中带上`session`
+- **parse(data)：** 对后台返回的数据进行预解析，若发现登录态失效，则重新执行登录；若成功，则真正获取到业务数据
+
+只要遵循上图的流程，我们就无需在业务逻辑中关注登录态的问题了，相当于把登录态的管理问题**耦合**到了发起网络请求当中，本组件则完成了上述流程的封装，让开发者不用再关心以上逻辑，把精力放回在业务的开发上。
 
 ## 演示DEMO
 
@@ -131,48 +131,65 @@ weRequest.request({
 
 ```javascript
 weRequest.init({
+    // [可选] 存在localStorage的session名称，且CGI请求的data中会自动带上以此为名称的session值；可不配置，默认为session
     sessionName: "session",
+    // [可选] 请求URL的固定前缀；可不配置，默认为空
     urlPerfix: "https://www.example.com/",
-    // 触发重新登录的条件，res为CGI返回的数据
+    // [必填] 触发重新登录的条件，res为CGI返回的数据
     loginTrigger: function (res) {
         // 此处例子：当返回数据中的字段errcode等于-1，会自动触发重新登录
         return res.errcode == -1;
     },
+    // [必填] 用code换取session的CGI配置
     codeToSession: {
+        // [必填] CGI的URL
         url: 'user/login',
+        // [可选] 调用改CGI的方法；可不配置，默认为GET
         method: 'GET',
+        // [可选] CGI中传参时，存放code的名称，此处例子名称就是code；可不配置，默认值为code
         codeName: 'code',
+        // [可选] 登录接口需要的其他参数；可不配置，默认为{}
         data: {},
-        // CGI中返回的session值
+        // [必填] CGI中返回的session值
         success: function (res) {
             // 此处例子：CGI返回数据中的字段session即为session值
             return res.session;
+        },
+        // [可选] 接口失败的回调，可不配置，默认为弹窗报错
+        fail: function(obj, res) {
+
         }
     },
+    // [可选] 登录重试次数，当连续请求登录接口返回失败次数超过这个次数，将不再重试登录；可不配置，默认为重试3次
     reLoginLimit: 2,
+    // [必填] 触发请求成功的条件
     successTrigger: function (res) {
         // 此处例子：当返回数据中的字段errcode等于0时，代表请求成功，其他情况都认为业务逻辑失败
         return res.errcode == 0;
     },
+    // [可选] 成功之后返回数据；可不配置
     successData: function (res) {
         // 此处例子：返回数据中的字段data为业务接受到的数据
         return res.data;
     },
+    // [可选] 当CGI返回错误时，弹框提示的标题文字
     errorTitle: function(res) {
         // 此处例子：当返回数据中的字段errcode等于0x10040730时，错误弹框的标题是“温馨提示”，其他情况下则是“操作失败”
         return res.errcode == 0x10040730 ? '温馨提示' : '操作失败'
     },
+    // [可选] 当CGI返回错误时，弹框提示的内容文字
     errorContent: function(res) {
         // 此处例子：返回数据中的字段msg为错误弹框的提示内容文字
-        return res.msg
+        return res.msg ? res.msg : '服务可能存在异常，请稍后重试'
     },
+    // [可选] 当出现CGI错误时，统一的回调函数，这里可以做统一的错误上报等处理
     errorCallback: function(obj, res) {
         // do some report
     },
+    // [可选] 是否需要调用checkSession，验证小程序的登录态过期，可不配置，默认为false
     doNotCheckSession: true,
-	// 上报耗时的函数，name为上报名称，startTime为接口调用开始时的时间戳，endTime为接口返回时的时间戳
+	// [可选] 上报耗时的函数，name为上报名称，startTime为接口调用开始时的时间戳，endTime为接口返回时的时间戳
     reportCGI: function(name, startTime, endTime, request) {
-	    // 这里可以自行上报耗时
         //wx.reportAnalytics(name, {
         //    time: endTime - startTime
         //});
@@ -188,12 +205,18 @@ weRequest.init({
         //})
         console.log(name + ":" + (endTime - startTime));
     },
+	// [可选] 提供接口的mock，若不需使用，请设置为false
     mockJson: require("../../mock.json"),
+    // [可选] 所有请求都会自动带上globalData里的参数
 	globalData: function() {
         return {
             version: getApp().version
         }
-    }
+    },
+    // [可选] session本地缓存时间(单位为ms)，可不配置，默认不设置本地缓存时间
+    sessionExpireTime: 24 * 60 * 60 * 1000,
+    // [可选] session本地缓存时间存在Storage中的名字，可不配置，默认为 sessionExpireKey
+    sessionExpireKey: "sessionExpireKey"
 })
 ```
 
