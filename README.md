@@ -74,7 +74,6 @@ weRequest.request({
 
 当本地没有登录态时，按照流程图，`weRequest`将会自动执行`wx.login()`后的一系列流程，得到`code`并调用后台接口换取`session`，储存在localStorage之后，重新发起业务请求。
 对应的流程为下图中**红色**的指向：
-![没有登录态时，自动登录](https://raw.githubusercontent.com/IvinWu/weRequest/master/image/flow2.png)
 
 ### 登录态过期时，自动重新登录
 
@@ -253,6 +252,16 @@ weRequest.request({
 |complete|Function|否||接口调用结束的回调函数（调用成功、失败都会执行）||
 |showLoading|Boolean|否|false|请求过程页面是否展示全屏的loading|是|
 |report|String|否||接口请求成功后将自动执行init()中配置的reportCGI函数，其中的name字段值为这里配置的值|是|
+
+### .getSession()
+
+[return String]
+获取本地缓存中用户票据的值
+
+### .getConfig()
+
+[return Object]
+获取weRequest的配置。目前Object仅包含urlPerfix字段
 
 ### .login()
 
