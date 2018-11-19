@@ -4,7 +4,6 @@
 
 _解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。_
 
-[![Github All Releases](https://img.shields.io/github/downloads/IvinWu/weRequest/total.svg)]()
 [![GitHub forks](https://img.shields.io/github/forks/IvinWu/weRequest.svg?style=social&label=Fork)]()
 [![GitHub stars](https://img.shields.io/github/stars/IvinWu/weRequest.svg?style=social&label=Stars)]()
 [![GitHub watchers](https://img.shields.io/github/watchers/IvinWu/weRequest.svg?style=social&label=Watch)]()
@@ -92,7 +91,7 @@ weRequest.request({
 |参数名|类型|必填|默认值|说明|
 | :-------- | :-------| :------ | :------ |:------ |
 |sessionName|String|否|session|储存在localStorage的session名称，且CGI请求的data中会自动带上以此为名称的session值；可不配置，默认为session|
-|urlPerfix|String|否||请求URL的固定前缀，如果配置了，后续请求的URL都会自动加上这个前缀|
+|urlPerfix|String or Function|否||请求URL的固定前缀，如果配置了，后续请求的URL都会自动加上这个前缀，如果是函数，则为函数的返回值|
 |loginTrigger|Function|是||触发重新登录的条件；参数为CGI返回的数据，返回需要重新登录的条件|
 |codeToSession|Object|是||用code换取session的CGI配置|
 |reLoginLimit|Int|否|3|登录重试次数，当连续请求登录接口返回失败次数超过这个次数，将不再重试登录|
@@ -290,7 +289,7 @@ weRequest.request({
 
 |参数名|类型|说明|
 | :-------- | :-------| :------ |
-|urlPerfix|String|在组件初始化时传入的请求URL的固定前缀|
+|urlPerfix|String or Function|在组件初始化时传入的请求URL的固定前缀|
 |sessionExpireTime|Int|在组件初始化时传入的用户登陆态设置本地缓存时间|
 |sessionExpireKey|String|在组件初始化时传入的用户登陆态本地缓存时间Storage的key|
 |sessionExpire|Int|用户登陆态本地缓存过期的时间戳|
