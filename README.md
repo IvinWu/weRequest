@@ -30,7 +30,7 @@ weRequest.request({
         id: '107B7615E04AE64CFC10'
     },
     success: function (data) {
-		// 省略...
+        // 省略...
     }
 })
 ```
@@ -65,7 +65,7 @@ weRequest.request({
 
 ### 自动带上登录态参数
 
-可以看到，通过`weRequest`发出的请求，将会自动带上登录态参数。
+通过`weRequest`发出的请求，将会自动带上登录态参数。
 对应的流程为下图中**红色**的指向：
 ![自动带上登录态参数](https://raw.githubusercontent.com/IvinWu/weRequest/master/image/flow1.png)
 
@@ -73,6 +73,7 @@ weRequest.request({
 
 当本地没有登录态时，按照流程图，`weRequest`将会自动执行`wx.login()`后的一系列流程，得到`code`并调用后台接口换取`session`，储存在localStorage之后，重新发起业务请求。
 对应的流程为下图中**红色**的指向：
+![没有登录态时，自动登录](https://raw.githubusercontent.com/IvinWu/weRequest/master/image/flow2.png)
 
 ### 登录态过期时，自动重新登录
 
@@ -187,7 +188,7 @@ weRequest.init({
     },
     // [可选] 是否需要调用checkSession，验证小程序的登录态过期，可不配置，默认为false
     doNotCheckSession: true,
-	// [可选] 上报耗时的函数，name为上报名称，startTime为接口调用开始时的时间戳，endTime为接口返回时的时间戳
+    // [可选] 上报耗时的函数，name为上报名称，startTime为接口调用开始时的时间戳，endTime为接口返回时的时间戳
     reportCGI: function(name, startTime, endTime, request) {
         //wx.reportAnalytics(name, {
         //    time: endTime - startTime
@@ -204,7 +205,7 @@ weRequest.init({
         //})
         console.log(name + ":" + (endTime - startTime));
     },
-	// [可选] 提供接口的mock，若不需使用，请设置为false
+    // [可选] 提供接口的mock，若不需使用，请设置为false
     mockJson: require("../../mock.json"),
     // [可选] 所有请求都会自动带上globalData里的参数
     globalData: function() {
@@ -315,11 +316,11 @@ wx.chooseImage({
 
 ### .login()
 
-<font color=red>[不建议使用]</font> 在不发起业务请求的情况下，单独执行登录逻辑
+```[不建议使用]``` 在不发起业务请求的情况下，单独执行登录逻辑
 
 ### .setSession(String)
 
-<font color=red>[不建议使用]</font> 设置用户票据的值
+```[不建议使用]``` 设置用户票据的值
 
 ## FAQ
 
@@ -359,11 +360,3 @@ weRequest.request({
 })
 ```
 此时，如果接口返回错误码，将触发这里定义的fail函数，且默认错误弹框将不会出现。
-
-### 为什么工具在发起请求之前，不主动去判断第三方session是否过期，而要通过接口结果来判断，这不是浪费了一次请求往返吗？
-
-每个小程序对于自身生成的session都有自己的一套管理方案，微信官方也没有指明一套通用的方案来要求开发者，仅仅要求了**应该保证其安全性且不应该设置较长的过期时间**。
-原文如下：
->通过 wx.login() 获取到用户登录态之后，需要维护登录态。开发者要注意不应该直接把 session_key、openid 等字段作为用户的标识或者 session 的标识，而应该自己派发一个 session 登录态（请参考登录时序图）。对于开发者自己生成的 session，应该保证其安全性且不应该设置较长的过期时间。session 派发到小程序客户端之后，可将其存储在 storage ，用于后续通信使用。
-
-因此，不能要求所有后端接口都要返回session的过期时间给前端，甚至有些后端逻辑对于session的管理是动态的，会随调用情况来更新session的生命周期，这样的话逻辑就更复杂了。但是无论任何一种管理策略，都必须会有兜底策略，即前端传入过期的session，后端必须要返回特定标识告知前端此session过期。因此作为一个通用的工具组件，我需要确保更多的开发者能够低门槛地使用，所以并没有针对各种特别策略去优化，而且我相信，对于正常使用小程序的用户来说，登录态过期是一个相对低概率的事情，对整体效率性能来说，是微乎其微的，使用通用的兜底策略去应对这种情况，我认为已经是足够的了。
