@@ -558,7 +558,7 @@ function setSession(s) {
 
 function mock(obj) {
     var res = {
-        data: mockJson[obj.url]
+        data: mockJson[obj.url] || mockJson[urlPerfix + obj.url]
     };
     if (successTrigger(res.data) && typeof obj.success === "function") {
         // 接口返回成功码
