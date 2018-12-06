@@ -531,7 +531,7 @@ function init(params) {
 
 function requestWrapper(obj) {
     obj = preDo(obj);
-    if (mockJson && mockJson[obj.url]) {
+    if (mockJson && (mockJson[obj.url] || mockJson[urlPerfix + obj.url])) {
         // mock 模式
         mock(obj);
     } else {
