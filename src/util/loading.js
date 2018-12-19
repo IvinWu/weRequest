@@ -11,7 +11,7 @@ function hide() {
     wx.hideToast();
 }
 
-module.exports = {
-    show: show,
-    hide: hide
+export default {
+    show,
+    hide
 }

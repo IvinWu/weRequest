@@ -1,8 +1,28 @@
 {
   "name": "weRequest",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "本工具通过拓展小程序的wx.request，让开发者通过简单的配置，实现自动管理登录态等功能",
-  "main": "./src/weRequest.js",
+  "keywords": [
+    "登录态",
+    "登陆态",
+    "会话管理",
+    "用户态",
+    "小程序"
+  ],
+  "homepage": "https://github.com/IvinWu/weRequest",
+  "author": {
+    "name": "Ivin Wu",
+    "email": "ivinwu@tencent.com",
+    "url": "https://github.com/IvinWu"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IvinWu/weRequest.git"
+  },
+  "main": "./src/index.js",
+  "scripts": {
+    "build": "webpack"
+  },
   "dependencies": {
     "webpack": "latest"
   },
