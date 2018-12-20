@@ -9,7 +9,7 @@ import responseHandler from './responseHandler'
 import durationReporter from "./durationReporter";
 
 // 格式化url
-function format(url) {
+function format(url: string) {
     if (url.startsWith('http')) {
         return url
     } else {
@@ -22,7 +22,7 @@ function format(url) {
 }
 
 // 所有请求发出前需要做的事情
-function preDo(obj) {
+function preDo(obj: TODO) {
     if(typeof obj.beforeSend === "function") {
         obj.beforeSend();
     }
@@ -39,10 +39,12 @@ function preDo(obj) {
 
     if (obj.showLoading) {
         loading.show(obj.showLoading);
-        obj.complete = ((fn) => {
+        obj.complete = ((fn: Function, ...args) => {
             return ()=> {
+                // TODO 使用Promise方式后，可能不需要这些了
                 loading.hide();
-                typeof fn === "function" && fn.apply(this, arguments);
+                // @ts-ignore
+                typeof fn === "function" && fn.apply(this, ...args);
             }
         })(obj.complete)
     }
@@ -54,17 +56,17 @@ function preDo(obj) {
 }
 
 // 格式化处理请求的obj内容
-function initialize(obj, container) {
+function initialize(obj: TODO, container: TODO) {
     if (!obj[container]) {
         obj[container] = {};
     }
 
     if (obj.originUrl !== config.codeToSession.url && status.session) {
-        obj[container][config.sessionName] = status.session;
+        obj[container][config.sessionName!] = status.session;
     }
 
     // 如果有全局参数，则添加
-    let gd = {};
+    let gd: any = {};
     if (typeof config.globalData === "function") {
         gd = config.globalData();
     } else if (typeof config.globalData === "object") {
@@ -101,7 +103,7 @@ function initialize(obj, container) {
     return obj;
 }
 
-function doRequest(obj) {
+function doRequest(obj: TODO) {
     obj = initialize(obj, 'data');
     obj.count++;
     wx.request({
@@ -110,10 +112,10 @@ function doRequest(obj) {
         method: obj.method,
         header: obj.header || {},
         dataType: obj.dataType || 'json',
-        success: function (res) {
+        success: function (res: wx.RequestSuccessCallbackResult) {
             responseHandler(res, obj, 'request')
         },
-        fail: function (res) {
+        fail: function (res: wx.GeneralCallbackResult) {
             errorHandler(obj, res);
             console.error(res);
         },
@@ -124,18 +126,17 @@ function doRequest(obj) {
     })
 }
 
-function doUploadFile(obj) {
+function doUploadFile(obj: TODO) {
     obj.count++;
     wx.uploadFile({
         url: obj.url,
         filePath: obj.filePath || '',
         name: obj.name || '',
-        method: 'POST',
         formData: obj.formData,
-        success: function (res) {
+        success: function (res: wx.UploadFileSuccessCallbackResult) {
             responseHandler(res, obj, 'uploadFile')
         },
-        fail: function (res) {
+        fail: function (res: wx.GeneralCallbackResult) {
             errorHandler(obj, res);
             console.error(res);
         },
@@ -146,7 +147,7 @@ function doUploadFile(obj) {
     })
 }
 
-function request(obj) {
+function request(obj: TODO): TODO {
     obj = preDo(obj);
     if(config.mockJson) {
         mockManager.get(obj, 'request');
@@ -161,7 +162,7 @@ function request(obj) {
     }, obj)
 }
 
-function uploadFile(obj) {
+function uploadFile(obj: TODO): TODO {
     obj = preDo(obj);
     if(config.mockJson) {
         mockManager.get(obj, 'uploadFile');

@@ -1,7 +1,7 @@
 import config from '../store/config'
 import responseHandler from './responseHandler'
 
-function get(obj, method) {
+function get(obj: TODO, method: "request" | "uploadFile"): any {
 
     if(!config.mockJson[obj.url] && !config.mockJson[obj.originUrl]) {
         // mock 没有对应接口的数据

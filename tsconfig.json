@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+      "strictNullChecks": true,
+      "noImplicitAny": true,
+      "module": "CommonJS",
+      "target": "ES5",
+      "allowJs": false,
+      "experimentalDecorators": true,
+      "noImplicitThis": true,
+      "noImplicitReturns": true,
+      "alwaysStrict": true,
+      "inlineSourceMap": true,
+      "inlineSources": true,
+      "noFallthroughCasesInSwitch": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "strict": true,
+      "removeComments": true,
+      "pretty": true,
+      "strictPropertyInitialization": true,
+      "typeRoots": ["./src/typings"],
+      "lib": ["es5", "es2015", "dom", "scripthost"]
+    },
+    "include": ["./src/**/*.ts"],
+    "exclude": [
+      "node_modules",
+      "build",
+      "**/*.spec.ts",
+      "**/*.d.ts"
+    ]
+  }
+  
