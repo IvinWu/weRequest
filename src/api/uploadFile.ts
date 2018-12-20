@@ -1,5 +1,5 @@
 import requestHandler from '../module/requestHandler'
 
-export default (obj) => {
+export default (obj: TODO) => {
     requestHandler.uploadFile(obj)
 }

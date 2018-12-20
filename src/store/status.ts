@@ -9,4 +9,4 @@ export default {
     logining: false as boolean,
     // 正在查询session有效期中，避免重复调用接口
     isCheckingSession: false as boolean
-}
+} as any

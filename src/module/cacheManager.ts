@@ -1,4 +1,4 @@
-function get(obj) {
+function get(obj: TODO) {
     wx.getStorage({
         key: obj.originUrl,
         success: function (res) {
@@ -16,7 +16,7 @@ function get(obj) {
     })
 }
 
-function set(obj, realData) {
+function set(obj: TODO , realData: TODO) {
     if (obj.cache === true || (typeof obj.cache === "function" && obj.cache(realData))) {
         wx.setStorage({
             key: obj.originUrl,

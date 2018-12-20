@@ -1,6 +1,6 @@
-let store = {};
+let store: TODO = {};
 
-function emit(key) {
+function emit(key: TODO) {
     let flow = getFlow(key);
     let currentLength = flow.waitingList.length;
     for (let i = 0; i < currentLength; i++) {
@@ -9,12 +9,12 @@ function emit(key) {
     }
 }
 
-function wait(key, callback) {
+function wait(key: TODO, callback: Function) {
     var flow = getFlow(key);
     flow.waitingList.push(callback)
 }
 
-function getFlow(key) {
+function getFlow(key: TODO) {
     if (!store[key]) {
         store[key] = {
             waitingList: []

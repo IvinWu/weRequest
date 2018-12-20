@@ -1,23 +1,23 @@
 import config from '../store/config'
 
-export default (obj, res) => {
+export default (obj: TODO, res: TODO) => {
     if (typeof obj.fail === "function") {
         obj.fail(res);
     } else {
         let title = "";
         if (typeof config.errorTitle === "function") {
             try {
-                title = config.errorTitle(res.data)
+                title = config.errorTitle(res.data || res.errMsg)
             } catch (e) {
             }
-        } else if (typeof errorTitle === "string") {
+        } else if (typeof config.errorTitle === "string") {
             title = config.errorTitle;
         }
 
         let content = "";
         if (typeof config.errorContent === "function") {
             try {
-                content = config.errorContent(res.data)
+                content = config.errorContent(res.data || res.errMsg)
             } catch (e) {
             }
         } else if (typeof config.errorContent === "string") {

@@ -1,6 +1,6 @@
 import config from '../store/config'
 
-function start(obj, name) {
+function start(obj: TODO, name?: string) {
     switch (name) {
         case 'checkSession':
             obj._checkSessionStartTime = new Date().getTime();
@@ -15,7 +15,7 @@ function start(obj, name) {
     }
 }
 
-function end(obj, name) {
+function end(obj: TODO, name?: string) {
     switch (name) {
         case 'checkSession':
             // wx.checkSession 耗时上报

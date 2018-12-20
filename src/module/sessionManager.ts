@@ -5,7 +5,7 @@ import requestHandler from './requestHandler'
 import errorHandler from './errorHandler'
 import durationReporter from './durationReporter'
 
-function checkSession(callback, obj) {
+function checkSession(callback: Function, obj: TODO) {
     if (status.isCheckingSession) {
         flow.wait('checkSessionFinished', () => {
             checkSession(callback, obj)
@@ -38,7 +38,7 @@ function checkSession(callback, obj) {
     }
 }
 
-function doLogin(callback, obj) {
+function doLogin(callback: Function, obj: TODO) {
     if (obj.isLogin) {
         // 登录接口，直接放过
         typeof callback === "function" && callback();
@@ -90,7 +90,7 @@ function doLogin(callback, obj) {
     }
 }
 
-function code2Session(obj, code, callback) {
+function code2Session(obj: TODO, code: TODO, callback: Function) {
     let data;
     // codeToSession.data支持函数
     if (typeof config.codeToSession.data === "function") {
@@ -98,7 +98,7 @@ function code2Session(obj, code, callback) {
     } else {
         data = config.codeToSession.data || {};
     }
-    data[config.codeToSession.codeName] = code;
+    data[config.codeToSession.codeName!] = code;
 
     obj.count++;
     requestHandler.request({
@@ -107,7 +107,7 @@ function code2Session(obj, code, callback) {
         method: config.codeToSession.method || 'GET',
         isLogin: true,
         report: config.codeToSession.report || config.codeToSession.url,
-        success: function (s) {
+        success: function (s: TODO) {
             status.session = s;
             status.sessionIsFresh = true;
             // 如果有设置本地session过期时间
@@ -115,12 +115,12 @@ function code2Session(obj, code, callback) {
                 status.sessionExpire = new Date().getTime() + status.sessionExpireTime;
                 wx.setStorage({
                     key: config.sessionExpireKey,
-                    data: status.sessionExpire
+                    data: String(status.sessionExpire)
                 })
             }
             typeof callback === "function" && callback();
             wx.setStorage({
-                key: config.sessionName,
+                key: config.sessionName!,
                 data: status.session
             })
         },

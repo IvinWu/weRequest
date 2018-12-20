@@ -5,7 +5,7 @@ import errorHandler from './errorHandler'
 import cacheManager from './cacheManager'
 import durationReporter from './durationReporter'
 
-function response(res, obj, method) {
+function response(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult, obj: TODO, method: "request" | "uploadFile"): any {
     if (res.statusCode === 200) {
 
         // 兼容uploadFile返回的res.data可能是字符串
@@ -24,7 +24,7 @@ function response(res, obj, method) {
             // 登录请求
             let s = "";
             try {
-                s = config.codeToSession.success(res.data);
+                s = config.codeToSession.success!(res.data);
             } catch (e) {
             }
             if (s) {
@@ -32,21 +32,21 @@ function response(res, obj, method) {
             } else {
                 errorHandler(obj, res);
             }
-        } else if (config.loginTrigger(res.data) && obj.reLoginLimit < config.reLoginLimit) {
+        } else if (config.loginTrigger!(res.data) && obj.reLoginLimit < config.reLoginLimit!) {
             // 登录态失效，且重试次数不超过配置
             status.session = '';
             status.sessionIsFresh = true;
             wx.removeStorage({
-                key: config.sessionName,
+                key: config.sessionName!,
                 complete: function () {
                     requestHandler[method](obj)
                 }
             })
-        } else if (config.successTrigger(res.data) && typeof obj.success === "function") {
+        } else if (config.successTrigger!(res.data) && typeof obj.success === "function") {
             // 接口返回成功码
             let realData = null;
             try {
-                realData = config.successData(res.data);
+                realData = config.successData!(res.data);
             } catch (e) {
                 console.error("Function successData occur error: " + e);
             }

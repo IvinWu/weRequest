@@ -2,11 +2,11 @@ import defaultConfig from '../store/config'
 import status from '../store/status'
 
 export default (params: IInitOption) => {
-    const config: IInitOption = {...params, ...defaultConfig)}
+    const config: IInitOption = {...params, ...defaultConfig}
     // 如果配置更改了session的存储名字，则重新获取一次session
     if (params.sessionName) {
         try {
-            status.session = wx.getStorageSync(config.sessionName) || '';
+            status.session = wx.getStorageSync(config.sessionName!) || '';
         } catch (e) {
             console.error('wx.getStorageSync:fail, can not get session.')
         }
