@@ -1,4 +1,4 @@
-export default {
+const defaultConfig: IInitOption = {
     sessionName: "session",
     loginTrigger() {
         return false
@@ -8,12 +8,12 @@ export default {
         return true
     },
     urlPerfix: "",
-    successData(res) {
+    successData(res: any) {
         return res
     },
     doNotCheckSession: false,
     errorTitle: "操作失败",
-    errorContent(res) {
+    errorContent(res: any) {
         return res
     },
     reLoginLimit: 3,
@@ -24,3 +24,5 @@ export default {
     // session在本地缓存的key
     sessionExpireKey: "sessionExpireKey"
 }
+
+export default defaultConfig;

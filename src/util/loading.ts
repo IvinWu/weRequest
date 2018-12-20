@@ -1,4 +1,4 @@
-function show(txt) {
+function show(txt: boolean | string) {
     wx.showToast({
         title: typeof txt === 'boolean' ? '加载中' : txt,
         icon: 'loading',
@@ -8,7 +8,7 @@ function show(txt) {
 }
 
 function hide() {
-    wx.hideToast();
+    wx.hideToast({});
 }
 
 export default {

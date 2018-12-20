@@ -1,5 +1,5 @@
 import requestHandler from '../module/requestHandler'
 
-export default (obj) => {
-    requestHandler.request(obj)
+export default (obj: IRequestOption) => {
+    return requestHandler.request(obj)
 }

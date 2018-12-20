@@ -1,5 +1,5 @@
-import sessionManager from '../module/sessionManager'
+import checkSession from '../module/sessionManager'
 
 export default (callback) => {
-    sessionManager(callback, {})
+    return checkSession(callback, {})
 }

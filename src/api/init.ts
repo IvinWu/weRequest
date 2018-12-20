@@ -1,8 +1,8 @@
-import config from '../store/config'
+import defaultConfig from '../store/config'
 import status from '../store/status'
 
-export default (params) => {
-    Object.assign(config, params);
+export default (params: IInitOption) => {
+    const config: IInitOption = {...params, ...defaultConfig)}
     // 如果配置更改了session的存储名字，则重新获取一次session
     if (params.sessionName) {
         try {

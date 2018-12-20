@@ -6,7 +6,7 @@ import login from './api/login'
 import getSession from './api/getSession'
 import getConfig from './api/getConfig'
 
-export {
+const weRequestObject: weRequest = {
     init,
     request,
     uploadFile,
@@ -15,3 +15,5 @@ export {
     getSession,
     getConfig
 }
+
+export default weRequestObject
