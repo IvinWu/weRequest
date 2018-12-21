@@ -1,13 +1,7 @@
-<img src="image/logo.png" alt="logo" height="160" align="center" />
+<p align="center"><img src="./image/logo.png" alt="weRequest" height="160"/></p>
+<h2 align="center">v1.0.0</h2>
+<p align="center"><b>解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。</b></p>
 
-# weRequest
-
-_解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。_
-
-[![GitHub forks](https://img.shields.io/github/forks/IvinWu/weRequest.svg?style=social&label=Fork)]()
-[![GitHub stars](https://img.shields.io/github/stars/IvinWu/weRequest.svg?style=social&label=Stars)]()
-[![GitHub watchers](https://img.shields.io/github/watchers/IvinWu/weRequest.svg?style=social&label=Watch)]()
-[![Packagist](https://img.shields.io/packagist/l/doctrine/orm.svg)]()
 
 ## 目标
 让业务逻辑更专注，不用再关注底层登录态问题。小程序对比以往的H5，登录态管理逻辑要复杂很多。通过`weRequest`这个组件，希望能帮助开发者把更多精力放在业务逻辑上，而登录态管理问题只需通过一次简单配置，以后就不用再花精力管理了。
@@ -237,7 +231,7 @@ weRequest.init({
 |success|Function|否||收到开发者服务成功返回，且执行`successTrigger`成功后的回调函数，参数为`successData`返回的参数|是|
 |fail|Function|否||接口调用失败，或执行`successTrigger`失败后的回调函数，若这里有配置，则不再默认弹窗报错|是|
 |complete|Function|否||接口调用结束的回调函数（调用成功、失败都会执行）||
-|showLoading|Boolean|否|false|请求过程页面是否展示全屏的loading|是|
+|showLoading|Boolean/String|否|false|请求过程页面是否展示全屏的loading，当值为字符串时，将展示相关文案的loading|是|
 |report|String|否||接口请求成功后将自动执行init()中配置的reportCGI函数，其中的name字段值为这里配置的值|是|
 
 #### 示例代码
@@ -275,7 +269,7 @@ weRequest.request({
 |success|Function|否||收到开发者服务成功返回，且执行`successTrigger`成功后的回调函数，参数为`successData`返回的参数|是|
 |fail|Function|否||接口调用失败，或执行`successTrigger`失败后的回调函数，若这里有配置，则不再默认弹窗报错|是|
 |complete|Function|否||接口调用结束的回调函数（调用成功、失败都会执行）||
-|showLoading|Boolean|否|false|请求过程页面是否展示全屏的loading|是|
+|showLoading|Boolean/String|否|false|请求过程页面是否展示全屏的loading，当值为字符串时，将展示相关文案的loading|是|
 |report|String|否||接口请求成功后将自动执行init()中配置的reportCGI函数，其中的name字段值为这里配置的值|是|
 
 #### 示例代码
@@ -360,3 +354,9 @@ weRequest.request({
 })
 ```
 此时，如果接口返回错误码，将触发这里定义的fail函数，且默认错误弹框将不会出现。
+
+## 贡献者
+<table><tbody><tr>
+<td><a target="_blank" href="https://github.com/IvinWu"><img width="60px" src="https://avatars0.githubusercontent.com/u/7484381?s=60&v=4"></a></td>
+<td><a target="_blank" href="https://github.com/godbasin"><img width="60px" src="https://avatars3.githubusercontent.com/u/11885123?s=60&v=4"></a></td>
+</tr></tbody></table>
