@@ -1,0 +1,17 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:latest", "tslint-config-prettier"],
+  "jsRules": {},
+  "rules": {
+    "object-literal-sort-keys": false,
+    "no-empty": false,
+    "no-string-literal": false,
+    "ordered-imports": false,
+    "no-empty-interface": false,
+    "prefer-conditional-expression": false,
+    "no-var-requires": false,
+    "no-console": false,
+    "no-object-literal-type-assertion": false
+  },
+  "rulesDirectory": []
+}
