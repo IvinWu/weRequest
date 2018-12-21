@@ -1,7 +1,7 @@
 /// <reference types="wx" />
 export interface IInitOption {
     codeToSession: ICodeToSessionOptions;
-    sessionName?: string;
+    sessionName: string;
     urlPerfix?: string | (() => string);
     doNotCheckSession?: boolean;
     reLoginLimit?: number;

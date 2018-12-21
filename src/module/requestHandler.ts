@@ -6,7 +6,8 @@ import cacheManager from './cacheManager'
 import sessionManager from './sessionManager'
 import errorHandler from './errorHandler'
 import responseHandler from './responseHandler'
-import durationReporter from "./durationReporter";
+import durationReporter from "./durationReporter"
+import url from '../util/url'
 
 // 格式化url
 function format(url: string) {
@@ -49,8 +50,10 @@ function preDo(obj: TODO) {
         })(obj.complete)
     }
 
-    obj.originUrl = obj.url;
-    obj.url = format(obj.url);
+    if(!obj.originUrl) {
+        obj.originUrl = obj.url;
+        obj.url = format(obj.url);
+    }
 
     return obj;
 }
@@ -79,23 +82,12 @@ function initialize(obj: TODO, container: TODO) {
 
     // 如果请求不是GET，则在URL中自动加上登录态和全局参数
     if (obj.method !== "GET") {
-
         if (status.session) {
-            if (obj.url.indexOf('?') >= 0) {
-                obj.url += '&' + config.sessionName + '=' + encodeURIComponent(status.session);
-            } else {
-                obj.url += '?' + config.sessionName + '=' + encodeURIComponent(status.session);
-            }
+            let params: any = {};
+            params[config.sessionName] = status.session;
+            obj.url = url.setParams(obj.url, params);
         }
-
-        // 如果有全局参数，则在URL中添加
-        for (let i in gd) {
-            if (obj.url.indexOf('?') >= 0) {
-                obj.url += '&' + i + '=' + gd[i];
-            } else {
-                obj.url += '?' + i + '=' + gd[i];
-            }
-        }
+        obj.url = url.setParams(obj.url, gd);
     }
 
     durationReporter.start(obj);
@@ -127,6 +119,7 @@ function doRequest(obj: TODO) {
 }
 
 function doUploadFile(obj: TODO) {
+    obj = initialize(obj, 'formData');
     obj.count++;
     wx.uploadFile({
         url: obj.url,
