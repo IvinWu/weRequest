@@ -7,10 +7,11 @@ export default (obj, res) => {
         let title = "";
         if (typeof config.errorTitle === "function") {
             try {
+                // TODO: 原生错误只有res.errMsg
                 title = config.errorTitle(res.data)
             } catch (e) {
             }
-        } else if (typeof errorTitle === "string") {
+        } else if (typeof config.errorTitle === "string") {
             title = config.errorTitle;
         }
 

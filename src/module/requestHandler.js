@@ -6,7 +6,8 @@ import cacheManager from './cacheManager'
 import sessionManager from './sessionManager'
 import errorHandler from './errorHandler'
 import responseHandler from './responseHandler'
-import durationReporter from "./durationReporter";
+import durationReporter from './durationReporter'
+import url from '../util/url'
 
 // 格式化url
 function format(url) {
@@ -23,7 +24,7 @@ function format(url) {
 
 // 所有请求发出前需要做的事情
 function preDo(obj) {
-    if(typeof obj.beforeSend === "function") {
+    if (typeof obj.beforeSend === "function") {
         obj.beforeSend();
     }
     // 登录态失效，重复登录计数
@@ -40,15 +41,17 @@ function preDo(obj) {
     if (obj.showLoading) {
         loading.show(obj.showLoading);
         obj.complete = ((fn) => {
-            return ()=> {
+            return () => {
                 loading.hide();
                 typeof fn === "function" && fn.apply(this, arguments);
             }
         })(obj.complete)
     }
 
-    obj.originUrl = obj.url;
-    obj.url = format(obj.url);
+    if(!obj.originUrl) {
+        obj.originUrl = obj.url;
+        obj.url = format(obj.url);
+    }
 
     return obj;
 }
@@ -77,23 +80,12 @@ function initialize(obj, container) {
 
     // 如果请求不是GET，则在URL中自动加上登录态和全局参数
     if (obj.method !== "GET") {
-
         if (status.session) {
-            if (obj.url.indexOf('?') >= 0) {
-                obj.url += '&' + config.sessionName + '=' + encodeURIComponent(status.session);
-            } else {
-                obj.url += '?' + config.sessionName + '=' + encodeURIComponent(status.session);
-            }
+            let params = {};
+            params[config.sessionName] = status.session;
+            obj.url = url.setParams(obj.url, params);
         }
-
-        // 如果有全局参数，则在URL中添加
-        for (let i in gd) {
-            if (obj.url.indexOf('?') >= 0) {
-                obj.url += '&' + i + '=' + gd[i];
-            } else {
-                obj.url += '?' + i + '=' + gd[i];
-            }
-        }
+        obj.url = url.setParams(obj.url, gd);
     }
 
     durationReporter.start(obj);
@@ -125,6 +117,7 @@ function doRequest(obj) {
 }
 
 function doUploadFile(obj) {
+    obj = initialize(obj, 'formData');
     obj.count++;
     wx.uploadFile({
         url: obj.url,
@@ -148,30 +141,30 @@ function doUploadFile(obj) {
 
 function request(obj) {
     obj = preDo(obj);
-    if(config.mockJson) {
+    if (config.mockJson) {
         mockManager.get(obj, 'request');
         return false;
     }
-    if(obj.cache) {
+    if (obj.cache) {
         cacheManager.get(obj);
     }
 
-    sessionManager(()=>{
+    sessionManager(() => {
         doRequest(obj)
     }, obj)
 }
 
 function uploadFile(obj) {
     obj = preDo(obj);
-    if(config.mockJson) {
+    if (config.mockJson) {
         mockManager.get(obj, 'uploadFile');
         return false;
     }
-    if(obj.cache) {
+    if (obj.cache) {
         cacheManager.get(obj);
     }
 
-    sessionManager(()=>{
+    sessionManager(() => {
         doUploadFile(obj)
     }, obj)
 }

@@ -42,7 +42,7 @@ function response(res, obj, method) {
                     requestHandler[method](obj)
                 }
             })
-        } else if (config.successTrigger(res.data) && typeof obj.success === "function") {
+        } else if (config.successTrigger(res.data)) {
             // 接口返回成功码
             let realData = null;
             try {
@@ -52,7 +52,7 @@ function response(res, obj, method) {
             }
             if(!obj.noCacheFlash) {
                 // 如果为了保证页面不闪烁，则不回调，只是缓存最新数据，待下次进入再用
-                obj.success(realData);
+                typeof obj.success === "function" && obj.success(realData);
             }
             // 缓存存储
             cacheManager.set(obj, realData);
