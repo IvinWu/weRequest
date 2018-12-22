@@ -224,8 +224,8 @@ function request(obj) {
 
     // 如果请求的URL中不是http开头的，则自动添加配置中的前缀
     var url = obj.url.startsWith('http') ? obj.url : ((typeof urlPerfix === "function" ? urlPerfix() : urlPerfix) + obj.url);
-    // 如果请求不是GET，则在URL中自动加上登录态和全局参数
-    if (obj.method != "GET") {
+    // 如果是 GET 请求，则在URL中自动加上登录态和全局参数
+    if (obj.method == "GET") {
 
         if (session) {
             if (url.indexOf('?') >= 0) {
