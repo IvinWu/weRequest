@@ -208,7 +208,7 @@ function request(obj) {
     }
 
     if (obj.url != codeToSession.url && session) {
-        obj.data[sessionName] = session;
+        // obj.data[sessionName] = session;
     }
 
     // 如果有全局参数，则添加
@@ -227,22 +227,22 @@ function request(obj) {
     // 如果是 GET 请求，则在URL中自动加上登录态和全局参数
     if (obj.method == "GET") {
 
-        if (session) {
-            if (url.indexOf('?') >= 0) {
-                url += '&' + sessionName + '=' + encodeURIComponent(session);
-            } else {
-                url += '?' + sessionName + '=' + encodeURIComponent(session);
-            }
-        }
+        // if (session) {
+        //     if (url.indexOf('?') >= 0) {
+        //         url += '&' + sessionName + '=' + encodeURIComponent(session);
+        //     } else {
+        //         url += '?' + sessionName + '=' + encodeURIComponent(session);
+        //     }
+        // }
 
         // 如果有全局参数，则在URL中添加
-        for (var i in gd) {
-            if (url.indexOf('?') >= 0) {
-                url += '&' + i + '=' + gd[i];
-            } else {
-                url += '?' + i + '=' + gd[i];
-            }
-        }
+        // for (var i in gd) {
+        //     if (url.indexOf('?') >= 0) {
+        //         url += '&' + i + '=' + gd[i];
+        //     } else {
+        //         url += '?' + i + '=' + gd[i];
+        //     }
+        // }
     }
 
     // 如果有上报字段配置，则记录请求发出前的时间戳
@@ -254,7 +254,7 @@ function request(obj) {
         url: url,
         data: obj.data,
         method: obj.method,
-        header: obj.header || {},
+        header: {"Authorization":"Bearer " + session},//obj.header || {},
         dataType: obj.dataType || 'json',
         success: function (res) {
             if (res.statusCode == 200) {
@@ -348,22 +348,22 @@ function uploadFile(obj) {
     var url = obj.url.startsWith('http') ? obj.url : ((typeof urlPerfix === "function" ? urlPerfix() : urlPerfix) + obj.url);
 
     // 在URL中自动加上登录态和全局参数
-    if (session) {
-        if (url.indexOf('?') >= 0) {
-            url += '&' + sessionName + '=' + session;
-        } else {
-            url += '?' + sessionName + '=' + session;
-        }
-    }
+    // if (session) {
+    //     if (url.indexOf('?') >= 0) {
+    //         url += '&' + sessionName + '=' + session;
+    //     } else {
+    //         url += '?' + sessionName + '=' + session;
+    //     }
+    // }
 
     // 如果有全局参数，则在URL中添加
-    for (var i in gd) {
-        if (url.indexOf('?') >= 0) {
-            url += '&' + i + '=' + gd[i];
-        } else {
-            url += '?' + i + '=' + gd[i];
-        }
-    }
+    // for (var i in gd) {
+    //     if (url.indexOf('?') >= 0) {
+    //         url += '&' + i + '=' + gd[i];
+    //     } else {
+    //         url += '?' + i + '=' + gd[i];
+    //     }
+    // }
 
     // 如果有上报字段配置，则记录请求发出前的时间戳
     if (obj.report) {
