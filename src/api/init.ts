@@ -58,7 +58,7 @@ export interface IInitOption {
     /* CGI中传参时，存放code的名称 */
     codeName?: string;
     /* 登录接口需要的其他参数 */
-    data?: string | IAnyObject | ArrayBuffer;
+    data?: string | Function | IAnyObject | ArrayBuffer;
     /* 接口返回成功的函数；需要返回session的值 */
     success?: Function;
     /* code换取session的接口逻辑出错时，执行的函数，若配置了此函数，则不再默认弹窗报错 */
