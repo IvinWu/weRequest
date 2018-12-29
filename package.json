@@ -22,10 +22,13 @@
   "main": "build/weRequest.js",
   "typings": "build/index.d.ts",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "commit": "git cz"
   },
   "dependencies": {},
   "devDependencies": {
+    "commitizen": "^3.0.5",
+    "cz-conventional-changelog": "^2.1.0",
     "prettier": "^1.15.3",
     "pretty-quick": "^1.8.0",
     "ts-loader": "^5.3.1",
@@ -38,6 +41,11 @@
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
     }
   }
 }
