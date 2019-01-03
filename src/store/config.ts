@@ -1,4 +1,5 @@
-import { IInitOption } from '../api/init';
+import { IInitOption } from '../interface'
+
 const defaultConfig: IInitOption = {
     sessionName: "session",
     loginTrigger() {

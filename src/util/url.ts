@@ -1,10 +1,10 @@
-function setParams(url: string, params: object) {
-    let queryStringIndex = url.indexOf('?');
+function setParams(url: string = '', params: object) {
+    let queryStringIndex: number = url.indexOf('?');
     let kvp: any = {};
     if (queryStringIndex >= 0) {
         let oldQueryString = url.substr(queryStringIndex + 1).split('&');
         for (let i = 0; i < oldQueryString.length; i++) {
-            let kv = oldQueryString[i].split('=');
+            let kv: Array<string> = oldQueryString[i].split('=');
             kvp[kv[0]] = kv[1]
         }
     }
