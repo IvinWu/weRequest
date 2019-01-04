@@ -1,7 +1,3 @@
-export interface IRequestOption extends wx.RequestOption {
-    beforeSend?: Function;
-    showLoading?: boolean | string;
-    report?: string;
-}
+import { IRequestOption } from '../interface';
 declare const _default: (obj: IRequestOption) => void;
 export default _default;

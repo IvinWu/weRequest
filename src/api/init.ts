@@ -3,7 +3,7 @@ import status from '../store/status'
 import { IInitOption } from '../interface'
 
 export default (params: IInitOption) => {
-    const config: IInitOption = {...params, ...defaultConfig}
+    const config: IInitOption = {...params, ...defaultConfig};
     // 如果配置更改了session的存储名字，则重新获取一次session
     if (params.sessionName) {
         try {

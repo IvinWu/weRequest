@@ -1,6 +1,6 @@
 import status from '../store/status'
 
-export default (session: TODO) => {
+export default (session: string) => {
     status.session = session;
     status.sessionIsFresh = true;
 }

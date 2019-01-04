@@ -1,3 +1,3 @@
-/// <reference types="wx" />
-declare function checkSession(callback: Function, obj: TODO): void;
-export default checkSession;
+import { IRequestOption, IUploadFileOption } from "../interface";
+declare const _default: (fn: Function, obj: IRequestOption | IUploadFileOption) => void;
+export default _default;

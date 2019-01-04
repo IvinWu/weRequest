@@ -1,6 +1,6 @@
-/// <reference types="wx" />
-declare function get(obj: TODO): void;
-declare function set(obj: TODO, realData: TODO): void;
+import { IRequestOption } from "../interface";
+declare function get(obj: IRequestOption): void;
+declare function set(obj: IRequestOption, realData: string | object): void;
 declare const _default: {
     get: typeof get;
     set: typeof set;

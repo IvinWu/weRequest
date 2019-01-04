@@ -4,6 +4,7 @@ import config from '../store/config'
 import requestHandler from './requestHandler'
 import errorHandler from './errorHandler'
 import durationReporter from './durationReporter'
+import {IRequestOption, IUploadFileOption} from "../interface";
 
 function checkSession() {
     return new Promise((resolve)=>{
@@ -31,7 +32,7 @@ function checkSession() {
     })
 }
 
-function doLogin(callback: Function, obj: TODO) {
+function doLogin(callback: Function, obj: IRequestOption | IUploadFileOption) {
     if (obj.isLogin) {
         // 登录接口，直接放过
         typeof callback === "function" && callback();
@@ -55,7 +56,7 @@ function doLogin(callback: Function, obj: TODO) {
     }
 }
 
-function getCode(callback: Function,obj: TODO) {
+function getCode(callback: Function, obj: IRequestOption | IUploadFileOption) {
     status.logining = true;
     console.log('wx.login');
     let start = new Date().getTime();
@@ -72,7 +73,7 @@ function getCode(callback: Function,obj: TODO) {
                     flow.emit('doLoginFinished');
                 })
             } else {
-                errorHandler(obj, res);
+                errorHandler.doError("登录失败", "请稍后重试[code 获取失败]");
                 console.error(res);
                 // 登录失败，解除锁，防止死锁
                 status.logining = false;
@@ -80,7 +81,7 @@ function getCode(callback: Function,obj: TODO) {
             }
         },
         fail: function (res) {
-            errorHandler(obj, res);
+            errorHandler.systemError(obj, res);
             console.error(res);
             // 登录失败，解除锁，防止死锁
             status.logining = false;
@@ -125,11 +126,11 @@ function code2Session(code: String) {
             },
             complete: function () {},
             fail: config.codeToSession.fail || null
-        })
+        } as IRequestOption)
     })
 }
 
-export default (fn: Function, obj: object)=>{
+export default (fn: Function, obj: IRequestOption | IUploadFileOption)=>{
     checkSession().then(()=>{
         return doLogin(fn, obj)
     });

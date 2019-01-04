@@ -1,4 +1,4 @@
-declare function setParams(url: string, params: object): string;
+declare function setParams(url: string | undefined, params: object): string;
 declare const _default: {
     setParams: typeof setParams;
 };

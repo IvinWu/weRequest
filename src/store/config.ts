@@ -5,7 +5,10 @@ const defaultConfig: IInitOption = {
     loginTrigger() {
         return false
     },
-    codeToSession: {},
+    codeToSession: {
+        url: "",
+        success: ()=> {}
+    },
     successTrigger() {
         return true
     },
@@ -25,6 +28,6 @@ const defaultConfig: IInitOption = {
     globalData: false,
     // session在本地缓存的key
     sessionExpireKey: "sessionExpireKey"
-}
+};
 
 export default defaultConfig;

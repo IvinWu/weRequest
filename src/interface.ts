@@ -23,7 +23,7 @@ export interface IInitOption {
         request?: () => void
     ) => void);
     /* 	可为接口提供mock数据 */
-    mockJson?: TODO;
+    mockJson?: any;
     /** 所有请求都会自动带上这里的参数 */
     globalData?: boolean | object | Function;
     /** session在本地缓存的key */
@@ -31,9 +31,9 @@ export interface IInitOption {
     /* 触发重新登录的条件；参数为CGI返回的数据，返回需要重新登录的条件 */
     loginTrigger?: (res: string | IAnyObject | ArrayBuffer) => boolean;
     /* 触发请求成功的条件；参数为CGI返回的数据，返回接口逻辑成功的条件 */
-    successTrigger?: (res: string | IAnyObject | ArrayBuffer) => boolean;
+    successTrigger: (res: string | IAnyObject | ArrayBuffer) => boolean;
     /* 成功之后返回数据；参数为CGI返回的数据，返回逻辑需要使用的数据 */
-    successData?: (res: string | IAnyObject | ArrayBuffer) => boolean;
+    successData: (res: string | IAnyObject | ArrayBuffer) => string | IAnyObject | ArrayBuffer;
     /* 	接口逻辑失败时，错误弹窗的标题 */
     errorTitle?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
     /* 接口逻辑失败时，错误弹窗的内容 */
@@ -42,7 +42,7 @@ export interface IInitOption {
 
 export interface ICodeToSessionOptions{
     /* CGI的url */
-    url?: string;
+    url: string;
     /* 调用该CGI的方法 */
     method?: 'OPTIONS'
         | 'GET'
@@ -57,33 +57,75 @@ export interface ICodeToSessionOptions{
     /* 登录接口需要的其他参数 */
     data?: string | Function | IAnyObject | ArrayBuffer;
     /* 接口返回成功的函数；需要返回session的值 */
-    success?: Function;
+    success: Function;
     /* code换取session的接口逻辑出错时，执行的函数，若配置了此函数，则不再默认弹窗报错 */
     fail?: Function;
     /* codeToSession的上报字段名 */
     report?: string;
 }
 
-export interface IRequestOption extends wx.RequestOption {
+export interface IRequestOption extends IRequestObject {
     /* 发起请求前执行的函数 */
     beforeSend?: Function;
     /* 请求过程页面是否展示全屏的loading */
     showLoading?: boolean | string;
     /* 接口请求成功后将自动执行init()中配置的reportCGI函数，其中的name字段值为这里配置的值 */
     report?: string;
-
+    /* 是否需要缓存 */
     cache?: boolean | Function;
-
-    noCacheFlash?: boolean
+    /* 当启用缓存时，决定除了返回缓存内容外，是否还返回接口实时内容，以防止页面多次渲染的抖动 */
+    noCacheFlash?: boolean;
+    /* 接口调用成功的回调函数 */
+    success: (res: string | IAnyObject | ArrayBuffer, cacheInfo?: object) => void;
+    /* 接口调用结束的回调函数（调用成功、失败都会执行） */
+    complete?: ()=> void;
+    /** 接口调用失败 或 逻辑失败 的回调函数 */
+    fail?: (res: string | IAnyObject | ArrayBuffer)=> void;
 }
 
-export interface IUploadFileOption extends wx.UploadFileOption {
+export interface IRequestObject extends wx.RequestOption{
+    /* 业务请求的原始url */
+    originUrl: string;
+    /* 业务请求的计数器 */
+    count: number;
+    /* 重登陆次数 */
+    reLoginLimit: number;
+    /* 该请求是否是登陆请求 */
+    isLogin?: boolean;
+    /* 请求发起的时间戳 */
+    _reportStartTime: number;
+    /* 请求返回的时间戳 */
+    _reportEndTime: number;
+}
+
+export interface IUploadFileOption extends IUploadFileObject {
     /* 发起请求前执行的函数 */
     beforeSend?: Function;
     /* 请求过程页面是否展示全屏的loading */
     showLoading?: boolean | string;
     /* 接口请求成功后将自动执行init()中配置的reportCGI函数，其中的name字段值为这里配置的值 */
     report?: string;
+    /* 接口调用成功的回调函数 */
+    success: (res: string | IAnyObject | ArrayBuffer, cacheInfo?: object) => void;
+    /* 接口调用结束的回调函数（调用成功、失败都会执行） */
+    complete?: ()=> void;
+    /** 接口调用失败 或 逻辑失败 的回调函数 */
+    fail?: (res: string | IAnyObject | ArrayBuffer)=> void;
+}
+
+export interface IUploadFileObject extends wx.UploadFileOption {
+    /* 业务请求的原始url */
+    originUrl: string;
+    /* 业务请求的计数器 */
+    count: number;
+    /* 重登陆次数 */
+    reLoginLimit: number;
+    /* 该请求是否是登陆请求 */
+    isLogin?: boolean;
+    /* 请求发起的时间戳 */
+    _reportStartTime: number;
+    /* 请求返回的时间戳 */
+    _reportEndTime: number;
 }
 
 export interface IGetConfigResult {

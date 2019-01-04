@@ -1,5 +1,5 @@
-/// <reference types="wx" />
-declare function get(obj: TODO, method: "request" | "uploadFile"): any;
+import { IRequestOption, IUploadFileOption } from "../interface";
+declare function get(obj: IRequestOption | IUploadFileOption, method: "request" | "uploadFile"): any;
 declare const _default: {
     get: typeof get;
 };

@@ -8,6 +8,7 @@ import errorHandler from './errorHandler'
 import responseHandler from './responseHandler'
 import durationReporter from "./durationReporter"
 import url from '../util/url'
+import { IRequestOption, IUploadFileOption } from "../interface"
 
 // 格式化url
 function format(url: string) {
@@ -23,7 +24,7 @@ function format(url: string) {
 }
 
 // 所有请求发出前需要做的事情
-function preDo(obj: TODO) {
+function preDo<T extends IRequestOption | IUploadFileOption>(obj: T): T {
     if(typeof obj.beforeSend === "function") {
         obj.beforeSend();
     }
@@ -40,7 +41,7 @@ function preDo(obj: TODO) {
 
     if (obj.showLoading) {
         loading.show(obj.showLoading);
-        obj.complete = ((fn: Function, ...args) => {
+        obj.complete = ((fn: any, ...args) => {
             return ()=> {
                 // TODO 使用Promise方式后，可能不需要这些了
                 loading.hide();
@@ -59,23 +60,19 @@ function preDo(obj: TODO) {
 }
 
 // 格式化处理请求的obj内容
-function initialize(obj: TODO, container: TODO) {
-    if (!obj[container]) {
-        obj[container] = {};
+function initializeRequestObj(obj: IRequestOption) {
+
+    if (!obj.data) {
+        obj.data = {};
     }
 
     if (obj.originUrl !== config.codeToSession.url && status.session) {
-        obj[container][config.sessionName!] = status.session;
+        obj.data = Object.assign({}, obj.data, {[config.sessionName]: status.session})
     }
 
     // 如果有全局参数，则添加
-    let gd: any = {};
-    if (typeof config.globalData === "function") {
-        gd = config.globalData();
-    } else if (typeof config.globalData === "object") {
-        gd = config.globalData;
-    }
-    obj[container] = Object.assign({}, gd, obj[container]);
+    let gd = getGlobalData();
+    obj.data = Object.assign({}, gd, obj.data);
 
     obj.method = obj.method || 'GET';
     obj.dataType = obj.dataType || 'json';
@@ -83,9 +80,7 @@ function initialize(obj: TODO, container: TODO) {
     // 如果请求不是GET，则在URL中自动加上登录态和全局参数
     if (obj.method !== "GET") {
         if (status.session) {
-            let params: any = {};
-            params[config.sessionName] = status.session;
-            obj.url = url.setParams(obj.url, params);
+            obj.url = url.setParams(obj.url, {[config.sessionName]: status.session});
         }
         obj.url = url.setParams(obj.url, gd);
     }
@@ -95,8 +90,44 @@ function initialize(obj: TODO, container: TODO) {
     return obj;
 }
 
-function doRequest(obj: TODO) {
-    obj = initialize(obj, 'data');
+// 格式化处理上传文件的obj内容
+function initializeUploadFileObj(obj: IUploadFileOption) {
+    if (!obj.formData) {
+        obj.formData = {};
+    }
+
+    if (obj.originUrl !== config.codeToSession.url && status.session) {
+        obj.formData = Object.assign({}, obj.formData, {[config.sessionName]: status.session})
+    }
+
+    // 如果有全局参数，则添加
+    let gd = getGlobalData();
+    obj.formData = Object.assign({}, gd, obj.formData);
+
+    // 将登陆态也带在url上
+    if (status.session) {
+        obj.url = url.setParams(obj.url, {[config.sessionName]: status.session});
+    }
+    // 全局参数同时放在url上
+    obj.url = url.setParams(obj.url, gd);
+
+    durationReporter.start(obj);
+
+    return obj;
+}
+
+function getGlobalData() {
+    let gd: any = {};
+    if (typeof config.globalData === "function") {
+        gd = config.globalData();
+    } else if (typeof config.globalData === "object") {
+        gd = config.globalData;
+    }
+    return gd;
+}
+
+function doRequest(obj: IRequestOption) {
+    obj = initializeRequestObj(obj);
     obj.count++;
     wx.request({
         url: obj.url,
@@ -108,7 +139,7 @@ function doRequest(obj: TODO) {
             responseHandler(res, obj, 'request')
         },
         fail: function (res: wx.GeneralCallbackResult) {
-            errorHandler(obj, res);
+            errorHandler.systemError(obj, res);
             console.error(res);
         },
         complete: function () {
@@ -118,8 +149,8 @@ function doRequest(obj: TODO) {
     })
 }
 
-function doUploadFile(obj: TODO) {
-    obj = initialize(obj, 'formData');
+function doUploadFile(obj: IUploadFileOption) {
+    obj = initializeUploadFileObj(obj);
     obj.count++;
     wx.uploadFile({
         url: obj.url,
@@ -130,7 +161,7 @@ function doUploadFile(obj: TODO) {
             responseHandler(res, obj, 'uploadFile')
         },
         fail: function (res: wx.GeneralCallbackResult) {
-            errorHandler(obj, res);
+            errorHandler.systemError(obj, res);
             console.error(res);
         },
         complete: function () {
@@ -140,11 +171,11 @@ function doUploadFile(obj: TODO) {
     })
 }
 
-function request(obj: TODO): TODO {
+function request(obj: IRequestOption): void {
     obj = preDo(obj);
     if(config.mockJson) {
         mockManager.get(obj, 'request');
-        return false;
+        return;
     }
     if(obj.cache) {
         cacheManager.get(obj);
@@ -155,14 +186,11 @@ function request(obj: TODO): TODO {
     }, obj)
 }
 
-function uploadFile(obj: TODO): TODO {
-    obj = preDo(obj);
+function uploadFile(obj: IUploadFileOption): void {
+    obj = preDo(obj) as IUploadFileOption;
     if(config.mockJson) {
         mockManager.get(obj, 'uploadFile');
-        return false;
-    }
-    if(obj.cache) {
-        cacheManager.get(obj);
+        return;
     }
 
     sessionManager(()=>{

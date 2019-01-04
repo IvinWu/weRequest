@@ -1,7 +1,8 @@
 import config from '../store/config'
 import responseHandler from './responseHandler'
+import { IRequestOption, IUploadFileOption } from "../interface";
 
-function get(obj: TODO, method: "request" | "uploadFile"): any {
+function get(obj: IRequestOption | IUploadFileOption, method: "request" | "uploadFile"): any {
 
     if(!config.mockJson[obj.url] && !config.mockJson[obj.originUrl]) {
         // mock 没有对应接口的数据

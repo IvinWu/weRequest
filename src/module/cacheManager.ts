@@ -1,4 +1,6 @@
-function get(obj: TODO) {
+import { IRequestOption } from "../interface"
+
+function get(obj: IRequestOption) {
     wx.getStorage({
         key: obj.originUrl,
         success: function (res) {
@@ -16,7 +18,7 @@ function get(obj: TODO) {
     })
 }
 
-function set(obj: TODO , realData: TODO) {
+function set(obj: IRequestOption , realData: string | object) {
     if (obj.cache === true || (typeof obj.cache === "function" && obj.cache(realData))) {
         wx.setStorage({
             key: obj.originUrl,

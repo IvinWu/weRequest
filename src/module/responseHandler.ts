@@ -4,8 +4,13 @@ import requestHandler from './requestHandler'
 import errorHandler from './errorHandler'
 import cacheManager from './cacheManager'
 import durationReporter from './durationReporter'
+import { IRequestOption, IUploadFileOption } from "../interface";
 
-function response(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult, obj: TODO, method: "request" | "uploadFile"): any {
+function response(
+    res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult,
+    obj: IRequestOption | IUploadFileOption,
+    method: "request" | "uploadFile"
+): any {
     if (res.statusCode === 200) {
 
         // 兼容uploadFile返回的res.data可能是字符串
@@ -13,7 +18,7 @@ function response(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCal
             try {
                 res.data = JSON.parse(res.data);
             } catch (e) {
-                errorHandler(obj, res);
+                errorHandler.logicError(obj, res);
                 return false;
             }
         }
@@ -24,13 +29,13 @@ function response(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCal
             // 登录请求
             let s = "";
             try {
-                s = config.codeToSession.success!(res.data);
+                s = config.codeToSession.success(res.data);
             } catch (e) {
             }
             if (s) {
                 obj.success(s);
             } else {
-                errorHandler(obj, res);
+                errorHandler.logicError(obj, res);
             }
         } else if (config.loginTrigger!(res.data) && obj.reLoginLimit < config.reLoginLimit!) {
             // 登录态失效，且重试次数不超过配置
@@ -39,18 +44,22 @@ function response(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCal
             wx.removeStorage({
                 key: config.sessionName!,
                 complete: function () {
-                    requestHandler[method](obj)
+                    if(method === "request") {
+                        requestHandler.request(<IRequestOption>obj);
+                    } else if(method === "uploadFile") {
+                        requestHandler.uploadFile(<IUploadFileOption>obj);
+                    }
                 }
             })
-        } else if (config.successTrigger!(res.data)) {
+        } else if (config.successTrigger(res.data)) {
             // 接口返回成功码
-            let realData = null;
+            let realData: string | IAnyObject | ArrayBuffer = "";
             try {
-                realData = config.successData!(res.data);
+                realData = config.successData(res.data);
             } catch (e) {
                 console.error("Function successData occur error: " + e);
             }
-            if(!obj.noCacheFlash) {
+            if(!(<IRequestOption>obj).noCacheFlash) {
                 // 如果为了保证页面不闪烁，则不回调，只是缓存最新数据，待下次进入再用
                 typeof obj.success === "function" && obj.success(realData);
             }
@@ -58,10 +67,10 @@ function response(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCal
             cacheManager.set(obj, realData);
         } else {
             // 接口返回失败码
-            errorHandler(obj, res);
+            errorHandler.logicError(obj, res);
         }
     } else {
-        errorHandler(obj, res);
+        errorHandler.logicError(obj, res);
     }
 }
 

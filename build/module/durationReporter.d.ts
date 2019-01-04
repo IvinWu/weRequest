@@ -1,8 +1,10 @@
-/// <reference types="wx" />
-declare function start(obj: TODO, name?: string): void;
-declare function end(obj: TODO, name?: string): void;
+import { IRequestOption, IUploadFileOption } from "../interface";
+declare function start(obj: IRequestOption | IUploadFileOption): void;
+declare function end(obj: IRequestOption | IUploadFileOption): void;
+declare function report(name: string, start: number, end: number): void;
 declare const _default: {
     start: typeof start;
     end: typeof end;
+    report: typeof report;
 };
 export default _default;
