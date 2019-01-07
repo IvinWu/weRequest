@@ -10,19 +10,19 @@ function checkSession() {
     return new Promise((resolve)=>{
         if (!status.sessionIsFresh && status.session) {
             console.log("wx.checkSession()");
-            let start = new Date().getTime();
+            const start = new Date().getTime();
             wx.checkSession({
-                success: function () {
+                success () {
                     // 登录态有效，且在本生命周期内无须再检验了
                     resolve();
                 },
-                fail: function () {
+                fail () {
                     // 登录态过期
                     status.session = '';
                     resolve();
                 },
-                complete: function () {
-                    let end = new Date().getTime();
+                complete () {
+                    const end = new Date().getTime();
                     durationReporter.report('checkSession', start, end);
                 }
             })
@@ -35,7 +35,9 @@ function checkSession() {
 function doLogin(callback: Function, obj: IRequestOption | IUploadFileOption) {
     if (obj.isLogin) {
         // 登录接口，直接放过
-        typeof callback === "function" && callback();
+        if(typeof callback === "function"){
+            callback();
+        }
     } else if (status.session) {
         // 缓存中有session
         if (status.sessionExpireTime && new Date().getTime() > status.sessionExpire) {
@@ -43,11 +45,13 @@ function doLogin(callback: Function, obj: IRequestOption | IUploadFileOption) {
             status.session = '';
             doLogin(callback, obj);
         } else {
-            typeof callback === "function" && callback();
+            if(typeof callback === "function"){
+                callback();
+            }
         }
     } else if (status.logining) {
         // 正在登录中，请求轮询稍后，避免重复调用登录接口
-        flow.wait('doLoginFinished', function () {
+        flow.wait('doLoginFinished', () => {
             doLogin(callback, obj);
         })
     } else {
@@ -59,13 +63,13 @@ function doLogin(callback: Function, obj: IRequestOption | IUploadFileOption) {
 function getCode(callback: Function, obj: IRequestOption | IUploadFileOption) {
     status.logining = true;
     console.log('wx.login');
-    let start = new Date().getTime();
+    const start = new Date().getTime();
     wx.login({
-        complete: function () {
-            let end = new Date().getTime();
+        complete () {
+            const end = new Date().getTime();
             durationReporter.report('login', start, end);
         },
-        success: function (res) {
+        success (res) {
             if (res.code) {
                 code2Session(res.code).then(()=>{
                     callback();
@@ -80,7 +84,7 @@ function getCode(callback: Function, obj: IRequestOption | IUploadFileOption) {
                 flow.emit('doLoginFinished');
             }
         },
-        fail: function (res) {
+        fail (res) {
             errorHandler.systemError(obj, res);
             console.error(res);
             // 登录失败，解除锁，防止死锁
@@ -90,7 +94,7 @@ function getCode(callback: Function, obj: IRequestOption | IUploadFileOption) {
     })
 }
 
-function code2Session(code: String) {
+function code2Session(code: string) {
     let data: any;
     // codeToSession.data支持函数
     if (typeof config.codeToSession.data === "function") {
@@ -103,11 +107,11 @@ function code2Session(code: String) {
     return new Promise((resolve)=>{
         requestHandler.request({
             url: config.codeToSession.url,
-            data: data,
+            data,
             method: config.codeToSession.method || 'GET',
             isLogin: true,
             report: config.codeToSession.report || config.codeToSession.url,
-            success: function (s: String) {
+            success (s: string) {
                 status.session = s;
                 status.sessionIsFresh = true;
                 // 如果有设置本地session过期时间
@@ -124,7 +128,7 @@ function code2Session(code: String) {
                 });
                 return resolve();
             },
-            complete: function () {},
+            complete () {},
             fail: config.codeToSession.fail || null
         } as IRequestOption)
     })

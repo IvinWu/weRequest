@@ -13,8 +13,8 @@ function get(obj: IRequestOption | IUploadFileOption, method: "request" | "uploa
     let data = config.mockJson[obj.url] || config.mockJson[obj.originUrl];
     // deep copy
     data = JSON.parse(JSON.stringify(data));
-    let res = {
-        data: data,
+    const res = {
+        data,
         statusCode: 200
     };
 

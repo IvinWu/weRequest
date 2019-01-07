@@ -43,11 +43,11 @@ function response(
             status.sessionIsFresh = true;
             wx.removeStorage({
                 key: config.sessionName!,
-                complete: function () {
+                complete () {
                     if(method === "request") {
-                        requestHandler.request(<IRequestOption>obj);
+                        requestHandler.request(obj as IRequestOption);
                     } else if(method === "uploadFile") {
-                        requestHandler.uploadFile(<IUploadFileOption>obj);
+                        requestHandler.uploadFile(obj as IUploadFileOption);
                     }
                 }
             })
@@ -59,9 +59,11 @@ function response(
             } catch (e) {
                 console.error("Function successData occur error: " + e);
             }
-            if(!(<IRequestOption>obj).noCacheFlash) {
+            if(!(obj as IRequestOption).noCacheFlash) {
                 // 如果为了保证页面不闪烁，则不回调，只是缓存最新数据，待下次进入再用
-                typeof obj.success === "function" && obj.success(realData);
+                if(typeof obj.success === "function"){
+                    obj.success(realData);
+                }
             }
             // 缓存存储
             cacheManager.set(obj, realData);

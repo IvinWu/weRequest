@@ -11,15 +11,15 @@ import url from '../util/url'
 import { IRequestOption, IUploadFileOption } from "../interface"
 
 // 格式化url
-function format(url: string) {
-    if (url.startsWith('http')) {
-        return url
+function format(originUrl: string) {
+    if (originUrl.startsWith('http')) {
+        return originUrl
     } else {
         let urlPerfix = config.urlPerfix;
         if (typeof config.urlPerfix === "function") {
             urlPerfix = config.urlPerfix()
         }
-        return urlPerfix + url;
+        return urlPerfix + originUrl;
     }
 }
 
@@ -45,8 +45,10 @@ function preDo<T extends IRequestOption | IUploadFileOption>(obj: T): T {
             return ()=> {
                 // TODO 使用Promise方式后，可能不需要这些了
                 loading.hide();
-                // @ts-ignore
-                typeof fn === "function" && fn.apply(this, ...args);
+                if(typeof fn === "function"){
+                    // @ts-ignore
+                    fn.apply(this, ...args);
+                }
             }
         })(obj.complete)
     }
@@ -67,12 +69,12 @@ function initializeRequestObj(obj: IRequestOption) {
     }
 
     if (obj.originUrl !== config.codeToSession.url && status.session) {
-        obj.data = Object.assign({}, obj.data, {[config.sessionName]: status.session})
+        obj.data = {...obj.data as object, [config.sessionName]: status.session};
     }
 
     // 如果有全局参数，则添加
-    let gd = getGlobalData();
-    obj.data = Object.assign({}, gd, obj.data);
+    const gd = getGlobalData();
+    obj.data = {...gd, ...obj.data as object};
 
     obj.method = obj.method || 'GET';
     obj.dataType = obj.dataType || 'json';
@@ -97,12 +99,12 @@ function initializeUploadFileObj(obj: IUploadFileOption) {
     }
 
     if (obj.originUrl !== config.codeToSession.url && status.session) {
-        obj.formData = Object.assign({}, obj.formData, {[config.sessionName]: status.session})
+        obj.formData = {...obj.formData as object, [config.sessionName]: status.session};
     }
 
     // 如果有全局参数，则添加
-    let gd = getGlobalData();
-    obj.formData = Object.assign({}, gd, obj.formData);
+    const gd = getGlobalData();
+    obj.formData = {...gd, ...obj.formData};
 
     // 将登陆态也带在url上
     if (status.session) {
@@ -135,16 +137,18 @@ function doRequest(obj: IRequestOption) {
         method: obj.method,
         header: obj.header || {},
         dataType: obj.dataType || 'json',
-        success: function (res: wx.RequestSuccessCallbackResult) {
+        success(res: wx.RequestSuccessCallbackResult) {
             responseHandler(res, obj, 'request')
         },
-        fail: function (res: wx.GeneralCallbackResult) {
+        fail (res: wx.GeneralCallbackResult) {
             errorHandler.systemError(obj, res);
             console.error(res);
         },
-        complete: function () {
+        complete () {
             obj.count--;
-            typeof obj.complete === "function" && obj.count === 0 && obj.complete();
+            if(typeof obj.complete === "function" && obj.count === 0){
+                obj.complete();
+            }
         }
     })
 }
@@ -157,16 +161,18 @@ function doUploadFile(obj: IUploadFileOption) {
         filePath: obj.filePath || '',
         name: obj.name || '',
         formData: obj.formData,
-        success: function (res: wx.UploadFileSuccessCallbackResult) {
+        success (res: wx.UploadFileSuccessCallbackResult) {
             responseHandler(res, obj, 'uploadFile')
         },
-        fail: function (res: wx.GeneralCallbackResult) {
+        fail (res: wx.GeneralCallbackResult) {
             errorHandler.systemError(obj, res);
             console.error(res);
         },
-        complete: function () {
+        complete () {
             obj.count--;
-            typeof obj.complete === "function" && obj.count === 0 && obj.complete();
+            if(typeof obj.complete === "function" && obj.count === 0){
+                obj.complete();
+            }
         }
     })
 }

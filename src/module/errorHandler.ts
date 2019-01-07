@@ -12,7 +12,7 @@ function logicError(obj: IRequestOption | IUploadFileOption, res: wx.RequestSucc
     if (typeof obj.fail === "function") {
         obj.fail(res);
     } else {
-        let {title, content} = getErrorMsg(res);
+        const {title, content} = getErrorMsg(res);
         doError(title, content);
     }
 
@@ -50,7 +50,7 @@ function getErrorMsg(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccess
 
 function doError(title: string, content: string) {
     wx.showModal({
-        title: title,
+        title,
         content: content || "网络或服务异常，请稍后重试",
         showCancel: false
     })
