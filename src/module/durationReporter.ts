@@ -7,12 +7,12 @@ function start(obj: IRequestOption | IUploadFileOption) {
 
 function end(obj: IRequestOption | IUploadFileOption) {
     obj._reportEndTime = new Date().getTime();
-    report(<string>obj.report, obj._reportStartTime, obj._reportEndTime);
+    report(obj.report as string, obj._reportStartTime, obj._reportEndTime);
 }
 
-function report(name: string, start: number, end: number) {
+function report(name: string, startTime: number, endTime: number) {
     if (typeof config.reportCGI === "function") {
-        config.reportCGI(name, start, end);
+        config.reportCGI(name, startTime, endTime);
     }
 }
 

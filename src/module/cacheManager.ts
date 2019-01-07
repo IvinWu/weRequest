@@ -3,17 +3,19 @@ import { IRequestOption } from "../interface"
 function get(obj: IRequestOption) {
     wx.getStorage({
         key: obj.originUrl,
-        success: function (res) {
+        success (res) {
             if (typeof obj.cache === "function" && obj.cache(res.data)) {
                 if (typeof obj.success === "function") {
                     obj.success(res.data, {isCache: true})
                 }
-            } else if (obj.cache == true) {
+            } else if (obj.cache === true) {
                 if (typeof obj.success === "function") {
                     obj.success(res.data, {isCache: true})
                 }
             }
-            typeof obj.complete === "function" && obj.complete();
+            if(typeof obj.complete === "function") {
+                obj.complete();
+            }
         }
     })
 }

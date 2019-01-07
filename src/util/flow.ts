@@ -1,16 +1,18 @@
-let store: any = {};
+const store: any = {};
 
 function emit(key: string) {
-    let flow = getFlow(key);
-    let currentLength = flow.waitingList.length;
+    const flow = getFlow(key);
+    const currentLength = flow.waitingList.length;
     for (let i = 0; i < currentLength; i++) {
-        let callback = flow.waitingList.shift();
-        typeof callback == "function" && callback();
+        const callback = flow.waitingList.shift();
+        if(typeof callback == "function"){
+            callback();
+        }
     }
 }
 
 function wait(key: string, callback: Function) {
-    var flow = getFlow(key);
+    const flow = getFlow(key);
     flow.waitingList.push(callback)
 }
 
