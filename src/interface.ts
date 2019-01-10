@@ -20,7 +20,7 @@ export interface IInitOption {
         /* 请求返回时的时间戳 */
         endTime: number,
         /* 请求方法，可用于上报 */
-        request?: () => void
+        request: Function
     ) => void);
     /* 	可为接口提供mock数据 */
     mockJson?: any;
@@ -76,7 +76,7 @@ export interface IRequestOption extends IRequestObject {
     /* 当启用缓存时，决定除了返回缓存内容外，是否还返回接口实时内容，以防止页面多次渲染的抖动 */
     noCacheFlash?: boolean;
     /* 接口调用成功的回调函数 */
-    success: (res: string | IAnyObject | ArrayBuffer, cacheInfo?: object) => void;
+    success?: (res: string | IAnyObject | ArrayBuffer, cacheInfo?: object) => void;
     /* 接口调用结束的回调函数（调用成功、失败都会执行） */
     complete?: ()=> void;
     /** 接口调用失败 或 逻辑失败 的回调函数 */
@@ -90,8 +90,6 @@ export interface IRequestObject extends wx.RequestOption{
     count: number;
     /* 重登陆次数 */
     reLoginLimit: number;
-    /* 该请求是否是登陆请求 */
-    isLogin?: boolean;
     /* 请求发起的时间戳 */
     _reportStartTime: number;
     /* 请求返回的时间戳 */
@@ -106,7 +104,7 @@ export interface IUploadFileOption extends IUploadFileObject {
     /* 接口请求成功后将自动执行init()中配置的reportCGI函数，其中的name字段值为这里配置的值 */
     report?: string;
     /* 接口调用成功的回调函数 */
-    success: (res: string | IAnyObject | ArrayBuffer, cacheInfo?: object) => void;
+    success?: (res: string | IAnyObject | ArrayBuffer, cacheInfo?: object) => void;
     /* 接口调用结束的回调函数（调用成功、失败都会执行） */
     complete?: ()=> void;
     /** 接口调用失败 或 逻辑失败 的回调函数 */
@@ -120,8 +118,6 @@ export interface IUploadFileObject extends wx.UploadFileOption {
     count: number;
     /* 重登陆次数 */
     reLoginLimit: number;
-    /* 该请求是否是登陆请求 */
-    isLogin?: boolean;
     /* 请求发起的时间戳 */
     _reportStartTime: number;
     /* 请求返回的时间戳 */

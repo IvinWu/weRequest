@@ -59,5 +59,6 @@ function doError(title: string, content: string) {
 export default {
     systemError,
     logicError,
-    doError
+    doError,
+    getErrorMsg
 }

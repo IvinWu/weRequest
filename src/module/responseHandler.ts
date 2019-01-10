@@ -25,19 +25,7 @@ function response(
 
         durationReporter.end(obj);
 
-        if (obj.isLogin) {
-            // 登录请求
-            let s = "";
-            try {
-                s = config.codeToSession.success(res.data);
-            } catch (e) {
-            }
-            if (s) {
-                obj.success(s);
-            } else {
-                errorHandler.logicError(obj, res);
-            }
-        } else if (config.loginTrigger!(res.data) && obj.reLoginLimit < config.reLoginLimit!) {
+        if (config.loginTrigger!(res.data) && obj.reLoginLimit < config.reLoginLimit!) {
             // 登录态失效，且重试次数不超过配置
             status.session = '';
             status.sessionIsFresh = true;

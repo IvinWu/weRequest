@@ -205,6 +205,7 @@ function uploadFile(obj: IUploadFileOption): void {
 }
 
 export default {
+    format,
     request,
     uploadFile
 }

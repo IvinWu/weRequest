@@ -1,44 +1,45 @@
 import flow from '../util/flow'
 import status from '../store/status'
 import config from '../store/config'
-import requestHandler from './requestHandler'
 import errorHandler from './errorHandler'
 import durationReporter from './durationReporter'
-import {IRequestOption, IUploadFileOption} from "../interface";
+import requestHandler from './requestHandler'
+import {IRequestOption, IUploadFileOption} from "../interface"
 
+let checkSessionPromise: any = null;
 function checkSession() {
-    return new Promise((resolve)=>{
-        if (!status.sessionIsFresh && status.session) {
-            console.log("wx.checkSession()");
-            const start = new Date().getTime();
-            wx.checkSession({
-                success () {
-                    // 登录态有效，且在本生命周期内无须再检验了
-                    resolve();
-                },
-                fail () {
-                    // 登录态过期
-                    status.session = '';
-                    resolve();
-                },
-                complete () {
-                    const end = new Date().getTime();
-                    durationReporter.report('checkSession', start, end);
-                }
-            })
-        } else {
-            resolve();
-        }
-    })
+    if(!checkSessionPromise) {
+        checkSessionPromise = new Promise((resolve)=>{
+            if(config.doNotCheckSession) {
+                resolve();
+            } else if (!status.sessionIsFresh && status.session) {
+                console.log("wx.checkSession()");
+                const start = new Date().getTime();
+                wx.checkSession({
+                    success () {
+                        // 登录态有效，且在本生命周期内无须再检验了
+                        resolve();
+                    },
+                    fail () {
+                        // 登录态过期
+                        status.session = '';
+                        resolve();
+                    },
+                    complete () {
+                        const end = new Date().getTime();
+                        durationReporter.report('wx_checkSession', start, end);
+                    }
+                })
+            } else {
+                resolve();
+            }
+        })
+    }
+    return checkSessionPromise;
 }
 
 function doLogin(callback: Function, obj: IRequestOption | IUploadFileOption) {
-    if (obj.isLogin) {
-        // 登录接口，直接放过
-        if(typeof callback === "function"){
-            callback();
-        }
-    } else if (status.session) {
+    if (status.session) {
         // 缓存中有session
         if (status.sessionExpireTime && new Date().getTime() > status.sessionExpire) {
             // 如果有设置本地session缓存时间，且缓存时间已到
@@ -67,7 +68,7 @@ function getCode(callback: Function, obj: IRequestOption | IUploadFileOption) {
     wx.login({
         complete () {
             const end = new Date().getTime();
-            durationReporter.report('login', start, end);
+            durationReporter.report('wx_login', start, end);
         },
         success (res) {
             if (res.code) {
@@ -105,32 +106,55 @@ function code2Session(code: string) {
     data[config.codeToSession.codeName!] = code;
 
     return new Promise((resolve)=>{
-        requestHandler.request({
-            url: config.codeToSession.url,
+        let start = new Date().getTime();
+        wx.request({
+            url: requestHandler.format(config.codeToSession.url),
             data,
             method: config.codeToSession.method || 'GET',
-            isLogin: true,
-            report: config.codeToSession.report || config.codeToSession.url,
-            success (s: string) {
-                status.session = s;
-                status.sessionIsFresh = true;
-                // 如果有设置本地session过期时间
-                if (status.sessionExpireTime) {
-                    status.sessionExpire = new Date().getTime() + status.sessionExpireTime;
-                    wx.setStorage({
-                        key: config.sessionExpireKey,
-                        data: String(status.sessionExpire)
-                    })
+            success (res: wx.RequestSuccessCallbackResult) {
+                if (res.statusCode === 200) {
+                    // 耗时上报
+                    if(config.codeToSession.report) {
+                        let end = new Date().getTime();
+                        durationReporter.report(config.codeToSession.report, start, end)
+                    }
+
+                    let s = "";
+                    try {
+                        s = config.codeToSession.success(res.data);
+                    } catch (e) {
+                    }
+
+                    if (s) {
+                        status.session = s;
+                        status.sessionIsFresh = true;
+                        // 如果有设置本地session过期时间
+                        if (status.sessionExpireTime) {
+                            status.sessionExpire = new Date().getTime() + status.sessionExpireTime;
+                            wx.setStorage({
+                                key: config.sessionExpireKey,
+                                data: String(status.sessionExpire)
+                            })
+                        }
+                        wx.setStorage({
+                            key: config.sessionName,
+                            data: status.session
+                        });
+                    } else {
+                        let {title, content} = errorHandler.getErrorMsg(res);
+                        errorHandler.doError(title, content)
+                    }
+                } else {
+                    errorHandler.doError("登录失败", "请稍后重试")
                 }
-                wx.setStorage({
-                    key: config.sessionName,
-                    data: status.session
-                });
                 return resolve();
             },
             complete () {},
-            fail: config.codeToSession.fail || null
-        } as IRequestOption)
+            fail: ()=> {
+                errorHandler.doError("登录失败", "请稍后重试");
+                return resolve();
+            }
+        })
     })
 }
 
