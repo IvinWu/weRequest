@@ -1,6 +1,5 @@
-import checkSession from '../module/sessionManager'
-import { IRequestOption } from "../interface"
+import sessionManager from '../module/sessionManager'
 
 export default (callback: Function) => {
-    return checkSession(callback, {} as IRequestOption)
+    return sessionManager.main(callback)
 }

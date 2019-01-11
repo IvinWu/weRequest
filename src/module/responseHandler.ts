@@ -1,9 +1,9 @@
 import config from '../store/config'
-import status from '../store/status'
 import requestHandler from './requestHandler'
 import errorHandler from './errorHandler'
 import cacheManager from './cacheManager'
 import durationReporter from './durationReporter'
+import sessionManager from './sessionManager'
 import { IRequestOption, IUploadFileOption } from "../interface";
 
 function response(
@@ -25,20 +25,14 @@ function response(
 
         durationReporter.end(obj);
 
-        if (config.loginTrigger!(res.data) && obj.reLoginLimit < config.reLoginLimit!) {
+        if (config.loginTrigger!(res.data) && obj.reLoginCount < config.reLoginLimit!) {
             // 登录态失效，且重试次数不超过配置
-            status.session = '';
-            status.sessionIsFresh = true;
-            wx.removeStorage({
-                key: config.sessionName!,
-                complete () {
-                    if(method === "request") {
-                        requestHandler.request(obj as IRequestOption);
-                    } else if(method === "uploadFile") {
-                        requestHandler.uploadFile(obj as IUploadFileOption);
-                    }
-                }
-            })
+            sessionManager.delSession();
+            if(method === "request") {
+                requestHandler.request(obj as IRequestOption);
+            } else if(method === "uploadFile") {
+                requestHandler.uploadFile(obj as IUploadFileOption);
+            }
         } else if (config.successTrigger(res.data)) {
             // 接口返回成功码
             let realData: string | IAnyObject | ArrayBuffer = "";

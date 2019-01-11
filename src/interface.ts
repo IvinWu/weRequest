@@ -86,10 +86,8 @@ export interface IRequestOption extends IRequestObject {
 export interface IRequestObject extends wx.RequestOption{
     /* 业务请求的原始url */
     originUrl: string;
-    /* 业务请求的计数器 */
-    count: number;
     /* 重登陆次数 */
-    reLoginLimit: number;
+    reLoginCount: number;
     /* 请求发起的时间戳 */
     _reportStartTime: number;
     /* 请求返回的时间戳 */
@@ -114,10 +112,8 @@ export interface IUploadFileOption extends IUploadFileObject {
 export interface IUploadFileObject extends wx.UploadFileOption {
     /* 业务请求的原始url */
     originUrl: string;
-    /* 业务请求的计数器 */
-    count: number;
     /* 重登陆次数 */
-    reLoginLimit: number;
+    reLoginCount: number;
     /* 请求发起的时间戳 */
     _reportStartTime: number;
     /* 请求返回的时间戳 */

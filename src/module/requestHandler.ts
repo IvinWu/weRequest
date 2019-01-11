@@ -8,7 +8,7 @@ import errorHandler from './errorHandler'
 import responseHandler from './responseHandler'
 import durationReporter from "./durationReporter"
 import url from '../util/url'
-import { IRequestOption, IUploadFileOption } from "../interface"
+import {IRequestOption, IUploadFileOption} from "../interface"
 
 // 格式化url
 function format(originUrl: string) {
@@ -25,35 +25,21 @@ function format(originUrl: string) {
 
 // 所有请求发出前需要做的事情
 function preDo<T extends IRequestOption | IUploadFileOption>(obj: T): T {
-    if(typeof obj.beforeSend === "function") {
+    if (typeof obj.beforeSend === "function") {
         obj.beforeSend();
     }
     // 登录态失效，重复登录计数
-    if (typeof obj.reLoginLimit === "undefined") {
-        obj.reLoginLimit = 0;
+    if (typeof obj.reLoginCount === "undefined") {
+        obj.reLoginCount = 0;
     } else {
-        obj.reLoginLimit++;
-    }
-
-    if (typeof obj.count === "undefined") {
-        obj.count = 0;
+        obj.reLoginCount++;
     }
 
     if (obj.showLoading) {
         loading.show(obj.showLoading);
-        obj.complete = ((fn: any, ...args) => {
-            return ()=> {
-                // TODO 使用Promise方式后，可能不需要这些了
-                loading.hide();
-                if(typeof fn === "function"){
-                    // @ts-ignore
-                    fn.apply(this, ...args);
-                }
-            }
-        })(obj.complete)
     }
 
-    if(!obj.originUrl) {
+    if (!obj.originUrl) {
         obj.originUrl = obj.url;
         obj.url = format(obj.url);
     }
@@ -130,78 +116,95 @@ function getGlobalData() {
 
 function doRequest(obj: IRequestOption) {
     obj = initializeRequestObj(obj);
-    obj.count++;
-    wx.request({
-        url: obj.url,
-        data: obj.data,
-        method: obj.method,
-        header: obj.header || {},
-        dataType: obj.dataType || 'json',
-        success(res: wx.RequestSuccessCallbackResult) {
-            responseHandler(res, obj, 'request')
-        },
-        fail (res: wx.GeneralCallbackResult) {
-            errorHandler.systemError(obj, res);
-            console.error(res);
-        },
-        complete () {
-            obj.count--;
-            if(typeof obj.complete === "function" && obj.count === 0){
-                obj.complete();
+    return new Promise((resolve, reject) => {
+        wx.request({
+            url: obj.url,
+            data: obj.data,
+            method: obj.method,
+            header: obj.header || {},
+            dataType: obj.dataType || 'json',
+            success(res: wx.RequestSuccessCallbackResult) {
+                return resolve(res);
+            },
+            fail(res: wx.GeneralCallbackResult) {
+                return reject(res);
+            },
+            complete() {
+                if (typeof obj.complete === "function") {
+                    obj.complete();
+                }
+                if(obj.showLoading) {
+                    loading.hide()
+                }
             }
-        }
+        })
     })
 }
 
 function doUploadFile(obj: IUploadFileOption) {
     obj = initializeUploadFileObj(obj);
-    obj.count++;
-    wx.uploadFile({
-        url: obj.url,
-        filePath: obj.filePath || '',
-        name: obj.name || '',
-        formData: obj.formData,
-        success (res: wx.UploadFileSuccessCallbackResult) {
-            responseHandler(res, obj, 'uploadFile')
-        },
-        fail (res: wx.GeneralCallbackResult) {
-            errorHandler.systemError(obj, res);
-            console.error(res);
-        },
-        complete () {
-            obj.count--;
-            if(typeof obj.complete === "function" && obj.count === 0){
-                obj.complete();
+    return new Promise((resolve, reject) =>{
+        wx.uploadFile({
+            url: obj.url,
+            filePath: obj.filePath || '',
+            name: obj.name || '',
+            formData: obj.formData,
+            success(res: wx.UploadFileSuccessCallbackResult) {
+                return resolve(res);
+            },
+            fail(res: wx.GeneralCallbackResult) {
+                return reject(res);
+            },
+            complete() {
+                if (typeof obj.complete === "function") {
+                    obj.complete();
+                }
+                if(obj.showLoading) {
+                    loading.hide()
+                }
             }
-        }
+        })
     })
 }
 
 function request(obj: IRequestOption): void {
     obj = preDo(obj);
-    if(config.mockJson) {
+
+    if (config.mockJson) {
         mockManager.get(obj, 'request');
         return;
     }
-    if(obj.cache) {
+
+    if (obj.cache) {
         cacheManager.get(obj);
     }
 
-    sessionManager(()=>{
-        doRequest(obj)
-    }, obj)
+    sessionManager.main(() => {
+        doRequest(obj).then((res) => {
+            return responseHandler(res as wx.RequestSuccessCallbackResult, obj, 'request');
+        }).catch((res) => {
+            console.error(res);
+            return errorHandler.systemError(obj, res);
+        })
+    })
 }
 
 function uploadFile(obj: IUploadFileOption): void {
     obj = preDo(obj) as IUploadFileOption;
-    if(config.mockJson) {
+
+    if (config.mockJson) {
         mockManager.get(obj, 'uploadFile');
         return;
     }
 
-    sessionManager(()=>{
-        doUploadFile(obj)
-    }, obj)
+    sessionManager.main(() => {
+        doUploadFile(obj).then((res)=>{
+            return responseHandler(res as wx.UploadFileSuccessCallbackResult, obj, 'uploadFile')
+        }).catch((res)=>{
+            console.error(res);
+            return errorHandler.systemError(obj, res);
+        })
+    })
 }
 
 export default {

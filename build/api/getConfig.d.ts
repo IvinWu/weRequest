@@ -1,8 +1,7 @@
-export interface IGetConfigResult {
-    urlPerfix?: string | (() => string);
-    sessionExpireTime?: number;
-    sessionExpireKey?: string;
-    sessionExpire?: number;
-}
-declare const _default: () => IGetConfigResult;
+declare const _default: () => {
+    urlPerfix: string | (() => string) | undefined;
+    sessionExpireTime: any;
+    sessionExpireKey: string;
+    sessionExpire: any;
+};
 export default _default;

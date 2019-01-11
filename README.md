@@ -111,7 +111,6 @@ weRequest.request({
 |codeName|String|否|code|CGI中传参时，存放code的名称|
 |data|Object|否||登录接口需要的其他参数|
 |success|Function|是||接口返回成功的函数；需要返回session的值|
-|fail|Function|否||code换取session的接口逻辑出错时，执行的函数，若配置了此函数，则不再默认弹窗报错|
 
 ##### reportCGI返回参数说明
 |参数名|类型|说明|
@@ -148,10 +147,6 @@ weRequest.init({
         success: function (res) {
             // 此处例子：CGI返回数据中的字段session即为session值
             return res.session;
-        },
-        // [可选] 接口失败的回调，可不配置，默认为弹窗报错
-        fail: function(obj, res) {
-
         }
     },
     // [可选] 登录重试次数，当连续请求登录接口返回失败次数超过这个次数，将不再重试登录；可不配置，默认为重试3次
