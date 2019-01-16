@@ -372,6 +372,7 @@ function uploadFile(obj) {
 
     wx.uploadFile({
         url: url,
+        header: Object.assign({ "Authorization": "Bearer " + session }, obj.header),
         filePath: obj.filePath || '',
         name: obj.name || '',
         formData: obj.formData,
