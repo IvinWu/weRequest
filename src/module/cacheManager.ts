@@ -4,11 +4,10 @@ function get(obj: IRequestOption) {
     wx.getStorage({
         key: obj.originUrl,
         success (res) {
-            if (typeof obj.cache === "function" && obj.cache(res.data)) {
-                if (typeof obj.success === "function") {
-                    obj.success(res.data, {isCache: true})
-                }
-            } else if (obj.cache === true) {
+            if (
+                obj.cache === true ||
+                (typeof obj.cache === "function" && obj.cache(res.data))
+            ) {
                 if (typeof obj.success === "function") {
                     obj.success(res.data, {isCache: true})
                 }
@@ -21,7 +20,10 @@ function get(obj: IRequestOption) {
 }
 
 function set(obj: IRequestOption , realData: string | object) {
-    if (obj.cache === true || (typeof obj.cache === "function" && obj.cache(realData))) {
+    if (
+        obj.cache === true ||
+        (typeof obj.cache === "function" && obj.cache(realData))
+    ) {
         wx.setStorage({
             key: obj.originUrl,
             data: realData

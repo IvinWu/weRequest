@@ -1,10 +1,11 @@
 import config from '../store/config'
+import loading from '../util/loading'
 import responseHandler from './responseHandler'
-import { IRequestOption, IUploadFileOption } from "../interface";
+import { IRequestOption, IUploadFileOption } from "../interface"
 
 function get(obj: IRequestOption | IUploadFileOption, method: "request" | "uploadFile"): any {
 
-    if(!config.mockJson[obj.url] && !config.mockJson[obj.originUrl]) {
+    if(!(config.mockJson[obj.url] || config.mockJson[obj.originUrl])) {
         // mock 没有对应接口的数据
         console.error('mock 没有对应接口的数据');
         return false;
@@ -18,7 +19,8 @@ function get(obj: IRequestOption | IUploadFileOption, method: "request" | "uploa
         statusCode: 200
     };
 
-    responseHandler(res, obj, method)
+    loading.hide();
+    return responseHandler(res, obj, method)
 }
 
 export default {

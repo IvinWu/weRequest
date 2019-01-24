@@ -1,4 +1,3 @@
-import flow from '../util/flow'
 import status from '../store/status'
 import config from '../store/config'
 import errorHandler from './errorHandler'
@@ -7,9 +6,10 @@ import requestHandler from './requestHandler'
 
 /* 生命周期内只做一次的checkSession */
 let checkSessionPromise: any = null;
+
 function checkSession() {
     if (!checkSessionPromise) {
-        checkSessionPromise = new Promise((resolve, reject) => {
+        checkSessionPromise = new Promise((resolve) => {
             console.log("wx.checkSession()");
             const start = new Date().getTime();
             wx.checkSession({
@@ -19,7 +19,8 @@ function checkSession() {
                 },
                 fail() {
                     // 登录态过期
-                    return reject();
+                    delSession();
+                    return resolve();
                 },
                 complete() {
                     const end = new Date().getTime();
@@ -37,7 +38,7 @@ function isSessionExpireOrEmpty() {
         // 如果缓存中没有session
         return true
     }
-    if (status.sessionExpireTime && new Date().getTime() > status.sessionExpire) {
+    if (config.sessionExpireTime && new Date().getTime() > status.sessionExpire) {
         // 如果有设置本地session缓存时间，且缓存时间已到
         delSession();
         return true
@@ -45,34 +46,40 @@ function isSessionExpireOrEmpty() {
     return false
 }
 
-function checkLogin(callback: Function) {
-    if (isSessionExpireOrEmpty()) {
-        if (status.logining) {
-            // 正在登录中，请求轮询稍后，避免重复调用登录接口
-            flow.wait('doLoginFinished', () => {
-                checkLogin(callback);
+function checkLogin() {
+    return new Promise((resolve, reject) => {
+        if (isSessionExpireOrEmpty()) {
+            return doLogin().then(() => {
+                return resolve();
+            }, (res: any)=>{
+                return reject(res);
             })
         } else {
-            // 缓存中无session
-            status.logining = true;
-            getCode().then(() => {
-                callback();
-                status.logining = false;
-                flow.emit('doLoginFinished');
-            }).catch(({title, content}) => {
-                errorHandler.doError(title, content);
-                // 登录失败，解除锁，防止死锁
-                status.logining = false;
-                flow.emit('doLoginFinished');
-            });
+            // 缓存中有session且未过期
+            return resolve();
         }
-    } else {
-        // 缓存中有session且未过期
-        callback();
-    }
+    })
 }
 
-function getCode() {
+/* 登陆流程的promise */
+let loginPromise: any = null;
+
+function doLogin() {
+    if (!loginPromise) {
+        loginPromise = new Promise((resolve, reject) => {
+            login().then(() => {
+                loginPromise = null;
+                return resolve();
+            }).catch((res) => {
+                loginPromise = null;
+                return reject(res);
+            });
+        })
+    }
+    return loginPromise;
+}
+
+function login() {
     return new Promise((resolve, reject) => {
         console.log('wx.login');
         const start = new Date().getTime();
@@ -81,8 +88,8 @@ function getCode() {
                 if (res.code) {
                     code2Session(res.code).then(() => {
                         return resolve();
-                    }).catch(({title, content}) => {
-                        return reject({title, content});
+                    }).catch((res) => {
+                        return reject(res);
                     })
                 } else {
                     return reject({title: "登录失败", "content": "请稍后重试[code 获取失败]"});
@@ -134,8 +141,8 @@ function code2Session(code: string) {
                         // 换回来的session，不需要再checkSession
                         config.doNotCheckSession = true;
                         // 如果有设置本地session过期时间
-                        if (status.sessionExpireTime) {
-                            status.sessionExpire = new Date().getTime() + status.sessionExpireTime;
+                        if (config.sessionExpireTime) {
+                            status.sessionExpire = new Date().getTime() + config.sessionExpireTime;
                             wx.setStorage({
                                 key: config.sessionExpireKey,
                                 data: String(status.sessionExpire)
@@ -170,19 +177,17 @@ function delSession() {
     })
 }
 
-function main(fn: Function) {
-    if (!config.doNotCheckSession && status.session) {
-        checkSession().then(() => {
-            return checkLogin(fn)
-        }).catch(() => {
-            // 登录态过期，清空session缓存
-            delSession();
-            return checkLogin(fn)
+function main() {
+    return new Promise((resolve, reject) => {
+        return checkLogin().then(() => {
+            return config.doNotCheckSession ? Promise.resolve() : checkSession()
+        }, ({title, content}) => {
+            errorHandler.doError(title, content);
+            return reject({title, content});
+        }).then(() => {
+            return resolve();
         })
-    } else {
-        // 不需要checkSession
-        return checkLogin(fn)
-    }
+    })
 }
 
 export default {

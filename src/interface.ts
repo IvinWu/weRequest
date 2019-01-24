@@ -28,6 +28,8 @@ export interface IInitOption {
     globalData?: boolean | object | Function;
     /** session在本地缓存的key */
     sessionExpireKey: string;
+    /* session在本地缓存的有效时间（单位ms） */
+    sessionExpireTime?: number;
     /* 触发重新登录的条件；参数为CGI返回的数据，返回需要重新登录的条件 */
     loginTrigger?: (res: string | IAnyObject | ArrayBuffer) => boolean;
     /* 触发请求成功的条件；参数为CGI返回的数据，返回接口逻辑成功的条件 */
@@ -81,6 +83,8 @@ export interface IRequestOption extends IRequestObject {
     complete?: ()=> void;
     /** 接口调用失败 或 逻辑失败 的回调函数 */
     fail?: (res: string | IAnyObject | ArrayBuffer)=> void;
+    /** 当使用Promise模式时，开发者是否需要捕获错误（默认不捕获，统一自动处理错误） */
+    catchError?: boolean;
 }
 
 export interface IRequestObject extends wx.RequestOption{
@@ -107,6 +111,8 @@ export interface IUploadFileOption extends IUploadFileObject {
     complete?: ()=> void;
     /** 接口调用失败 或 逻辑失败 的回调函数 */
     fail?: (res: string | IAnyObject | ArrayBuffer)=> void;
+    /** 当使用Promise模式时，开发者是否需要捕获错误（默认不捕获，统一自动处理错误） */
+    catchError?: boolean;
 }
 
 export interface IUploadFileObject extends wx.UploadFileOption {

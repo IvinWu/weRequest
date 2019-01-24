@@ -18,8 +18,12 @@ function response(
             try {
                 res.data = JSON.parse(res.data);
             } catch (e) {
-                errorHandler.logicError(obj, res);
-                return false;
+                if(obj.catchError) {
+                    throw new Error(e);
+                } else {
+                    errorHandler.logicError(obj, res);
+                    return;
+                }
             }
         }
 
@@ -45,16 +49,28 @@ function response(
                 // 如果为了保证页面不闪烁，则不回调，只是缓存最新数据，待下次进入再用
                 if(typeof obj.success === "function"){
                     obj.success(realData);
+                } else {
+                    return realData;
                 }
             }
             // 缓存存储
             cacheManager.set(obj, realData);
         } else {
             // 接口返回失败码
-            errorHandler.logicError(obj, res);
+            if(obj.catchError) {
+                let msg = errorHandler.getErrorMsg(res);
+                throw new Error(msg.content);
+            } else {
+                errorHandler.logicError(obj, res);
+            }
         }
     } else {
-        errorHandler.logicError(obj, res);
+        // https返回状态码非200
+        if(obj.catchError) {
+            throw new Error(res.statusCode.toString());
+        } else {
+            errorHandler.logicError(obj, res);
+        }
     }
 }
 

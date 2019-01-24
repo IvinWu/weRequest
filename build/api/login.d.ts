@@ -1,2 +1,2 @@
-declare const _default: (callback: Function) => void;
+declare const _default: () => Promise<{}>;
 export default _default;

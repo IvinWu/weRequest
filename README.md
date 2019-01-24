@@ -1,15 +1,31 @@
 <p align="center"><img src="./image/logo.png" alt="weRequest" height="160"/></p>
-<h2 align="center">v1.0.0</h2>
+<h2 align="center">v1.2.0</h2>
 <p align="center"><b>解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。</b></p>
 
 
 ## 目标
 让业务逻辑更专注，不用再关注底层登录态问题。小程序对比以往的H5，登录态管理逻辑要复杂很多。通过`weRequest`这个组件，希望能帮助开发者把更多精力放在业务逻辑上，而登录态管理问题只需通过一次简单配置，以后就不用再花精力管理了。
 
-## 怎么使用
+## 安装
 
+### 1) 通过npm安装
+```
+npm install --save we-request
+```
+
+### 2）直接下载`dist/weRequest.min.js`放到小程序包内
+
+## 怎么使用
 ```javascript
-var weRequest= require('../weRequest');
+// ES6 模式
+import weRequest from 'we-request';
+// 若下载文件到本地，则直接引入对应文件，具体路径自己根据情况修改
+// import weRequest from '../lib/weRequest.min'
+
+// commonJs 模式
+const weRequest= require('we-request');
+// 若下载文件到本地，则直接引入对应文件，具体路径自己根据情况修改
+// const weRequest = require('../lib/weRequest.min');
 
 // 初始化配置
 weRequest.init({
@@ -26,6 +42,16 @@ weRequest.request({
     success: function (data) {
         // 省略...
     }
+})
+
+// 同时也支持Promise形式使用
+weRequest.request({
+    url: 'order/detail',
+    data: {
+      id: '107B7615E04AE64CFC10'
+    }
+}).then((data)=>{
+    // 省略...
 })
 ```
 - 引入`weRequest`组件
@@ -211,6 +237,7 @@ weRequest.init({
 
 ### .request(OBJECT)
 
+[return Promise]
 带上登录态发起一个请求，参数大部分与`wx.request`一致
 
 #### OBJECT参数说明
@@ -251,6 +278,7 @@ weRequest.request({
 
 ### .uploadFile(Object)
 
+[return Promise]
 带上登录态，将本地资源上传到开发者服务器，客户端发起一个 HTTPS POST 请求，其中 content-type 为 multipart/form-data，参数大部分与`wx.uploadFile`一致
 
 #### OBJECT参数说明

@@ -2,9 +2,10 @@ import config from '../store/config'
 import { IRequestOption, IUploadFileOption } from "../interface";
 
 function systemError(obj: IRequestOption | IUploadFileOption, res: wx.GeneralCallbackResult) {
-    doError("", res.errMsg);
     if (typeof obj.fail === "function") {
-        obj.fail("");
+        obj.fail(res);
+    } else {
+        doError("", res.errMsg);
     }
 }
 

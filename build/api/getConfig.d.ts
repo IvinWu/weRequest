@@ -1,6 +1,6 @@
 declare const _default: () => {
     urlPerfix: string | (() => string) | undefined;
-    sessionExpireTime: any;
+    sessionExpireTime: number | undefined;
     sessionExpireKey: string;
     sessionExpire: any;
 };

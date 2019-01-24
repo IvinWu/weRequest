@@ -4,11 +4,11 @@ import status from '../store/status'
 import mockManager from './mockManager'
 import cacheManager from './cacheManager'
 import sessionManager from './sessionManager'
-import errorHandler from './errorHandler'
 import responseHandler from './responseHandler'
 import durationReporter from "./durationReporter"
 import url from '../util/url'
 import {IRequestOption, IUploadFileOption} from "../interface"
+import errorHandler from "./errorHandler";
 
 // 格式化url
 function format(originUrl: string) {
@@ -127,13 +127,14 @@ function doRequest(obj: IRequestOption) {
                 return resolve(res);
             },
             fail(res: wx.GeneralCallbackResult) {
+                errorHandler.systemError(obj, res);
                 return reject(res);
             },
             complete() {
                 if (typeof obj.complete === "function") {
                     obj.complete();
                 }
-                if(obj.showLoading) {
+                if (obj.showLoading) {
                     loading.hide()
                 }
             }
@@ -143,7 +144,7 @@ function doRequest(obj: IRequestOption) {
 
 function doUploadFile(obj: IUploadFileOption) {
     obj = initializeUploadFileObj(obj);
-    return new Promise((resolve, reject) =>{
+    return new Promise((resolve, reject) => {
         wx.uploadFile({
             url: obj.url,
             filePath: obj.filePath || '',
@@ -153,13 +154,14 @@ function doUploadFile(obj: IUploadFileOption) {
                 return resolve(res);
             },
             fail(res: wx.GeneralCallbackResult) {
+                errorHandler.systemError(obj, res);
                 return reject(res);
             },
             complete() {
                 if (typeof obj.complete === "function") {
                     obj.complete();
                 }
-                if(obj.showLoading) {
+                if (obj.showLoading) {
                     loading.hide()
                 }
             }
@@ -167,42 +169,48 @@ function doUploadFile(obj: IUploadFileOption) {
     })
 }
 
-function request(obj: IRequestOption): void {
-    obj = preDo(obj);
+function request(obj: IRequestOption): any {
+    return new Promise((resolve, reject) => {
+        obj = preDo(obj);
 
-    if (config.mockJson) {
-        mockManager.get(obj, 'request');
-        return;
-    }
+        if (config.mockJson) {
+            let mockResponse = mockManager.get(obj, 'request');
+            if (mockResponse) {
+                return resolve(mockResponse);
+            }
+        }
 
-    if (obj.cache) {
-        cacheManager.get(obj);
-    }
+        if (obj.cache) {
+            cacheManager.get(obj);
+        }
 
-    sessionManager.main(() => {
-        doRequest(obj).then((res) => {
-            return responseHandler(res as wx.RequestSuccessCallbackResult, obj, 'request');
-        }).catch((res) => {
-            console.error(res);
-            return errorHandler.systemError(obj, res);
+        sessionManager.main().then(() => {
+            return doRequest(obj)
+        }).then((res) => {
+            let response = responseHandler(res as wx.RequestSuccessCallbackResult, obj, 'request');
+            return resolve(response);
+        }).catch((e) => {
+            return reject(e);
         })
     })
 }
 
-function uploadFile(obj: IUploadFileOption): void {
-    obj = preDo(obj) as IUploadFileOption;
+function uploadFile(obj: IUploadFileOption): any {
+    return new Promise((resolve, reject) => {
+        obj = preDo(obj);
 
-    if (config.mockJson) {
-        mockManager.get(obj, 'uploadFile');
-        return;
-    }
+        if (config.mockJson) {
+            mockManager.get(obj, 'uploadFile');
+            return;
+        }
 
-    sessionManager.main(() => {
-        doUploadFile(obj).then((res)=>{
-            return responseHandler(res as wx.UploadFileSuccessCallbackResult, obj, 'uploadFile')
-        }).catch((res)=>{
-            console.error(res);
-            return errorHandler.systemError(obj, res);
+        sessionManager.main().then(() => {
+            return doUploadFile(obj)
+        }).then((res) => {
+            let response = responseHandler(res as wx.UploadFileSuccessCallbackResult, obj, 'uploadFile');
+            return resolve(response);
+        }).catch((e) => {
+            return reject(e);
         })
     })
 }
