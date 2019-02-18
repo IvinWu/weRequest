@@ -53,11 +53,7 @@ function initializeRequestObj(obj: IRequestOption) {
     if (!obj.data) {
         obj.data = {};
     }
-
-    if (obj.originUrl !== config.codeToSession.url && status.session) {
-        obj.data = {...obj.data as object, [config.sessionName]: status.session};
-    }
-
+    
     // 如果有全局参数，则添加
     const gd = getGlobalData();
     obj.data = {...gd, ...obj.data as object};
@@ -65,14 +61,31 @@ function initializeRequestObj(obj: IRequestOption) {
     obj.method = obj.method || 'GET';
     obj.dataType = obj.dataType || 'json';
 
-    // 如果请求不是GET，则在URL中自动加上登录态和全局参数
-    if (obj.method !== "GET") {
-        if (status.session) {
+    if (status.session) {
+        if (config.sessionSendWay === 'urlQueryString') {
             obj.url = url.setParams(obj.url, {[config.sessionName]: status.session});
+        } else if (config.sessionSendWay === 'header') {
+            if (typeof config.formatSession === "function") {
+                obj.header = { ...obj.header, [config.sessionName]: config.formatSession(status.session) }
+            } else {
+                obj.header = { ...obj.header, [config.sessionName]: status.session }
+            }
         }
-        obj.url = url.setParams(obj.url, gd);
     }
 
+    // 全局参数同时放在url上
+    // 防止url中添加多余的 '?'
+    let gdIsEmpty = true;
+
+    for (const key in gd) { if (obj.hasOwnProperty(key)) {
+        gdIsEmpty = false;
+    }
+    }
+
+    if (!gdIsEmpty) {
+        obj.url = url.setParams(obj.url, gd);
+    }
+    
     durationReporter.start(obj);
 
     return obj;
@@ -85,20 +98,40 @@ function initializeUploadFileObj(obj: IUploadFileOption) {
     }
 
     if (obj.originUrl !== config.codeToSession.url && status.session) {
-        obj.formData = {...obj.formData as object, [config.sessionName]: status.session};
+            obj.formData = {...obj.formData as object, [config.sessionName]: status.session};
     }
 
     // 如果有全局参数，则添加
     const gd = getGlobalData();
     obj.formData = {...gd, ...obj.formData};
 
-    // 将登陆态也带在url上
     if (status.session) {
-        obj.url = url.setParams(obj.url, {[config.sessionName]: status.session});
+        if (status.session) {
+            if (config.sessionSendWay === 'urlQueryString') {
+                obj.url = url.setParams(obj.url, {[config.sessionName]: status.session});
+            } else if (config.sessionSendWay === 'header') {
+                if (typeof config.formatSession === "function") {
+                    obj.header = { ...obj.header, [config.sessionName]: config.formatSession(status.session) }
+                } else {
+                    obj.header = { ...obj.header, [config.sessionName]: status.session }
+                }
+            }
+        }
     }
-    // 全局参数同时放在url上
-    obj.url = url.setParams(obj.url, gd);
 
+    // 全局参数同时放在url上
+    // 防止url中添加多余的 '?'
+    let gdIsEmpty = true;
+
+    for (const key in gd) { if (obj.hasOwnProperty(key)) {
+        gdIsEmpty = false;
+    }
+    }
+
+    if (!gdIsEmpty) {
+        obj.url = url.setParams(obj.url, gd);
+    }
+    
     durationReporter.start(obj);
 
     return obj;

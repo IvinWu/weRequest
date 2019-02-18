@@ -3,6 +3,10 @@ export interface IInitOption {
     codeToSession: ICodeToSessionOptions;
     /* 储存在localStorage的session名称，且CGI请求的data中会自动带上以此为名称的session值；可不配置，默认为session */
     sessionName: string;
+    /* 把 session 放在 url query string 还是 header 中 */
+    sessionSendWay: 'urlQueryString' | 'header',
+    /* 是否需要对session额外处理, 如 jwt 或 oauth token 一般会加上 '`Bearer `'  */
+    formatSession?: null | Function;
     /* 请求URL的固定前缀，如果配置了，后续请求的URL都会自动加上这个前缀，如果是函数，则为函数的返回值 */
     urlPerfix?: string | (() => string);
     /* 是否需要调用checkSession，验证小程序的登录态过期；若业务不需要使用到session_key，则可配置为true */

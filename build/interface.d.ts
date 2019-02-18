@@ -2,6 +2,8 @@
 export interface IInitOption {
     codeToSession: ICodeToSessionOptions;
     sessionName: string;
+    sessionSendWay: 'urlQueryString' | 'header';
+    formatSession?: null | Function;
     urlPerfix?: string | (() => string);
     doNotCheckSession?: boolean;
     reLoginLimit?: number;

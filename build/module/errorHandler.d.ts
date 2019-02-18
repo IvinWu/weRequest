@@ -1,3 +1,4 @@
+/// <reference types="wx" />
 import { IRequestOption, IUploadFileOption } from "../interface";
 declare function systemError(obj: IRequestOption | IUploadFileOption, res: wx.GeneralCallbackResult): void;
 declare function logicError(obj: IRequestOption | IUploadFileOption, res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult): void;

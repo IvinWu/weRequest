@@ -2,6 +2,7 @@ import { IInitOption } from '../interface'
 
 const defaultConfig: IInitOption = {
     sessionName: "session",
+    sessionSendWay: "urlQueryString",
     loginTrigger() {
         return false
     },
