@@ -1,6 +1,9 @@
 import { IRequestOption } from "../interface"
 
 function get(obj: IRequestOption) {
+    if (!obj.originUrl) {
+        return;
+    }
     wx.getStorage({
         key: obj.originUrl,
         success (res) {
@@ -20,6 +23,9 @@ function get(obj: IRequestOption) {
 }
 
 function set(obj: IRequestOption , realData: string | object) {
+    if (!obj.originUrl) {
+        return;
+    }
     if (
         obj.cache === true ||
         (typeof obj.cache === "function" && obj.cache(realData))

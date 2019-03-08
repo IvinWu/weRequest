@@ -9,7 +9,7 @@ export interface IInitOption {
     reportCGI?: boolean | ((name: string, startTime: number, endTime: number, request: Function) => void);
     mockJson?: any;
     globalData?: boolean | object | Function;
-    sessionExpireKey: string;
+    sessionExpireKey?: string;
     sessionExpireTime?: number;
     loginTrigger?: (res: string | IAnyObject | ArrayBuffer) => boolean;
     successTrigger: (res: string | IAnyObject | ArrayBuffer) => boolean;
@@ -38,10 +38,10 @@ export interface IRequestOption extends IRequestObject {
     catchError?: boolean;
 }
 export interface IRequestObject extends wx.RequestOption {
-    originUrl: string;
-    reLoginCount: number;
-    _reportStartTime: number;
-    _reportEndTime: number;
+    originUrl?: string;
+    reLoginCount?: number;
+    _reportStartTime?: number;
+    _reportEndTime?: number;
 }
 export interface IUploadFileOption extends IUploadFileObject {
     beforeSend?: Function;
@@ -53,10 +53,10 @@ export interface IUploadFileOption extends IUploadFileObject {
     catchError?: boolean;
 }
 export interface IUploadFileObject extends wx.UploadFileOption {
-    originUrl: string;
-    reLoginCount: number;
-    _reportStartTime: number;
-    _reportEndTime: number;
+    originUrl?: string;
+    reLoginCount?: number;
+    _reportStartTime?: number;
+    _reportEndTime?: number;
 }
 export interface IGetConfigResult {
     urlPerfix?: string | (() => string);

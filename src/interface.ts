@@ -27,7 +27,7 @@ export interface IInitOption {
     /** 所有请求都会自动带上这里的参数 */
     globalData?: boolean | object | Function;
     /** session在本地缓存的key */
-    sessionExpireKey: string;
+    sessionExpireKey?: string;
     /* session在本地缓存的有效时间（单位ms） */
     sessionExpireTime?: number;
     /* 触发重新登录的条件；参数为CGI返回的数据，返回需要重新登录的条件 */
@@ -89,13 +89,13 @@ export interface IRequestOption extends IRequestObject {
 
 export interface IRequestObject extends wx.RequestOption{
     /* 业务请求的原始url */
-    originUrl: string;
+    originUrl?: string;
     /* 重登陆次数 */
-    reLoginCount: number;
+    reLoginCount?: number;
     /* 请求发起的时间戳 */
-    _reportStartTime: number;
+    _reportStartTime?: number;
     /* 请求返回的时间戳 */
-    _reportEndTime: number;
+    _reportEndTime?: number;
 }
 
 export interface IUploadFileOption extends IUploadFileObject {
@@ -117,13 +117,13 @@ export interface IUploadFileOption extends IUploadFileObject {
 
 export interface IUploadFileObject extends wx.UploadFileOption {
     /* 业务请求的原始url */
-    originUrl: string;
+    originUrl?: string;
     /* 重登陆次数 */
-    reLoginCount: number;
+    reLoginCount?: number;
     /* 请求发起的时间戳 */
-    _reportStartTime: number;
+    _reportStartTime?: number;
     /* 请求返回的时间戳 */
-    _reportEndTime: number;
+    _reportEndTime?: number;
 }
 
 export interface IGetConfigResult {

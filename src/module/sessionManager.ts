@@ -141,7 +141,7 @@ function code2Session(code: string) {
                         // 换回来的session，不需要再checkSession
                         config.doNotCheckSession = true;
                         // 如果有设置本地session过期时间
-                        if (config.sessionExpireTime) {
+                        if (config.sessionExpireTime && config.sessionExpireKey) {
                             status.sessionExpire = new Date().getTime() + config.sessionExpireTime;
                             wx.setStorage({
                                 key: config.sessionExpireKey,

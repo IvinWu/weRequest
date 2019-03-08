@@ -8,7 +8,7 @@ function start(obj: IRequestOption | IUploadFileOption) {
 
 function end(obj: IRequestOption | IUploadFileOption) {
     obj._reportEndTime = new Date().getTime();
-    if(obj.report) {
+    if(obj.report && obj._reportStartTime) {
         report(obj.report as string, obj._reportStartTime, obj._reportEndTime);
     }
 }
