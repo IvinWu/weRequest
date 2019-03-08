@@ -220,8 +220,10 @@ weRequest.init({
         //})
         console.log(name + ":" + (endTime - startTime));
     },
-    // [可选] 提供接口的mock，若不需使用，请设置为false
-    mockJson: require("../../mock.json"),
+    // [可选] 提供接口的mock，若不需使用，请设置为false。url为调用weRequest.request()时的url。
+    mockJson: {
+          url: require("../../mock.json")
+    }
     // [可选] 所有请求都会自动带上globalData里的参数
     globalData: function() {
         return {
