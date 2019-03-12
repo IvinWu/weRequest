@@ -1,7 +1,8 @@
 /// <reference types="wx" />
 export interface IInitOption {
-    codeToSession: ICodeToSessionOptions;
-    sessionName: string;
+    sessionName?: string;
+    codeName?: string;
+    getSession: Function;
     urlPerfix?: string | (() => string);
     doNotCheckSession?: boolean;
     reLoginLimit?: number;
@@ -16,15 +17,6 @@ export interface IInitOption {
     successData: (res: string | IAnyObject | ArrayBuffer) => string | IAnyObject | ArrayBuffer;
     errorTitle?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
     errorContent?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
-}
-export interface ICodeToSessionOptions {
-    url: string;
-    method?: 'OPTIONS' | 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'TRACE' | 'CONNECT' | 'string';
-    codeName?: string;
-    data?: string | Function | IAnyObject | ArrayBuffer;
-    success: Function;
-    fail?: Function;
-    report?: string;
 }
 export interface IRequestOption extends IRequestObject {
     beforeSend?: Function;

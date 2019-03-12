@@ -2,12 +2,12 @@ import { IInitOption } from '../interface'
 
 const defaultConfig: IInitOption = {
     sessionName: "session",
+    codeName: "code",
     loginTrigger() {
         return false
     },
-    codeToSession: {
-        url: "",
-        success: ()=> {}
+    getSession(res: any) {
+        return res;
     },
     successTrigger() {
         return true

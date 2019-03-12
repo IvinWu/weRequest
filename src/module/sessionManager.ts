@@ -2,7 +2,6 @@ import status from '../store/status'
 import config from '../store/config'
 import errorHandler from './errorHandler'
 import durationReporter from './durationReporter'
-import requestHandler from './requestHandler'
 
 /* 生命周期内只做一次的checkSession */
 let checkSessionPromise: any = null;
@@ -34,8 +33,8 @@ function checkSession() {
 
 /* 判断session是否为空或已过期 */
 function isSessionExpireOrEmpty() {
-    if (!status.session) {
-        // 如果缓存中没有session
+    if (!status.session && !status.code) {
+        // 如果缓存中没有session且没有js_code
         return true
     }
     if (config.sessionExpireTime && new Date().getTime() > status.sessionExpire) {
@@ -49,6 +48,8 @@ function isSessionExpireOrEmpty() {
 function checkLogin() {
     return new Promise((resolve, reject) => {
         if (isSessionExpireOrEmpty()) {
+            // 没有登陆态，不需要再checkSession
+            config.doNotCheckSession = true;
             return doLogin().then(() => {
                 return resolve();
             }, (res: any)=>{
@@ -86,11 +87,8 @@ function login() {
         wx.login({
             success(res) {
                 if (res.code) {
-                    code2Session(res.code).then(() => {
-                        return resolve();
-                    }).catch((res) => {
-                        return reject(res);
-                    })
+                    status.code = res.code;
+                    return resolve(res.code);
                 } else {
                     return reject({title: "登录失败", "content": "请稍后重试[code 获取失败]"});
                 }
@@ -106,75 +104,36 @@ function login() {
     })
 }
 
-function code2Session(code: string) {
-    let data: any;
-    // codeToSession.data支持函数
-    if (typeof config.codeToSession.data === "function") {
-        data = config.codeToSession.data();
-    } else {
-        data = config.codeToSession.data || {};
-    }
-    data[config.codeToSession.codeName!] = code;
-
-    return new Promise((resolve, reject) => {
-        let start = new Date().getTime();
-        wx.request({
-            url: requestHandler.format(config.codeToSession.url),
-            data,
-            method: config.codeToSession.method || 'GET',
-            success(res: wx.RequestSuccessCallbackResult) {
-                if (res.statusCode === 200) {
-                    // 耗时上报
-                    if (config.codeToSession.report) {
-                        let end = new Date().getTime();
-                        durationReporter.report(config.codeToSession.report, start, end)
-                    }
-
-                    let s = "";
-                    try {
-                        s = config.codeToSession.success(res.data);
-                    } catch (e) {
-                    }
-
-                    if (s) {
-                        status.session = s;
-                        // 换回来的session，不需要再checkSession
-                        config.doNotCheckSession = true;
-                        // 如果有设置本地session过期时间
-                        if (config.sessionExpireTime && config.sessionExpireKey) {
-                            status.sessionExpire = new Date().getTime() + config.sessionExpireTime;
-                            wx.setStorage({
-                                key: config.sessionExpireKey,
-                                data: String(status.sessionExpire)
-                            })
-                        }
-                        wx.setStorage({
-                            key: config.sessionName,
-                            data: status.session
-                        });
-                        return resolve();
-                    } else {
-                        return reject(errorHandler.getErrorMsg(res));
-                    }
-                } else {
-                    return reject({title: "登录失败", "content": "请稍后重试"});
-                }
-            },
-            complete() {
-            },
-            fail: () => {
-                return reject({title: "登录失败", "content": "请稍后重试"});
-            }
+function setSession(session: string) {
+    status.session = session;
+    // 换回来的session，不需要再checkSession
+    config.doNotCheckSession = true;
+    // 如果有设置本地session过期时间
+    if (config.sessionExpireTime && config.sessionExpireKey) {
+        status.sessionExpire = new Date().getTime() + config.sessionExpireTime;
+        wx.setStorage({
+            key: config.sessionExpireKey,
+            data: String(status.sessionExpire)
         })
-    })
+    }
+    wx.setStorage({
+        key: config.sessionName as string,
+        data: status.session
+    });
 }
 
 /* 清空session */
 function delSession() {
     status.session = '';
     wx.removeStorage({
-        key: config.sessionName
-    })
+        key: config.sessionName as string
+    });
+    if (config.sessionExpireTime && config.sessionExpireKey) {
+        status.sessionExpire = Infinity;
+        wx.removeStorage({
+            key: config.sessionExpireKey
+        })
+    }
 }
 
 function main() {
@@ -192,5 +151,6 @@ function main() {
 
 export default {
     main,
+    setSession,
     delSession
 }

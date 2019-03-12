@@ -1,3 +1,4 @@
+import status from '../store/status'
 import config from '../store/config'
 import requestHandler from './requestHandler'
 import errorHandler from './errorHandler'
@@ -40,6 +41,18 @@ function response(
         } else if (config.successTrigger(res.data)) {
             // 接口返回成功码
             let realData: string | IAnyObject | ArrayBuffer = "";
+
+            // 获取最新的登陆态
+            try {
+                let session = config.getSession(res.data);
+                if (session && session !== status.session) {
+                    sessionManager.setSession(session);
+                }
+            } catch (e) {
+                console.error("Function getSession occur error: " + e);
+            }
+
+            // 获取业务数据
             try {
                 realData = config.successData(res.data);
             } catch (e) {

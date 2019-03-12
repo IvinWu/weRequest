@@ -1,5 +1,5 @@
-import status from '../store/status'
+import sessionManager from '../module/sessionManager'
 
 export default (session: string) => {
-    status.session = session;
+    sessionManager.setSession(session);
 }

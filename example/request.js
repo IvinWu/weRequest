@@ -3,6 +3,8 @@ var weRequest = require('../src/weRequest');
 weRequest.init({
     // [可选] 存在localStorage的session名称，且CGI请求的data中会自动带上以此为名称的session值；可不配置，默认为session
     sessionName: "session",
+    // [可选] CGI中传参时，存放code的名称，此处例子名称就是code；可不传，默认值为code
+    codeName: 'code',
     // [可选] 请求URL的固定前缀；可不配置，默认为空
     urlPerfix: "https://www.example.com/",
     // [必填] 触发重新登录的条件，res为CGI返回的数据
@@ -10,25 +12,9 @@ weRequest.init({
         // 此处例子：当返回数据中的字段errcode等于-1，会自动触发重新登录
         return res.errcode == -1;
     },
-    // [必填] 用code换取session的CGI配置
-    codeToSession: {
-        // [必填] CGI的URL
-        url: 'user/login',
-        // [可选] 调用改CGI的方法；可不配置，默认为GET
-        method: 'GET',
-        // [可选] CGI中传参时，存放code的名称，此处例子名称就是code；可不配置，默认值为code
-        codeName: 'code',
-        // [可选] 登录接口需要的其他参数；可不配置，默认为{}
-        data: {},
-        // [必填] CGI中返回的session值
-        success: function (res) {
-            // 此处例子：CGI返回数据中的字段session即为session值
-            return res.session;
-        },
-        // [可选] 接口失败的回调，可不配置，默认为弹窗报错
-        fail: function(obj, res) {
-
-        }
+    // [必填] 后端在接口中返回登录成功后的第三方登录态
+    getSession: function(res) {
+        return res.session_id;
     },
     // [可选] 登录重试次数，当连续请求登录接口返回失败次数超过这个次数，将不再重试登录；可不配置，默认为重试3次
     reLoginLimit: 2,
@@ -75,10 +61,10 @@ weRequest.init({
         //})
         console.log(name + ":" + (endTime - startTime));
     },
-	// [可选] 提供接口的mock，若不需使用，请设置为false
+    // [可选] 提供接口的mock，若不需使用，请设置为false
     mockJson: require("../../mock.json"),
     // [可选] 所有请求都会自动带上globalData里的参数
-	globalData: function() {
+    globalData: function() {
         return {
             version: getApp().version
         }
@@ -87,6 +73,6 @@ weRequest.init({
     sessionExpireTime: 24 * 60 * 60 * 1000,
     // [可选] session本地缓存时间存在Storage中的名字，可不配置，默认为 sessionExpireKey
     sessionExpireKey: "sessionExpireKey"
-})
+});
 
 module.exports = weRequest;

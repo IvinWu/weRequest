@@ -1,8 +1,10 @@
 export interface IInitOption {
-    /* 用code换取session的CGI配置 */
-    codeToSession: ICodeToSessionOptions;
     /* 储存在localStorage的session名称，且CGI请求的data中会自动带上以此为名称的session值；可不配置，默认为session */
-    sessionName: string;
+    sessionName?: string;
+    /* 存放code的名称；可不配置，默认值为code */
+    codeName?: string;
+    // 后端在接口中返回登录成功后的第三方登录态
+    getSession: Function;
     /* 请求URL的固定前缀，如果配置了，后续请求的URL都会自动加上这个前缀，如果是函数，则为函数的返回值 */
     urlPerfix?: string | (() => string);
     /* 是否需要调用checkSession，验证小程序的登录态过期；若业务不需要使用到session_key，则可配置为true */
@@ -40,30 +42,6 @@ export interface IInitOption {
     errorTitle?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
     /* 接口逻辑失败时，错误弹窗的内容 */
     errorContent?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
-}
-
-export interface ICodeToSessionOptions{
-    /* CGI的url */
-    url: string;
-    /* 调用该CGI的方法 */
-    method?: 'OPTIONS'
-        | 'GET'
-        | 'HEAD'
-        | 'POST'
-        | 'PUT'
-        | 'DELETE'
-        | 'TRACE'
-        | 'CONNECT' | 'string',
-    /* CGI中传参时，存放code的名称 */
-    codeName?: string;
-    /* 登录接口需要的其他参数 */
-    data?: string | Function | IAnyObject | ArrayBuffer;
-    /* 接口返回成功的函数；需要返回session的值 */
-    success: Function;
-    /* code换取session的接口逻辑出错时，执行的函数，若配置了此函数，则不再默认弹窗报错 */
-    fail?: Function;
-    /* codeToSession的上报字段名 */
-    report?: string;
 }
 
 export interface IRequestOption extends IRequestObject {

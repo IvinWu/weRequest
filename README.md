@@ -112,10 +112,11 @@ weRequest.request({
 |参数名|类型|必填|默认值|说明|
 | :-------- | :-------| :------ | :------ |:------ |
 |sessionName|String|否|session|储存在localStorage的session名称，且CGI请求的data中会自动带上以此为名称的session值；可不配置，默认为session|
+|codeName|String|否|code|CGI中传参时，存放code的名称；可不配置，默认值为code|
 |urlPerfix|String or Function|否||请求URL的固定前缀，如果配置了，后续请求的URL都会自动加上这个前缀，如果是函数，则为函数的返回值|
 |loginTrigger|Function|是||触发重新登录的条件；参数为CGI返回的数据，返回需要重新登录的条件|
-|codeToSession|Object|是||用code换取session的CGI配置|
 |reLoginLimit|Int|否|3|登录重试次数，当连续请求登录接口返回失败次数超过这个次数，将不再重试登录|
+|getSession|Function|是||后端在接口中返回登录成功后的第三方登录态|
 |successTrigger|Function|是||触发请求成功的条件；参数为CGI返回的数据，返回接口逻辑成功的条件|
 |successData|Function|否||成功之后返回数据；参数为CGI返回的数据，返回逻辑需要使用的数据|
 |errorTitle|String/Function|否|操作失败|接口逻辑失败时，错误弹窗的标题|
@@ -127,16 +128,6 @@ weRequest.request({
 |globalData|Object/Function|否||所有请求都会自动带上这里的参数|
 |sessionExpireTime|Int|否|null|为用户登陆态设置本地缓存时间（单位为ms），一旦过期，直接废弃缓存中的登陆态|
 |sessionExpireKey|String|否|sessionExpireKey|如果为用户登陆态设置了本地缓存时间，则过期时间将以此值为key存储在Storage中|
-
-##### codeToSession参数说明
-
-|参数名|类型|必填|默认值|说明|
-| :-------- | :-------| :------ | :------ |:------ |
-|url|String|是||CGI的url|
-|method|String|否|GET|调用改CGI的方法|
-|codeName|String|否|code|CGI中传参时，存放code的名称|
-|data|Object|否||登录接口需要的其他参数|
-|success|Function|是||接口返回成功的函数；需要返回session的值|
 
 ##### reportCGI返回参数说明
 |参数名|类型|说明|
@@ -152,6 +143,8 @@ weRequest.request({
 weRequest.init({
     // [可选] 存在localStorage的session名称，且CGI请求的data中会自动带上以此为名称的session值；可不配置，默认为session
     sessionName: "session",
+    // [可选] 存放code的名称；可不配置，默认值为code
+    codeName: "js_code",
     // [可选] 请求URL的固定前缀；可不配置，默认为空
     urlPerfix: "https://www.example.com/",
     // [必填] 触发重新登录的条件，res为CGI返回的数据
@@ -159,21 +152,9 @@ weRequest.init({
         // 此处例子：当返回数据中的字段errcode等于-1，会自动触发重新登录
         return res.errcode == -1;
     },
-    // [必填] 用code换取session的CGI配置
-    codeToSession: {
-        // [必填] CGI的URL
-        url: 'user/login',
-        // [可选] 调用改CGI的方法；可不配置，默认为GET
-        method: 'GET',
-        // [可选] CGI中传参时，存放code的名称，此处例子名称就是code；可不配置，默认值为code
-        codeName: 'code',
-        // [可选] 登录接口需要的其他参数；可不配置，默认为{}
-        data: {},
-        // [必填] CGI中返回的session值
-        success: function (res) {
-            // 此处例子：CGI返回数据中的字段session即为session值
-            return res.session;
-        }
+    // [必填] 后端在接口中返回登录成功后的第三方登录态
+    getSession: function(res) {
+        return res.session_id;
     },
     // [可选] 登录重试次数，当连续请求登录接口返回失败次数超过这个次数，将不再重试登录；可不配置，默认为重试3次
     reLoginLimit: 2,
@@ -225,7 +206,7 @@ weRequest.init({
         url1: require("../../mock1.json"),
         url2: require("../../mock2.json"),
         url3: require("../../mock3.json")
-    }
+    },
     // [可选] 所有请求都会自动带上globalData里的参数
     globalData: function() {
         return {
@@ -301,25 +282,6 @@ weRequest.request({
 |showLoading|Boolean/String|否|false|请求过程页面是否展示全屏的loading，当值为字符串时，将展示相关文案的loading|是|
 |report|String|否||接口请求成功后将自动执行init()中配置的reportCGI函数，其中的name字段值为这里配置的值|是|
 
-#### 示例代码
-
-```javascript
-wx.chooseImage({
-    count: 1,
-    success: function (res) {
-        weRequest.uploadFile({
-            url: 'upload/img',
-            filePath: res.tempFilePaths[0],
-            name: 'pic',
-            showLoading: "提交中",
-            success(data){
-                console.log(data.imgPath);
-            }
-        })
-    }
-})
-```
-
 ### .getSession()
 
 [return String]
@@ -339,11 +301,11 @@ wx.chooseImage({
 
 ### .login()
 
-```[不建议使用]``` 在不发起业务请求的情况下，单独执行登录逻辑
+<font color=red>[不建议使用]</font> 在不发起业务请求的情况下，单独执行登录逻辑
 
 ### .setSession(String)
 
-```[不建议使用]``` 设置用户票据的值
+<font color=red>[不建议使用]</font> 设置用户票据的值
 
 ## FAQ
 

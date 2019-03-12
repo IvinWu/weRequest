@@ -54,8 +54,13 @@ function initializeRequestObj(obj: IRequestOption) {
         obj.data = {};
     }
 
-    if (obj.originUrl !== config.codeToSession.url && status.session) {
-        obj.data = {...obj.data as object, [config.sessionName]: status.session};
+    let js_code = status.code;
+    status.code = '';
+
+    if (js_code) {
+        obj.data = {...obj.data as object, [config.codeName as string]: js_code};
+    } else if (status.session) {
+        obj.data = {...obj.data as object, [config.sessionName as string]: status.session};
     }
 
     // 如果有全局参数，则添加
@@ -67,8 +72,10 @@ function initializeRequestObj(obj: IRequestOption) {
 
     // 如果请求不是GET，则在URL中自动加上登录态和全局参数
     if (obj.method !== "GET") {
-        if (status.session) {
-            obj.url = url.setParams(obj.url, {[config.sessionName]: status.session});
+        if(js_code) {
+            obj.url = url.setParams(obj.url, {[config.codeName as string]: js_code});
+        } else if (status.session) {
+            obj.url = url.setParams(obj.url, {[config.sessionName as string]: status.session});
         }
         obj.url = url.setParams(obj.url, gd);
     }
@@ -84,8 +91,13 @@ function initializeUploadFileObj(obj: IUploadFileOption) {
         obj.formData = {};
     }
 
-    if (obj.originUrl !== config.codeToSession.url && status.session) {
-        obj.formData = {...obj.formData as object, [config.sessionName]: status.session};
+    let js_code = status.code;
+    status.code = '';
+
+    if (js_code) {
+        obj.formData = {...obj.formData as object, [config.codeName as string]: js_code};
+    } else if (status.session) {
+        obj.formData = {...obj.formData as object, [config.sessionName as string]: status.session};
     }
 
     // 如果有全局参数，则添加
@@ -93,8 +105,10 @@ function initializeUploadFileObj(obj: IUploadFileOption) {
     obj.formData = {...gd, ...obj.formData};
 
     // 将登陆态也带在url上
-    if (status.session) {
-        obj.url = url.setParams(obj.url, {[config.sessionName]: status.session});
+    if(js_code) {
+        obj.url = url.setParams(obj.url, {[config.codeName as string]: js_code});
+    } else if (status.session) {
+        obj.url = url.setParams(obj.url, {[config.sessionName as string]: status.session});
     }
     // 全局参数同时放在url上
     obj.url = url.setParams(obj.url, gd);
