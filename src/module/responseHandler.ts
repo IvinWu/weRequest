@@ -29,7 +29,7 @@ function response(
 
         durationReporter.end(obj);
 
-        if (config.loginTrigger!(res.data) && obj.reLoginCount && obj.reLoginCount < config.reLoginLimit!) {
+        if (config.loginTrigger!(res.data) && obj.reLoginCount !== undefined && obj.reLoginCount < config.reLoginLimit!) {
             // 登录态失效，且重试次数不超过配置
             sessionManager.delSession();
             if(method === "request") {
