@@ -8,7 +8,7 @@ let checkSessionPromise: any = null;
 
 function checkSession() {
     if (!checkSessionPromise) {
-        checkSessionPromise = new Promise((resolve) => {
+        checkSessionPromise = new Promise((resolve, reject) => {
             console.log("wx.checkSession()");
             const start = new Date().getTime();
             wx.checkSession({
@@ -19,7 +19,11 @@ function checkSession() {
                 fail() {
                     // 登录态过期
                     delSession();
-                    return resolve();
+                    return doLogin().then(() => {
+                        return resolve();
+                    }, (res: any)=>{
+                        return reject(res);
+                    });
                 },
                 complete() {
                     const end = new Date().getTime();
@@ -145,6 +149,9 @@ function main() {
             return reject({title, content});
         }).then(() => {
             return resolve();
+        }, ({title, content})=> {
+            errorHandler.doError(title, content);
+            return reject({title, content});
         })
     })
 }
