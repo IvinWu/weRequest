@@ -1,5 +1,5 @@
 import { IRequestOption, IUploadFileOption } from "../interface";
-declare function get(obj: IRequestOption | IUploadFileOption, method: "request" | "uploadFile"): any;
+declare function get(obj: IRequestOption | IUploadFileOption): any;
 declare const _default: {
     get: typeof get;
 };
