@@ -1,9 +1,8 @@
 import config from '../store/config'
 import loading from '../util/loading'
-import responseHandler from './responseHandler'
 import { IRequestOption, IUploadFileOption } from "../interface"
 
-function get(obj: IRequestOption | IUploadFileOption, method: "request" | "uploadFile"): any {
+function get(obj: IRequestOption | IUploadFileOption): any {
 
     if(!(config.mockJson[obj.url] || (obj.originUrl && config.mockJson[obj.originUrl]))) {
         // mock 没有对应接口的数据
@@ -20,7 +19,7 @@ function get(obj: IRequestOption | IUploadFileOption, method: "request" | "uploa
     };
 
     loading.hide();
-    return responseHandler(res, obj, method)
+    return res;
 }
 
 export default {
