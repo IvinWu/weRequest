@@ -6,33 +6,49 @@
 ## 目标
 让业务逻辑更专注，不用再关注底层登录态问题。小程序对比以往的H5，登录态管理逻辑要复杂很多。通过`weRequest`这个组件，希望能帮助开发者把更多精力放在业务逻辑上，而登录态管理问题只需通过一次简单配置，以后就不用再花精力管理了。
 
-## 安装
+## 如何安装
 
-### 1) 通过npm安装
+### a) 通过npm安装
 ```
 npm install --save we-request
 ```
 
-### 2）直接下载`dist/weRequest.min.js`放到小程序包内
+### b) 或直接下载`build/weRequest.min.js`放到小程序包内
 
 ## 怎么使用
+
+### 1) 引入`weRequest`组件
+
+#### 1.a）ES6模式
+
 ```javascript
-// ES6 模式
 import weRequest from 'we-request';
+
 // 若下载文件到本地，则直接引入对应文件，具体路径自己根据情况修改
 // import weRequest from '../lib/weRequest.min'
+```
 
-// commonJs 模式
+#### 1.b) commonJs 模式
+
+```javascript
 const weRequest= require('we-request');
+
 // 若下载文件到本地，则直接引入对应文件，具体路径自己根据情况修改
 // const weRequest = require('../lib/weRequest.min');
+```
 
+### 2) 初始化组件配置
+
+```javascript
 // 初始化配置
 weRequest.init({
     // 关于配置内容，将在后文详述
     // 此处暂时省略...
 })
+```
+### 3) **就像使用`wx.request`那样去使用它**
 
+```javascript
 // 发起请求
 weRequest.request({
     url: 'order/detail',
@@ -54,9 +70,32 @@ weRequest.request({
     // 省略...
 })
 ```
-- 引入`weRequest`组件
-- 初始化组件配置
-- **就像使用`wx.request`那样去使用它**
+
+## 使用贴士
+
+正常情况下组件只需要`init`一次即可，因此初始化可以封装在一个文件中：
+
+```javascript
+// 举例： 以下代码封装在 util/weRequest.js
+
+import weRequest from 'we-request';
+
+weRequest.init({
+  // ...
+});
+
+export default weRequest;
+```
+
+后续业务逻辑直接引用封装好的文件即可使用：
+
+```javascript
+import weRequest from 'util/weRequest';
+
+weRequest.request({
+  // ...
+})
+```
 
 ## 为什么需要它
 
