@@ -384,6 +384,10 @@ wx.chooseImage({
 
 ```[不建议使用]``` 设置用户票据的值
 
+### .version
+
+获取 weRequest 版本号
+
 ## FAQ
 
 ### 我希望在请求时候，页面能出现最简单的loading状态，该怎么办？
