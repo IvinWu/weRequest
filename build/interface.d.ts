@@ -2,11 +2,11 @@
 export interface IInitOption {
     sessionName?: string;
     codeName?: string;
-    getSession: Function;
+    getSession: (res: string | IAnyObject | ArrayBuffer) => string;
     urlPerfix?: string | (() => string);
     doNotCheckSession?: boolean;
     reLoginLimit?: number;
-    errorCallback?: null | Function;
+    errorCallback?: ((obj: IAnyObject, res: string | IAnyObject | ArrayBuffer) => void) | null;
     reportCGI?: boolean | ((name: string, startTime: number, endTime: number, request: Function) => void);
     mockJson?: any;
     globalData?: boolean | object | Function;
@@ -22,7 +22,7 @@ export interface IRequestOption extends IRequestObject {
     beforeSend?: Function;
     showLoading?: boolean | string;
     report?: string;
-    cache?: boolean | Function;
+    cache?: boolean | ((res: string | IAnyObject | ArrayBuffer) => boolean);
     noCacheFlash?: boolean;
     success?: (res: string | IAnyObject | ArrayBuffer, cacheInfo?: object) => void;
     complete?: () => void;

@@ -4,7 +4,7 @@ export interface IInitOption {
     /* 存放code的名称；可不配置，默认值为code */
     codeName?: string;
     // 后端在接口中返回登录成功后的第三方登录态
-    getSession: Function;
+    getSession: (res: string | IAnyObject | ArrayBuffer) => string;
     /* 请求URL的固定前缀，如果配置了，后续请求的URL都会自动加上这个前缀，如果是函数，则为函数的返回值 */
     urlPerfix?: string | (() => string);
     /* 是否需要调用checkSession，验证小程序的登录态过期；若业务不需要使用到session_key，则可配置为true */
@@ -12,7 +12,7 @@ export interface IInitOption {
     /* 登录重试次数，当连续请求登录接口返回失败次数超过这个次数，将不再重试登录 */
     reLoginLimit?: number;
     /* 当出现接口逻辑错误时，会执行统一的回调函数，这里可以做统一的错误上报等处理 */
-    errorCallback?: null | Function;
+    errorCallback?: ((obj: IAnyObject, res: string | IAnyObject | ArrayBuffer) => void) | null;
     /* 接口返回成功之后，会执行统一的回调函数，这里可以做统一的耗时上报等处理 */
     reportCGI?: boolean | ((
         /* 调用的接口名字，可在request接口的report字段配置 */
@@ -52,7 +52,7 @@ export interface IRequestOption extends IRequestObject {
     /* 接口请求成功后将自动执行init()中配置的reportCGI函数，其中的name字段值为这里配置的值 */
     report?: string;
     /* 是否需要缓存 */
-    cache?: boolean | Function;
+    cache?: boolean | ((res: string | IAnyObject | ArrayBuffer) => boolean);
     /* 当启用缓存时，决定除了返回缓存内容外，是否还返回接口实时内容，以防止页面多次渲染的抖动 */
     noCacheFlash?: boolean;
     /* 接口调用成功的回调函数 */
