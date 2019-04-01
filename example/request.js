@@ -1,4 +1,4 @@
-var weRequest = require('../src/weRequest');
+import weRequest from '../src/index'
 
 weRequest.init({
     // [可选] 存在localStorage的session名称，且CGI请求的data中会自动带上以此为名称的session值；可不配置，默认为session
@@ -89,4 +89,4 @@ weRequest.init({
     sessionExpireKey: "sessionExpireKey"
 })
 
-module.exports = weRequest;
+export default weRequest;
