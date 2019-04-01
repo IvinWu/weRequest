@@ -1,5 +1,5 @@
 <p align="center"><img src="./image/logo.png" alt="weRequest" height="160"/></p>
-<h2 align="center">v2.0.2</h2>
+<h2 align="center">v2.0.3</h2>
 <p align="center"><b>解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。</b></p>
 
 
@@ -105,7 +105,7 @@ weRequest.request({
 
 具体到业务开发过程中的前端来说，我认为上图还不够完整，于是我画了下面这张以**前端逻辑**为出发点的、包含循环的**流程图**。
 我认为前端每一次**发起网络请求**，跟后台进行数据交互，都适用于下图的**流程**：
-![](https://raw.githubusercontent.com/IvinWu/weRequest/master/image/flow_login.png)
+![](https://raw.githubusercontent.com/IvinWu/weRequest/2.x.x/image/flow_login.png)
 
 - **hasChecked：** 用一状态标识本生命周期内是否执行过`wx.checkSession`，判断该标识，若否，开始执行`wx.checkSession`，若是，进入下一步
 - **wx.checkSession()：** 调用接口判断登录态是否过期，若是，重新登录；若否，进入下一步
@@ -126,19 +126,19 @@ weRequest.request({
 
 通过`weRequest`发出的请求，将会自动带上登录态参数。
 对应的流程为下图中**红色**的指向：
-![自动带上登录态参数](https://raw.githubusercontent.com/IvinWu/weRequest/master/image/flow1.png)
+![自动带上登录态参数](https://raw.githubusercontent.com/IvinWu/weRequest/2.x.x/image/flow1.png)
 
 ### 没有登录态时，自动登录
 
 当本地没有登录态时，按照流程图，`weRequest`将会自动执行`wx.login()`后的一系列流程，得到`code`并调用后台接口换取`session`，储存在localStorage之后，重新发起业务请求。
 对应的流程为下图中**红色**的指向：
-![没有登录态时，自动登录](https://raw.githubusercontent.com/IvinWu/weRequest/master/image/flow2.png)
+![没有登录态时，自动登录](https://raw.githubusercontent.com/IvinWu/weRequest/2.x.x/image/flow2.png)
 
 ### 登录态过期时，自动重新登录
 
 对后台数据进行预解析之后，发现登录态过期，于是重新执行登录流程，获取新的`session`之后，重新发起请求。
 对应的流程为下图中**红色**的指向：
-![登录态过期时，自动重新登录](https://raw.githubusercontent.com/IvinWu/weRequest/master/image/flow3.png)
+![登录态过期时，自动重新登录](https://raw.githubusercontent.com/IvinWu/weRequest/2.x.x/image/flow3.png)
 
 ## 文档
 
@@ -340,11 +340,15 @@ weRequest.request({
 
 ### .login()
 
-<font color=red>[不建议使用]</font> 在不发起业务请求的情况下，单独执行登录逻辑
+```[不建议使用]``` 在不发起业务请求的情况下，单独执行登录逻辑
 
 ### .setSession(String)
 
-<font color=red>[不建议使用]</font> 设置用户票据的值
+```[不建议使用]``` 设置用户票据的值
+
+### .version
+
+获取 weRequest 版本号
 
 ## FAQ
 

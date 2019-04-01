@@ -26,6 +26,9 @@ module.exports = [
             libraryExport: "default"
         },
         plugins: [
+            new webpack.DefinePlugin({
+                __VERSION__: JSON.stringify(pk.version)
+            }),
             new webpack.BannerPlugin({
                 banner: `weRequest ${pk.version}\n${pk.homepage}`
             })
@@ -55,6 +58,9 @@ module.exports = [
         },
         devtool: "inline-source-map",
         plugins: [
+            new webpack.DefinePlugin({
+                __VERSION__: JSON.stringify(pk.version)
+            }),
             new webpack.BannerPlugin({
                 banner: `weRequest ${pk.version}\n${pk.homepage}`
             })
