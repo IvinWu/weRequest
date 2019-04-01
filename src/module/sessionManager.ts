@@ -9,7 +9,7 @@ let checkSessionPromise: any = null;
 
 function checkSession() {
     if (!checkSessionPromise) {
-        checkSessionPromise = new Promise((resolve) => {
+        checkSessionPromise = new Promise((resolve, reject) => {
             console.log("wx.checkSession()");
             const start = new Date().getTime();
             wx.checkSession({
@@ -20,7 +20,11 @@ function checkSession() {
                 fail() {
                     // 登录态过期
                     delSession();
-                    return resolve();
+                    return doLogin().then(() => {
+                        return resolve();
+                    }, (res: any)=>{
+                        return reject(res);
+                    });
                 },
                 complete() {
                     const end = new Date().getTime();
@@ -49,6 +53,8 @@ function isSessionExpireOrEmpty() {
 function checkLogin() {
     return new Promise((resolve, reject) => {
         if (isSessionExpireOrEmpty()) {
+            // 没有登陆态，不需要再checkSession
+            config.doNotCheckSession = true;
             return doLogin().then(() => {
                 return resolve();
             }, (res: any)=>{
@@ -104,6 +110,24 @@ function login() {
             }
         })
     })
+}
+
+function setSession(session: string) {
+    status.session = session;
+    // 换回来的session，不需要再checkSession
+    config.doNotCheckSession = true;
+    // 如果有设置本地session过期时间
+    if (config.sessionExpireTime && config.sessionExpireKey) {
+        status.sessionExpire = new Date().getTime() + config.sessionExpireTime;
+        wx.setStorage({
+            key: config.sessionExpireKey,
+            data: String(status.sessionExpire)
+        })
+    }
+    wx.setStorage({
+        key: config.sessionName as string,
+        data: status.session
+    });
 }
 
 function code2Session(code: string) {
@@ -173,8 +197,14 @@ function code2Session(code: string) {
 function delSession() {
     status.session = '';
     wx.removeStorage({
-        key: config.sessionName
-    })
+        key: config.sessionName as string
+    });
+    if (config.sessionExpireTime && config.sessionExpireKey) {
+        status.sessionExpire = Infinity;
+        wx.removeStorage({
+            key: config.sessionExpireKey
+        })
+    }
 }
 
 function main() {
@@ -186,11 +216,15 @@ function main() {
             return reject({title, content});
         }).then(() => {
             return resolve();
+        }, ({title, content})=> {
+            errorHandler.doError(title, content);
+            return reject({title, content});
         })
     })
 }
 
 export default {
     main,
+    setSession,
     delSession
 }

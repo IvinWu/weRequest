@@ -174,9 +174,10 @@ function request(obj: IRequestOption): any {
         obj = preDo(obj);
 
         if (config.mockJson) {
-            let mockResponse = mockManager.get(obj, 'request');
+            let mockResponse = mockManager.get(obj);
             if (mockResponse) {
-                return resolve(mockResponse);
+                let response = responseHandler(mockResponse, obj, 'request');
+                return resolve(response);
             }
         }
 
@@ -200,8 +201,11 @@ function uploadFile(obj: IUploadFileOption): any {
         obj = preDo(obj);
 
         if (config.mockJson) {
-            mockManager.get(obj, 'uploadFile');
-            return;
+            let mockResponse = mockManager.get(obj);
+            if (mockResponse) {
+                let response = responseHandler(mockResponse, obj, 'uploadFile');
+                return resolve(response);
+            }
         }
 
         sessionManager.main().then(() => {
