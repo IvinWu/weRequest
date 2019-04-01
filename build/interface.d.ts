@@ -72,4 +72,5 @@ export interface weRequest {
     getConfig?: () => IGetConfigResult;
     login?: (callback: Function) => void;
     setSession?: (x: string) => void;
+    version?: string;
 }

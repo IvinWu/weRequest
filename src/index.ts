@@ -6,6 +6,7 @@ import login from "./api/login"
 import getSession from "./api/getSession"
 import getConfig from "./api/getConfig"
 import { weRequest } from "./interface"
+import { version } from './version'
 
 const weRequestObject: weRequest = {
   init,
@@ -14,7 +15,8 @@ const weRequestObject: weRequest = {
   setSession,
   login,
   getSession,
-  getConfig
+  getConfig,
+  version
 };
 
 export default weRequestObject;
