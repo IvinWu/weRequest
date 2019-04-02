@@ -10,7 +10,7 @@ export interface IInitOption {
     /* 登录重试次数，当连续请求登录接口返回失败次数超过这个次数，将不再重试登录 */
     reLoginLimit?: number;
     /* 当出现接口逻辑错误时，会执行统一的回调函数，这里可以做统一的错误上报等处理 */
-    errorCallback?: null | Function;
+    errorCallback?: ((obj: IAnyObject, res: string | IAnyObject | ArrayBuffer) => void) | null;
     /* 接口返回成功之后，会执行统一的回调函数，这里可以做统一的耗时上报等处理 */
     reportCGI?: boolean | ((
         /* 调用的接口名字，可在request接口的report字段配置 */
@@ -74,7 +74,7 @@ export interface IRequestOption extends IRequestObject {
     /* 接口请求成功后将自动执行init()中配置的reportCGI函数，其中的name字段值为这里配置的值 */
     report?: string;
     /* 是否需要缓存 */
-    cache?: boolean | Function;
+    cache?: boolean | ((res: string | IAnyObject | ArrayBuffer) => boolean);
     /* 当启用缓存时，决定除了返回缓存内容外，是否还返回接口实时内容，以防止页面多次渲染的抖动 */
     noCacheFlash?: boolean;
     /* 接口调用成功的回调函数 */
@@ -138,20 +138,20 @@ export interface IGetConfigResult {
 }
 
 export interface weRequest {
-    /** 小程序账号信息 */
-    init?: (obj: IInitOption) => void;
-    /** 插件账号信息（仅在插件中调用时包含这一项） */
-    request?: (option: IRequestOption) => void;
-    /** 插件账号信息（仅在插件中调用时包含这一项） */
-    uploadFile?: (option: IUploadFileOption) => void;
+    /** 初始化 */
+    init: (obj: IInitOption) => void;
+    /** 请求 */
+    request: (option: IRequestOption) => void;
+    /** 上传文件 */
+    uploadFile: (option: IUploadFileOption) => void;
     /* 获取本地缓存中用户票据的值 */
-    getSession?: () => string;
+    getSession: () => string;
     /* 获取weRequest的配置 */
-    getConfig?: () => IGetConfigResult;
+    getConfig: () => IGetConfigResult;
     /* [不建议使用] 在不发起业务请求的情况下，单独执行登录逻辑 */
-    login?: (callback: Function) => void;
+    login: (callback: Function) => void;
     /* [不建议使用] 设置用户票据的值 */
-    setSession?: (x: string) => void;
+    setSession: (x: string) => void;
     /* 获取weRequest版本 */
-    version?: string;
+    version: string;
 }
