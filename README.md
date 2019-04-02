@@ -1,5 +1,5 @@
 <p align="center"><img src="./image/logo.png" alt="weRequest" height="160"/></p>
-<h2 align="center">v2.0.4</h2>
+<h2 align="center">v2.0.6</h2>
 <p align="center"><b>解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。</b></p>
 
 
@@ -10,7 +10,7 @@
 
 ### a) 通过npm安装
 ```
-npm install --save we-request
+npm install --save we-request@2.x.x
 ```
 
 ### b) 或直接下载`build/weRequest.min.js`放到小程序包内

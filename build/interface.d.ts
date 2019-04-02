@@ -57,12 +57,12 @@ export interface IGetConfigResult {
     sessionExpire?: number;
 }
 export interface weRequest {
-    init?: (obj: IInitOption) => void;
-    request?: (option: IRequestOption) => void;
-    uploadFile?: (option: IUploadFileOption) => void;
-    getSession?: () => string;
-    getConfig?: () => IGetConfigResult;
-    login?: (callback: Function) => void;
-    setSession?: (x: string) => void;
-    version?: string;
+    init: (obj: IInitOption) => void;
+    request: (option: IRequestOption) => void;
+    uploadFile: (option: IUploadFileOption) => void;
+    getSession: () => string;
+    getConfig: () => IGetConfigResult;
+    login: (callback: Function) => void;
+    setSession: (x: string) => void;
+    version: string;
 }

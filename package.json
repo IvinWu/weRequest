@@ -1,6 +1,6 @@
 {
   "name": "we-request",
-  "version": "2.0.4",
+  "version": "2.0.6",
   "description": "本工具通过拓展小程序的wx.request，让开发者通过简单的配置，实现自动管理登录态等功能",
   "keywords": [
     "登录态",
@@ -19,8 +19,8 @@
     "type": "git",
     "url": "https://github.com/IvinWu/weRequest.git"
   },
-  "main": "src/index.ts",
-  "typings": "src/typings/index.d.ts",
+  "main": "build/weRequest.js",
+  "typings": "build/index.d.ts",
   "scripts": {
     "build": "webpack",
     "commit": "git cz"
