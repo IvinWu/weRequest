@@ -116,20 +116,20 @@ export interface IGetConfigResult {
 }
 
 export interface weRequest {
-    /** 小程序账号信息 */
-    init?: (obj: IInitOption) => void;
-    /** 插件账号信息（仅在插件中调用时包含这一项） */
-    request?: (option: IRequestOption) => void;
-    /** 插件账号信息（仅在插件中调用时包含这一项） */
-    uploadFile?: (option: IUploadFileOption) => void;
+    /** 初始化 */
+    init: (obj: IInitOption) => void;
+    /** 请求 */
+    request: (option: IRequestOption) => void;
+    /** 上传文件 */
+    uploadFile: (option: IUploadFileOption) => void;
     /* 获取本地缓存中用户票据的值 */
-    getSession?: () => string;
+    getSession: () => string;
     /* 获取weRequest的配置 */
-    getConfig?: () => IGetConfigResult;
+    getConfig: () => IGetConfigResult;
     /* [不建议使用] 在不发起业务请求的情况下，单独执行登录逻辑 */
-    login?: (callback: Function) => void;
+    login: (callback: Function) => void;
     /* [不建议使用] 设置用户票据的值 */
-    setSession?: (x: string) => void;
+    setSession: (x: string) => void;
     /* 获取weRequest版本 */
-    version?: string;
+    version: string;
 }
