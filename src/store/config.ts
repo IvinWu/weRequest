@@ -13,9 +13,6 @@ const defaultConfig: IInitOption = {
         return true
     },
     urlPerfix: "",
-    successData(res: any) {
-        return res
-    },
     doNotCheckSession: false,
     errorTitle: "操作失败",
     errorContent(res: any) {

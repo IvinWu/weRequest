@@ -35,7 +35,7 @@ export interface IInitOption {
     /* 触发请求成功的条件；参数为CGI返回的数据，返回接口逻辑成功的条件 */
     successTrigger: (res: string | IAnyObject | ArrayBuffer) => boolean;
     /* 成功之后返回数据；参数为CGI返回的数据，返回逻辑需要使用的数据 */
-    successData: (res: string | IAnyObject | ArrayBuffer) => string | IAnyObject | ArrayBuffer;
+    successData?: (res: string | IAnyObject | ArrayBuffer) => string | IAnyObject | ArrayBuffer;
     /* 	接口逻辑失败时，错误弹窗的标题 */
     errorTitle?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
     /* 接口逻辑失败时，错误弹窗的内容 */

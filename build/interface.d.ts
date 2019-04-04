@@ -13,7 +13,7 @@ export interface IInitOption {
     sessionExpireTime?: number;
     loginTrigger?: (res: string | IAnyObject | ArrayBuffer) => boolean;
     successTrigger: (res: string | IAnyObject | ArrayBuffer) => boolean;
-    successData: (res: string | IAnyObject | ArrayBuffer) => string | IAnyObject | ArrayBuffer;
+    successData?: (res: string | IAnyObject | ArrayBuffer) => string | IAnyObject | ArrayBuffer;
     errorTitle?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
     errorContent?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
 }

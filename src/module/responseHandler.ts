@@ -41,7 +41,11 @@ function response(
             // 接口返回成功码
             let realData: string | IAnyObject | ArrayBuffer = "";
             try {
-                realData = config.successData(res.data);
+                if (typeof config.successData === 'function') {
+                    realData = config.successData(res.data);
+                } else {
+                    realData = res.data;
+                }
             } catch (e) {
                 console.error("Function successData occur error: " + e);
             }
