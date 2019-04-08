@@ -141,7 +141,7 @@ export interface weRequest {
     /** 初始化 */
     init: (obj: IInitOption) => void;
     /** 请求 */
-    request: (option: IRequestOption) => void;
+    request: (option: IRequestOption) => void | Promise<object>;
     /** 上传文件 */
     uploadFile: (option: IUploadFileOption) => void;
     /* 获取本地缓存中用户票据的值 */
