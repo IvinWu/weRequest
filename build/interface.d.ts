@@ -58,8 +58,8 @@ export interface IGetConfigResult {
 }
 export interface weRequest {
     init: (obj: IInitOption) => void;
-    request: (option: IRequestOption) => void;
-    uploadFile: (option: IUploadFileOption) => void;
+    request: (option: IRequestOption) => Promise<object>;
+    uploadFile: (option: IUploadFileOption) => Promise<object>;
     getSession: () => string;
     getConfig: () => IGetConfigResult;
     login: (callback: Function) => void;

@@ -119,9 +119,9 @@ export interface weRequest {
     /** 初始化 */
     init: (obj: IInitOption) => void;
     /** 请求 */
-    request: (option: IRequestOption) => void;
+    request: (option: IRequestOption) => Promise<object>;
     /** 上传文件 */
-    uploadFile: (option: IUploadFileOption) => void;
+    uploadFile: (option: IUploadFileOption) => Promise<object>;
     /* 获取本地缓存中用户票据的值 */
     getSession: () => string;
     /* 获取weRequest的配置 */
