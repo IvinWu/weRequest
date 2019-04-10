@@ -66,7 +66,7 @@ function initializeRequestObj(obj: IRequestOption) {
     obj.dataType = obj.dataType || 'json';
 
     // 如果请求不是GET，则在URL中自动加上登录态和全局参数
-    if (obj.method !== "GET") {
+    if (!config.doNotUseQueryString && obj.method !== "GET") {
         if (status.session) {
             obj.url = url.setParams(obj.url, {[config.sessionName]: status.session});
         }
@@ -92,12 +92,14 @@ function initializeUploadFileObj(obj: IUploadFileOption) {
     const gd = getGlobalData();
     obj.formData = {...gd, ...obj.formData};
 
-    // 将登陆态也带在url上
-    if (status.session) {
-        obj.url = url.setParams(obj.url, {[config.sessionName]: status.session});
+    if (!config.doNotUseQueryString) {
+        // 将登陆态也带在url上
+        if (status.session) {
+            obj.url = url.setParams(obj.url, {[config.sessionName]: status.session});
+        }
+        // 全局参数同时放在url上
+        obj.url = url.setParams(obj.url, gd);
     }
-    // 全局参数同时放在url上
-    obj.url = url.setParams(obj.url, gd);
 
     durationReporter.start(obj);
 

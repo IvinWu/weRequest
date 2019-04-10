@@ -40,6 +40,8 @@ export interface IInitOption {
     errorTitle?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
     /* 接口逻辑失败时，错误弹窗的内容 */
     errorContent?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
+    /* 当请求为非GET时，不将登陆态等参数放在queryString上（默认都放queryString） */
+    doNotUseQueryString?: boolean;
 }
 
 export interface ICodeToSessionOptions{

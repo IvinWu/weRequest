@@ -16,6 +16,7 @@ export interface IInitOption {
     successData?: (res: string | IAnyObject | ArrayBuffer) => string | IAnyObject | ArrayBuffer;
     errorTitle?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
     errorContent?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
+    doNotUseQueryString?: boolean;
 }
 export interface ICodeToSessionOptions {
     url: string;
