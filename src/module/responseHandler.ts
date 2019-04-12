@@ -33,9 +33,9 @@ function response(
             // 登录态失效，且重试次数不超过配置
             sessionManager.delSession();
             if(method === "request") {
-                requestHandler.request(obj as IRequestOption);
+                return requestHandler.request(obj as IRequestOption);
             } else if(method === "uploadFile") {
-                requestHandler.uploadFile(obj as IUploadFileOption);
+                return requestHandler.uploadFile(obj as IUploadFileOption);
             }
         } else if (config.successTrigger(res.data)) {
             // 接口返回成功码
