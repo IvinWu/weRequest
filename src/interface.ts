@@ -47,6 +47,8 @@ export interface IInitOption {
 export interface ICodeToSessionOptions{
     /* CGI的url */
     url: string;
+    /* 增加自定义 header */
+    header?: IAnyObject;
     /* 调用该CGI的方法 */
     method?: 'OPTIONS'
         | 'GET'

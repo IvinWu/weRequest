@@ -144,6 +144,7 @@ function code2Session(code: string) {
         let start = new Date().getTime();
         wx.request({
             url: requestHandler.format(config.codeToSession.url),
+            header: config.codeToSession.header || {"content-type": "application/json"},
             data,
             method: config.codeToSession.method || 'GET',
             success(res: wx.RequestSuccessCallbackResult) {
