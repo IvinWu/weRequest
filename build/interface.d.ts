@@ -63,7 +63,6 @@ export interface weRequest {
     uploadFile: (option: IUploadFileOption) => Promise<object>;
     getSession: () => string;
     getConfig: () => IGetConfigResult;
-    login: (callback: Function) => void;
     setSession: (x: string) => void;
     version: string;
 }

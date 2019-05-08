@@ -128,8 +128,6 @@ export interface weRequest {
     getSession: () => string;
     /* 获取weRequest的配置 */
     getConfig: () => IGetConfigResult;
-    /* [不建议使用] 在不发起业务请求的情况下，单独执行登录逻辑 */
-    login: (callback: Function) => void;
     /* [不建议使用] 设置用户票据的值 */
     setSession: (x: string) => void;
     /* 获取weRequest版本 */

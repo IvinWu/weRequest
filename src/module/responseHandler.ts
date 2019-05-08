@@ -5,52 +5,32 @@ import errorHandler from './errorHandler'
 import cacheManager from './cacheManager'
 import durationReporter from './durationReporter'
 import sessionManager from './sessionManager'
-import { IRequestOption, IUploadFileOption } from "../interface";
+import { IRequestOption, IUploadFileOption } from '../interface'
+import url from '../util/url'
 
-function response(
-    res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult,
-    obj: IRequestOption | IUploadFileOption,
-    method: "request" | "uploadFile"
+function responseForRequest(
+    res: wx.RequestSuccessCallbackResult,
+    obj: IRequestOption
 ): any {
     if (res.statusCode === 200) {
-
-        // 兼容uploadFile返回的res.data可能是字符串
-        if(typeof res.data === "string") {
-            try {
-                res.data = JSON.parse(res.data);
-            } catch (e) {
-                if(obj.catchError) {
-                    throw new Error(e);
-                } else {
-                    errorHandler.logicError(obj, res);
-                    return;
-                }
-            }
-        }
 
         durationReporter.end(obj);
 
         if (config.loginTrigger!(res.data) && obj.reLoginCount !== undefined && obj.reLoginCount < config.reLoginLimit!) {
             // 登录态失效，且重试次数不超过配置
             sessionManager.delSession();
-            if(method === "request") {
-                return requestHandler.request(obj as IRequestOption);
-            } else if(method === "uploadFile") {
-                return requestHandler.uploadFile(obj as IUploadFileOption);
+            //  obj 移除登陆态
+            if (obj.data) {
+                delete (obj.data as IAnyObject)[config.sessionName as string];
             }
+            obj.url = url.delParams(obj.url, config.sessionName as string);
+            return requestHandler.request(obj);
         } else if (config.successTrigger(res.data)) {
             // 接口返回成功码
             let realData: string | IAnyObject | ArrayBuffer = "";
 
             // 获取最新的登陆态
-            try {
-                let session = config.getSession(res.data);
-                if (session && session !== status.session) {
-                    sessionManager.setSession(session);
-                }
-            } catch (e) {
-                console.error("Function getSession occur error: " + e);
-            }
+            getSession(res.data);
 
             // 获取业务数据
             try {
@@ -58,7 +38,7 @@ function response(
             } catch (e) {
                 console.error("Function successData occur error: " + e);
             }
-            if(!(obj as IRequestOption).noCacheFlash) {
+            if(!obj.noCacheFlash) {
                 // 如果为了保证页面不闪烁，则不回调，只是缓存最新数据，待下次进入再用
                 if(typeof obj.success === "function"){
                     obj.success(realData);
@@ -87,4 +67,89 @@ function response(
     }
 }
 
-export default response;
+function responseForUploadFile(
+    res: wx.UploadFileSuccessCallbackResult,
+    obj: IUploadFileOption
+): any {
+    if (res.statusCode === 200) {
+
+        // 兼容uploadFile返回的res.data可能是字符串
+        if(typeof res.data === "string") {
+            try {
+                res.data = JSON.parse(res.data);
+            } catch (e) {
+                if(obj.catchError) {
+                    throw new Error(e);
+                } else {
+                    errorHandler.logicError(obj, res);
+                    return;
+                }
+            }
+        }
+
+        durationReporter.end(obj);
+
+        if (config.loginTrigger!(res.data) && obj.reLoginCount !== undefined && obj.reLoginCount < config.reLoginLimit!) {
+            // 登录态失效，且重试次数不超过配置
+            sessionManager.delSession();
+            //  obj 移除登陆态
+            if (obj.formData) {
+                delete obj.formData[config.sessionName as string];
+            }
+            obj.url = url.delParams(obj.url, config.sessionName as string);
+            return requestHandler.uploadFile(obj);
+        } else if (config.successTrigger(res.data)) {
+            // 接口返回成功码
+            let realData: string | IAnyObject | ArrayBuffer = "";
+
+            // 获取最新的登陆态
+            getSession(res.data);
+
+            // 获取业务数据
+            try {
+                realData = config.successData(res.data);
+            } catch (e) {
+                console.error("Function successData occur error: " + e);
+            }
+
+            if(typeof obj.success === "function"){
+                obj.success(realData);
+            } else {
+                return realData;
+            }
+
+        } else {
+            // 接口返回失败码
+            if(obj.catchError) {
+                let msg = errorHandler.getErrorMsg(res);
+                throw new Error(msg.content);
+            } else {
+                errorHandler.logicError(obj, res);
+            }
+        }
+    } else {
+        // https返回状态码非200
+        if(obj.catchError) {
+            throw new Error(res.statusCode.toString());
+        } else {
+            errorHandler.logicError(obj, res);
+        }
+    }
+}
+
+// 获取最新的登陆态
+function getSession(data: string | IAnyObject | ArrayBuffer) {
+    try {
+        let session = config.getSession(data);
+        if (session && session !== status.session) {
+            sessionManager.setSession(session);
+        }
+    } catch (e) {
+        console.error("Function getSession occur error: " + e);
+    }
+}
+
+export default {
+    responseForRequest,
+    responseForUploadFile
+};

@@ -19,7 +19,7 @@ function checkSession() {
                 fail() {
                     // 登录态过期
                     delSession();
-                    return doLogin().then(() => {
+                    return login().then(() => {
                         return resolve();
                     }, (res: any)=>{
                         return reject(res);
@@ -54,7 +54,7 @@ function checkLogin() {
         if (isSessionExpireOrEmpty()) {
             // 没有登陆态，不需要再checkSession
             config.doNotCheckSession = true;
-            return doLogin().then(() => {
+            return login().then(() => {
                 return resolve();
             }, (res: any)=>{
                 return reject(res);
@@ -64,24 +64,6 @@ function checkLogin() {
             return resolve();
         }
     })
-}
-
-/* 登陆流程的promise */
-let loginPromise: any = null;
-
-function doLogin() {
-    if (!loginPromise) {
-        loginPromise = new Promise((resolve, reject) => {
-            login().then(() => {
-                loginPromise = null;
-                return resolve();
-            }).catch((res) => {
-                loginPromise = null;
-                return reject(res);
-            });
-        })
-    }
-    return loginPromise;
 }
 
 function login() {

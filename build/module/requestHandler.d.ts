@@ -1,4 +1,4 @@
-import { IRequestOption, IUploadFileOption } from "../interface";
+import { IRequestOption, IUploadFileOption } from '../interface';
 declare function format(originUrl: string): string;
 declare function request(obj: IRequestOption): any;
 declare function uploadFile(obj: IUploadFileOption): any;

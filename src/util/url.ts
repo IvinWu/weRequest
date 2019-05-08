@@ -1,6 +1,5 @@
-function setParams(url: string = "", params: object) {
-    const queryStringIndex: number = url.indexOf("?");
-    let kvp: any = {};
+function getParams(url: string = "", queryStringIndex: number) {
+    let kvp: IAnyObject = {};
     if (queryStringIndex >= 0) {
         const oldQueryString = url.substr(queryStringIndex + 1).split("&");
         // @ts-ignore
@@ -9,22 +8,43 @@ function setParams(url: string = "", params: object) {
             kvp[kv[0]] = kv[1];
         });
     }
+    return kvp;
+}
 
-    kvp = {...kvp, ...params};
-
-    const queryString = Object.keys(kvp)
-        .map(key => {
+function joinUrl(kvp: IAnyObject, queryStringIndex: number, url: string) {
+    let queryString = '';
+    if (Object.keys(kvp).length) {
+        queryString = Object.keys(kvp).map(key => {
             return `${key}=${encodeURI(kvp[key])}`;
-        })
-        .join("&");
+        }).join("&");
+    }
 
     if (queryStringIndex >= 0) {
-        return url.substring(0, queryStringIndex + 1) + queryString;
+        return url.substring(0, queryStringIndex + (queryString ? 1 : 0)) + queryString;
     } else {
-        return url + "?" + queryString;
+        return url + (queryString ? "?" : "") + queryString;
     }
 }
 
+function setParams(url: string = "", params: object) {
+    const queryStringIndex: number = url.indexOf("?");
+    let kvp = getParams(url, queryStringIndex);
+
+    kvp = {...kvp, ...params};
+
+    return joinUrl(kvp, queryStringIndex, url);
+}
+
+function delParams(url: string = "", key: string) {
+    const queryStringIndex: number = url.indexOf("?");
+    let kvp = getParams(url, queryStringIndex);
+
+    delete kvp[key];
+
+    return joinUrl(kvp, queryStringIndex, url);
+}
+
 export default {
-    setParams
+    setParams,
+    delParams
 };
