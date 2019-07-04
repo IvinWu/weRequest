@@ -1,6 +1,5 @@
 import config from '../store/config'
 import requestHandler from './requestHandler'
-import errorHandler from './errorHandler'
 import cacheManager from './cacheManager'
 import durationReporter from './durationReporter'
 import sessionManager from './sessionManager'
