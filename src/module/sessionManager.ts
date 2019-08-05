@@ -138,7 +138,11 @@ function code2Session(code: string) {
     } else {
         data = config.codeToSession.data || {};
     }
-    data[config.codeToSession.codeName!] = code;
+    if (config.codeToSession.codeName) {
+        data[config.codeToSession.codeName] = code;
+    } else {
+        data.code = code;
+    }
 
     return new Promise((resolve, reject) => {
         let start = new Date().getTime();
