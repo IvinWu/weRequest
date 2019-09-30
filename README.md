@@ -1,5 +1,5 @@
 <p align="center"><img src="./image/logo.png" alt="weRequest" height="160"/></p>
-<h2 align="center">v2.0.9</h2>
+<h2 align="center">v2.0.11</h2>
 <p align="center"><b>解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。</b></p>
 
 
@@ -99,7 +99,7 @@ weRequest.request({
 
 ## 为什么需要它
 
-![登录时序图](http://mp.weixin.qq.com/debug/wxadoc/dev/image/login.png)
+![登录时序图](https://res.wx.qq.com/wxdoc/dist/assets/img/api-login.2fcc9f35.jpg)
 
 上图是小程序官方文档中的**登录时序图**。此图涵盖了前后端，详细讲解了包括登录态的生成，维护，传输等各方面的问题。
 

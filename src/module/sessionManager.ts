@@ -19,8 +19,8 @@ function checkSession() {
                 fail() {
                     // 登录态过期
                     delSession();
-                    return login().then(() => {
-                        return resolve();
+                    return login().then((js_code) => {
+                        return resolve(js_code);
                     }, (res: any)=>{
                         return reject(res);
                     });
@@ -37,8 +37,8 @@ function checkSession() {
 
 /* 判断session是否为空或已过期 */
 function isSessionExpireOrEmpty() {
-    if (!status.session && !status.code) {
-        // 如果缓存中没有session且没有js_code
+    if (!status.session) {
+        // 如果缓存中没有session
         return true
     }
     if (config.sessionExpireTime && new Date().getTime() > status.sessionExpire) {
@@ -54,8 +54,8 @@ function checkLogin() {
         if (isSessionExpireOrEmpty()) {
             // 没有登陆态，不需要再checkSession
             config.doNotCheckSession = true;
-            return login().then(() => {
-                return resolve();
+            return login().then((js_code) => {
+                return resolve(js_code);
             }, (res: any)=>{
                 return reject(res);
             })
@@ -73,7 +73,6 @@ function login() {
         wx.login({
             success(res) {
                 if (res.code) {
-                    status.code = res.code;
                     return resolve(res.code);
                 } else {
                     return reject({title: "登录失败", "content": "请稍后重试[code 获取失败]"});
@@ -124,13 +123,13 @@ function delSession() {
 
 function main() {
     return new Promise((resolve, reject) => {
-        return checkLogin().then(() => {
-            return config.doNotCheckSession ? Promise.resolve() : checkSession()
+        return checkLogin().then((js_code) => {
+            return config.doNotCheckSession ? Promise.resolve(js_code) : checkSession()
         }, ({title, content}) => {
             errorHandler.doError(title, content);
             return reject({title, content});
-        }).then(() => {
-            return resolve();
+        }).then((js_code) => {
+            return resolve(js_code);
         }, ({title, content})=> {
             errorHandler.doError(title, content);
             return reject({title, content});

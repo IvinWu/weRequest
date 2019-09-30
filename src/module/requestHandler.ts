@@ -48,14 +48,11 @@ function preDo<T extends IRequestOption | IUploadFileOption>(obj: T): T {
 }
 
 // 格式化处理请求的obj内容
-function initializeRequestObj(obj: IRequestOption) {
+function initializeRequestObj(obj: IRequestOption, js_code: string|undefined) {
 
     if (!obj.data) {
         obj.data = {};
     }
-
-    let js_code = status.code;
-    status.code = '';
 
     if (js_code) {
         obj.data = {...obj.data as object, [config.codeName as string]: js_code};
@@ -86,13 +83,10 @@ function initializeRequestObj(obj: IRequestOption) {
 }
 
 // 格式化处理上传文件的obj内容
-function initializeUploadFileObj(obj: IUploadFileOption) {
+function initializeUploadFileObj(obj: IUploadFileOption, js_code: string|undefined) {
     if (!obj.formData) {
         obj.formData = {};
     }
-
-    let js_code = status.code;
-    status.code = '';
 
     if (js_code) {
         obj.formData = {...obj.formData as object, [config.codeName as string]: js_code};
@@ -130,8 +124,8 @@ function getGlobalData() {
     return gd;
 }
 
-function doRequest(obj: IRequestOption) {
-    obj = initializeRequestObj(obj);
+function doRequest(obj: IRequestOption, js_code: string|undefined) {
+    obj = initializeRequestObj(obj, js_code);
     return new Promise((resolve, reject) => {
         wx.request({
             url: obj.url,
@@ -158,8 +152,8 @@ function doRequest(obj: IRequestOption) {
     })
 }
 
-function doUploadFile(obj: IUploadFileOption) {
-    obj = initializeUploadFileObj(obj);
+function doUploadFile(obj: IUploadFileOption, js_code: string|undefined) {
+    obj = initializeUploadFileObj(obj, js_code);
     return new Promise((resolve, reject) => {
         wx.uploadFile({
             url: obj.url,
@@ -203,8 +197,8 @@ function request(obj: IRequestOption): any {
             cacheManager.get(obj);
         }
 
-        sessionManager.main().then(() => {
-            return doRequest(obj)
+        sessionManager.main().then((js_code) => {
+            return doRequest(obj, js_code as any)
         }).then((res) => {
             let response = responseHandler.responseForRequest(res as wx.RequestSuccessCallbackResult, obj);
             return resolve(response);
@@ -229,8 +223,8 @@ function uploadFile(obj: IUploadFileOption): any {
             }
         }
 
-        sessionManager.main().then(() => {
-            return doUploadFile(obj)
+        sessionManager.main().then((js_code) => {
+            return doUploadFile(obj, js_code as any)
         }).then((res) => {
             let response = responseHandler.responseForUploadFile(res as wx.UploadFileSuccessCallbackResult, obj);
             return resolve(response);
