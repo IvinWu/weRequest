@@ -8,7 +8,11 @@ let checkSessionPromise: any = null;
 
 function checkSession() {
     if (!checkSessionPromise) {
-        checkSessionPromise = new Promise((resolve, reject) => {
+        checkSessionPromise = new Promise((resolve) => {
+            // 如果本地无登录态，就不需要checkSession了
+            if (isSessionExpireOrEmpty()) {
+                return resolve();
+            }
             console.log("wx.checkSession()");
             const start = new Date().getTime();
             wx.checkSession({
@@ -19,11 +23,7 @@ function checkSession() {
                 fail() {
                     // 登录态过期
                     delSession();
-                    return login().then((js_code) => {
-                        return resolve(js_code);
-                    }, (res: any)=>{
-                        return reject(res);
-                    });
+                    return resolve();
                 },
                 complete() {
                     const end = new Date().getTime();
@@ -49,24 +49,9 @@ function isSessionExpireOrEmpty() {
     return false
 }
 
-function checkLogin() {
-    return new Promise((resolve, reject) => {
-        if (isSessionExpireOrEmpty()) {
-            // 没有登陆态，不需要再checkSession
-            config.doNotCheckSession = true;
-            return login().then((js_code) => {
-                return resolve(js_code);
-            }, (res: any)=>{
-                return reject(res);
-            })
-        } else {
-            // 缓存中有session且未过期
-            return resolve();
-        }
-    })
-}
-
 function login() {
+    // 请求新的登陆态，不需要再checkSession
+    config.doNotCheckSession = true;
     return new Promise((resolve, reject) => {
         console.log('wx.login');
         const start = new Date().getTime();
@@ -75,6 +60,7 @@ function login() {
                 if (res.code) {
                     return resolve(res.code);
                 } else {
+                    errorHandler.doError("登录失败", "请稍后重试[code 获取失败]");
                     return reject({title: "登录失败", "content": "请稍后重试[code 获取失败]"});
                 }
             },
@@ -83,6 +69,7 @@ function login() {
                 durationReporter.report('wx_login', start, end);
             },
             fail(res) {
+                errorHandler.doError("登录失败", res.errMsg);
                 return reject({title: "登录失败", "content": res.errMsg});
             }
         })
@@ -122,18 +109,13 @@ function delSession() {
 }
 
 function main() {
-    return new Promise((resolve, reject) => {
-        return checkLogin().then((js_code) => {
-            return config.doNotCheckSession ? Promise.resolve(js_code) : checkSession()
-        }, ({title, content}) => {
-            errorHandler.doError(title, content);
-            return reject({title, content});
-        }).then((js_code) => {
-            return resolve(js_code);
-        }, ({title, content})=> {
-            errorHandler.doError(title, content);
-            return reject({title, content});
-        })
+    return (config.doNotCheckSession ? Promise.resolve() : checkSession()).then(()=>{
+        if (isSessionExpireOrEmpty()) {
+            return login();
+        } else {
+            // 缓存中有session且未过期
+            return Promise.resolve();
+        }
     })
 }
 

@@ -197,12 +197,12 @@ function request(obj: IRequestOption): any {
             cacheManager.get(obj);
         }
 
-        sessionManager.main().then((js_code) => {
-            return doRequest(obj, js_code as any)
-        }).then((res) => {
+        sessionManager.main().then((js_code: any) => {
+            return doRequest(obj, js_code)
+        }).then((res: any) => {
             let response = responseHandler.responseForRequest(res as wx.RequestSuccessCallbackResult, obj);
             return resolve(response);
-        }).catch((e) => {
+        }).catch((e: any) => {
             return reject(e);
         })
 
@@ -223,12 +223,12 @@ function uploadFile(obj: IUploadFileOption): any {
             }
         }
 
-        sessionManager.main().then((js_code) => {
+        sessionManager.main().then((js_code: any) => {
             return doUploadFile(obj, js_code as any)
-        }).then((res) => {
+        }).then((res: any) => {
             let response = responseHandler.responseForUploadFile(res as wx.UploadFileSuccessCallbackResult, obj);
             return resolve(response);
-        }).catch((e) => {
+        }).catch((e: any) => {
             return reject(e);
         })
     })
