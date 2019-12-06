@@ -22,7 +22,7 @@ function logicError(obj: IRequestOption | IUploadFileOption, res: wx.RequestSucc
         config.errorCallback(obj, res);
     }
 
-    console.error(res);
+    console.warn(res);
 }
 
 function getErrorMsg(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult) {
