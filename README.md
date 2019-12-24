@@ -265,7 +265,7 @@ weRequest.init({
         url1: require("../../mock1.json"),
         url2: require("../../mock2.json"),
         url3: require("../../mock3.json")
-    }
+    },
     // [可选] 所有请求都会自动带上globalData里的参数
     globalData: function() {
         return {
