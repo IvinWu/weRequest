@@ -1,5 +1,5 @@
 <p align="center"><img src="./image/logo.png" alt="weRequest" height="160"/></p>
-<h2 align="center">v1.2.10</h2>
+<h2 align="center">v1.2.11</h2>
 <p align="center"><b>解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。</b></p>
 
 
@@ -301,6 +301,7 @@ weRequest.init({
 |report|String|否||接口请求成功后将自动执行init()中配置的reportCGI函数，其中的name字段值为这里配置的值|是|
 |cache|Boolean|否||接口是否启用缓存机制，若为true，将以url为key将结果存储在storage中，下次带cache的请求优先返回缓存内容，success回调中第二个参数对象的isCache值将标识内容是否为缓存|是|
 |noCacheFlash|Boolean|否||当启用缓存时，决定除了返回缓存内容外，是否还返回接口实时内容，以防止页面多次渲染的抖动|是|
+|catchError|Boolean|否|false|当使用Promise模式时，开发者是否需要捕获错误（默认不捕获，统一自动处理错误）|否|
 
 #### 示例代码
 
@@ -340,6 +341,7 @@ weRequest.request({
 |complete|Function|否||接口调用结束的回调函数（调用成功、失败都会执行）||
 |showLoading|Boolean/String|否|false|请求过程页面是否展示全屏的loading，当值为字符串时，将展示相关文案的loading|是|
 |report|String|否||接口请求成功后将自动执行init()中配置的reportCGI函数，其中的name字段值为这里配置的值|是|
+|catchError|Boolean|否|false|当使用Promise模式时，开发者是否需要捕获错误（默认不捕获，统一自动处理错误）|否|
 
 #### 示例代码
 

@@ -3,6 +3,7 @@ import config from '../store/config'
 import errorHandler from './errorHandler'
 import durationReporter from './durationReporter'
 import requestHandler from './requestHandler'
+import loading from '../util/loading'
 
 /* 生命周期内只做一次的checkSession */
 let checkSessionPromise: any = null;
@@ -78,6 +79,7 @@ function doLogin() {
                 return resolve();
             }).catch((res) => {
                 loginPromise = null;
+                loading.hide();
                 return reject(res);
             });
         })

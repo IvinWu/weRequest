@@ -10,15 +10,23 @@ function catchHandler(e: ThrowError, obj: IRequestOption | IUploadFileOption, re
     const { type, res } = e
     if (obj.catchError) {
         if (type === 'http-error') {
-            reject(new Error(res.statusCode.toString()));
+            return reject(new Error(res.statusCode.toString()));
         } else if (type === 'upload-error') {
-            reject(new Error(res));
+            return reject(new Error(res));
         } else if (type === 'logic-error') {
             let msg = errorHandler.getErrorMsg(res);
-            reject(new Error(msg.content));
+            return reject(new Error(msg.content));
+        } else {
+            // 其他js错误
+            return reject(e);
         }
     } else {
-        errorHandler.logicError(obj, e.res);
+        if (e.type) {
+            return errorHandler.logicError(obj, e.res);
+        } else {
+            // 其他js错误
+            return reject(e);
+        }
     }
 
 }

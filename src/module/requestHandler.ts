@@ -196,7 +196,7 @@ function request(obj: IRequestOption): any {
                 return resolve(response);
             }
         }).catch((e) => {
-            catchHandler(e, obj, reject)
+            return catchHandler(e, obj, reject)
         })
     })
 }
