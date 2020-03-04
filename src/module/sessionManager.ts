@@ -4,6 +4,8 @@ import errorHandler from './errorHandler'
 import durationReporter from './durationReporter'
 import requestHandler from './requestHandler'
 import loading from '../util/loading'
+import request from '../api/request'
+import { IRequestOption, IUploadFileOption } from "../interface";
 
 /* 生命周期内只做一次的checkSession */
 let checkSessionPromise: any = null;
@@ -209,17 +211,22 @@ function delSession() {
     }
 }
 
-function main() {
+function main(relatedRequestObj?: IRequestOption | IUploadFileOption) {
     return new Promise((resolve, reject) => {
+        let retry = !relatedRequestObj
+            // 如果没有关联的请求，重试即调用自身
+            ? () => main().then(resolve).catch(reject)
+            // 如果有关联的请求，重试即调用所关联的请求
+            : () => request(relatedRequestObj).then(relatedRequestObj._resolve).catch(relatedRequestObj._reject);
         return checkLogin().then(() => {
             return config.doNotCheckSession ? Promise.resolve() : checkSession()
         }, ({title, content}) => {
-            errorHandler.doError(title, content);
+            errorHandler.doError(title, content, retry);
             return reject({title, content});
         }).then(() => {
             return resolve();
         }, ({title, content})=> {
-            errorHandler.doError(title, content);
+            errorHandler.doError(title, content, retry);
             return reject({title, content});
         })
     })

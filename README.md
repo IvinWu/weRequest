@@ -160,6 +160,7 @@ weRequest.request({
 |errorTitle|String/Function|否|操作失败|接口逻辑失败时，错误弹窗的标题|
 |errorContent|String/Function|否||接口逻辑失败时，错误弹窗的内容|
 |errorCallback|Function|否||当出现接口逻辑错误时，会执行统一的回调函数，这里可以做统一的错误上报等处理|
+|errorRetryBtn|Boolean|否|false|接口逻辑失败时，错误弹框是否显示重试按钮，点击重试可重新尝试发起请求|
 |doNotCheckSession|Boolean|否|false|是否需要调用checkSession，验证小程序的登录态过期；若业务不需要使用到session_key，则可配置为true|
 |reportCGI|Function|否||接口返回成功之后，会执行统一的回调函数，这里可以做统一的耗时上报等处理|
 |mockJson|Object|否||可为接口提供mock数据|
@@ -241,6 +242,8 @@ weRequest.init({
     errorCallback: function(obj, res) {
         // do some report
     },
+    // [可选] 当出现错误时，弹框是否显示重试按钮，默认为false
+    errorRetryBtn: true,
     // [可选] 是否需要调用checkSession，验证小程序的登录态过期，可不配置，默认为false
     doNotCheckSession: true,
     // [可选] 上报耗时的函数，name为上报名称，startTime为接口调用开始时的时间戳，endTime为接口返回时的时间戳

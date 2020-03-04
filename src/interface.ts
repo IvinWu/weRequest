@@ -40,6 +40,8 @@ export interface IInitOption {
     errorTitle?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
     /* 接口逻辑失败时，错误弹窗的内容 */
     errorContent?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
+    /* 接口逻辑失败时，错误弹窗是否显示重试按钮 */
+    errorRetryBtn?: boolean;
     /* 当请求为非GET时，不将登陆态等参数放在queryString上（默认都放queryString） */
     doNotUseQueryString?: boolean;
 }
@@ -98,6 +100,10 @@ export interface IRequestObject extends wx.RequestOption{
     _reportStartTime?: number;
     /* 请求返回的时间戳 */
     _reportEndTime?: number;
+    /* 请求成功resolve */
+    _resolve?: (value?: any) => void;
+    /* 请求失败reject */
+    _reject?: (reason?: any) => void;
 }
 
 export interface IUploadFileOption extends IUploadFileObject {
@@ -126,6 +132,10 @@ export interface IUploadFileObject extends wx.UploadFileOption {
     _reportStartTime?: number;
     /* 请求返回的时间戳 */
     _reportEndTime?: number;
+    /* 请求成功resolve */
+    _resolve?: (value?: any) => void;
+    /* 请求失败reject */
+    _reject?: (reason?: any) => void;
 }
 
 export interface IGetConfigResult {
