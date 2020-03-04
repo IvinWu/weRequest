@@ -6,7 +6,7 @@ declare function getErrorMsg(res: wx.RequestSuccessCallbackResult | wx.UploadFil
     title: string;
     content: string;
 };
-declare function doError(title: string, content: string): void;
+declare function doError(title: string, content: string, retry?: () => any): void;
 declare const _default: {
     systemError: typeof systemError;
     logicError: typeof logicError;
