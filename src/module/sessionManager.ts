@@ -150,6 +150,7 @@ function code2Session(code: string) {
             url: requestHandler.format(config.codeToSession.url),
             data,
             method: config.codeToSession.method || 'GET',
+            header: typeof config.setHeader === 'function' ? config.setHeader(): config.setHeader,
             success(res: wx.RequestSuccessCallbackResult) {
                 if (res.statusCode === 200) {
                     // 耗时上报

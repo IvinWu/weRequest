@@ -12,6 +12,7 @@ const defaultConfig: IInitOption = {
     successTrigger() {
         return true
     },
+    setHeader: {},
     urlPerfix: "",
     doNotCheckSession: false,
     errorTitle: "操作失败",

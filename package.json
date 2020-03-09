@@ -1,6 +1,6 @@
 {
   "name": "we-request",
-  "version": "1.2.12",
+  "version": "1.2.13",
   "description": "本工具通过拓展小程序的wx.request，让开发者通过简单的配置，实现自动管理登录态等功能",
   "keywords": [
     "登录态",
@@ -22,7 +22,7 @@
   "main": "build/weRequest.js",
   "typings": "build/index.d.ts",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack --display-error-details",
     "commit": "git cz"
   },
   "dependencies": {},
@@ -34,9 +34,9 @@
     "ts-loader": "^5.3.1",
     "tslint": "^5.12.0",
     "tslint-config-prettier": "^1.17.0",
-    "typescript": "^3.2.2",
+    "typescript": "^3.7.4",
     "webpack": "^4.28.0",
-    "webpack-cli": "^3.1.1"
+    "webpack-cli": "^3.3.10"
   },
   "husky": {
     "hooks": {
