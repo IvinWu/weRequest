@@ -56,6 +56,8 @@ weRequest.init({
     errorCallback: function(obj, res) {
         // do some report
     },
+    // [可选] 当出现错误时，弹框是否显示重试按钮，默认为false
+    errorRetryBtn: true,
     // [可选] 是否需要调用checkSession，验证小程序的登录态过期，可不配置，默认为false
     doNotCheckSession: true,
 	// [可选] 上报耗时的函数，name为上报名称，startTime为接口调用开始时的时间戳，endTime为接口返回时的时间戳

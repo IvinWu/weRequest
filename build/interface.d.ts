@@ -16,6 +16,7 @@ export interface IInitOption {
     successData?: (res: string | IAnyObject | ArrayBuffer) => string | IAnyObject | ArrayBuffer;
     errorTitle?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
     errorContent?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
+    errorRetryBtn?: boolean;
     doNotUseQueryString?: boolean;
 }
 export interface ICodeToSessionOptions {
@@ -43,6 +44,8 @@ export interface IRequestObject extends wx.RequestOption {
     reLoginCount?: number;
     _reportStartTime?: number;
     _reportEndTime?: number;
+    _resolve?: (value?: any) => void;
+    _reject?: (reason?: any) => void;
 }
 export interface IUploadFileOption extends IUploadFileObject {
     beforeSend?: Function;
@@ -58,6 +61,8 @@ export interface IUploadFileObject extends wx.UploadFileOption {
     reLoginCount?: number;
     _reportStartTime?: number;
     _reportEndTime?: number;
+    _resolve?: (value?: any) => void;
+    _reject?: (reason?: any) => void;
 }
 export interface IGetConfigResult {
     urlPerfix?: string | (() => string);

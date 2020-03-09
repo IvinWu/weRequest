@@ -25,7 +25,7 @@ function format(originUrl: string) {
 }
 
 // 所有请求发出前需要做的事情
-function preDo<T extends IRequestOption | IUploadFileOption>(obj: T): T {
+function preDo<T extends IRequestOption | IUploadFileOption>(obj: T, resolve: (value?: any) => void, reject?: (reason?: any) => void): T {
     if (typeof obj.beforeSend === "function") {
         obj.beforeSend();
     }
@@ -44,6 +44,9 @@ function preDo<T extends IRequestOption | IUploadFileOption>(obj: T): T {
         obj.originUrl = obj.url;
         obj.url = format(obj.url);
     }
+
+    obj._resolve = resolve;
+    obj._reject = reject;
 
     return obj;
 }
@@ -174,7 +177,7 @@ function doUploadFile(obj: IUploadFileOption) {
 
 function request(obj: IRequestOption): any {
     return new Promise((resolve, reject) => {
-        obj = preDo(obj);
+        obj = preDo(obj, resolve, reject);
 
         if (config.mockJson) {
             let mockResponse = mockManager.get(obj);
@@ -188,7 +191,7 @@ function request(obj: IRequestOption): any {
             cacheManager.get(obj);
         }
 
-        sessionManager.main().then(() => {
+        sessionManager.main(obj).then(() => {
             return doRequest(obj)
         }).then((res) => {
             let response = responseHandler(res as wx.RequestSuccessCallbackResult, obj, 'request');
@@ -203,7 +206,7 @@ function request(obj: IRequestOption): any {
 
 function uploadFile(obj: IUploadFileOption): any {
     return new Promise((resolve, reject) => {
-        obj = preDo(obj);
+        obj = preDo(obj, resolve, reject);
 
         if (config.mockJson) {
             let mockResponse = mockManager.get(obj);
@@ -213,7 +216,7 @@ function uploadFile(obj: IUploadFileOption): any {
             }
         }
 
-        sessionManager.main().then(() => {
+        sessionManager.main(obj).then(() => {
             return doUploadFile(obj)
         }).then((res) => {
             let response = responseHandler(res as wx.UploadFileSuccessCallbackResult, obj, 'uploadFile');

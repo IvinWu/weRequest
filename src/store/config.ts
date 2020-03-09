@@ -18,6 +18,7 @@ const defaultConfig: IInitOption = {
     errorContent(res: any) {
         return res
     },
+    errorRetryBtn: false,
     reLoginLimit: 3,
     errorCallback: null,
     reportCGI: false,
