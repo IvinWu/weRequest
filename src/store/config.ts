@@ -15,6 +15,7 @@ const defaultConfig: IInitOption = {
     setHeader: {},
     urlPerfix: "",
     doNotCheckSession: false,
+    withJWT: false,
     errorTitle: "操作失败",
     errorContent(res: any) {
         return res

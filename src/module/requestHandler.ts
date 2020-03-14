@@ -68,8 +68,13 @@ function initializeRequestObj(obj: IRequestOption) {
         obj.header = {...obj.header, ...config.setHeader};
     }
 
-    if (obj.originUrl !== config.codeToSession.url && status.session) {
-        obj.data = { ...obj.data as object, [config.sessionName]: status.session };
+    if (config.withJWT) {
+        let token = { 'Authorization': 'Bearer ' + status.session };
+        obj.header = { ...obj.header, ...token };
+    } else {
+        if (obj.originUrl !== config.codeToSession.url && status.session) {
+            obj.data = { ...obj.data as object, [config.sessionName]: status.session };
+        }
     }
 
     // 如果有全局参数，则添加
@@ -108,8 +113,13 @@ function initializeUploadFileObj(obj: IUploadFileOption) {
         obj.header = {...obj.header, ...config.setHeader};
     }
 
-    if (obj.originUrl !== config.codeToSession.url && status.session) {
-        obj.formData = { ...obj.formData as object, [config.sessionName]: status.session };
+    if (config.withJWT) {
+        let token = { 'Authorization': 'Bearer ' + status.session };
+        obj.header = { ...obj.header, ...token };
+    } else {
+        if (obj.originUrl !== config.codeToSession.url && status.session) {
+            obj.formData = { ...obj.formData as object, [config.sessionName]: status.session };
+        }
     }
 
     // 如果有全局参数，则添加

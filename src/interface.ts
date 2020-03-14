@@ -9,6 +9,8 @@ export interface IInitOption {
     urlPerfix?: string | (() => string);
     /* 是否需要调用checkSession，验证小程序的登录态过期；若业务不需要使用到session_key，则可配置为true */
     doNotCheckSession?: boolean;
+    /* 是否需要附带 JWT 验证到 Header，若业务需要使用到 JWT，则可配置为true */
+    withJWT?: boolean;
     /* 登录重试次数，当连续请求登录接口返回失败次数超过这个次数，将不再重试登录 */
     reLoginLimit?: number;
     /* 当出现接口逻辑错误时，会执行统一的回调函数，这里可以做统一的错误上报等处理 */

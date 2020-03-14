@@ -5,6 +5,7 @@ export interface IInitOption {
     setHeader?: (() => IAnyObject) | object;
     urlPerfix?: string | (() => string);
     doNotCheckSession?: boolean;
+    withJWT?: boolean;
     reLoginLimit?: number;
     errorCallback?: ((obj: IAnyObject, res: string | IAnyObject | ArrayBuffer) => void) | null;
     reportCGI?: boolean | ((name: string, startTime: number, endTime: number, request: Function) => void);

@@ -162,6 +162,7 @@ weRequest.request({
 |errorCallback|Function|否||当出现接口逻辑错误时，会执行统一的回调函数，这里可以做统一的错误上报等处理|
 |errorRetryBtn|Boolean|否|false|接口逻辑失败时，错误弹框是否显示重试按钮，点击重试可重新尝试发起请求|
 |doNotCheckSession|Boolean|否|false|是否需要调用checkSession，验证小程序的登录态过期；若业务不需要使用到session_key，则可配置为true|
+|withJWT|Boolean|否|false|是否需要附带 JWT 验证到 Header，若业务需要使用到 JWT，则可配置为true|
 |reportCGI|Function|否||接口返回成功之后，会执行统一的回调函数，这里可以做统一的耗时上报等处理|
 |mockJson|Object|否||可为接口提供mock数据|
 |globalData|Object/Function|否||所有请求都会自动带上这里的参数|
