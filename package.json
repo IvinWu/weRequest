@@ -23,7 +23,8 @@
   "typings": "build/index.d.ts",
   "scripts": {
     "build": "webpack --display-error-details",
-    "commit": "git cz"
+    "commit": "git cz",
+    "pub": "npm publish"
   },
   "dependencies": {},
   "devDependencies": {
