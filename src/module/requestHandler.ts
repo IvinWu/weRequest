@@ -202,7 +202,7 @@ function request(obj: IRequestOption): any {
         if (config.mockJson) {
             let mockResponse = mockManager.get(obj);
             if (mockResponse) {
-                let response = responseHandler(mockResponse, obj, 'request');
+                let response = responseHandler.responseForRequest(mockResponse, obj);
                 return resolve(response);
             }
         }
@@ -214,7 +214,7 @@ function request(obj: IRequestOption): any {
         sessionManager.main(obj).then(() => {
             return doRequest(obj)
         }).then((res) => {
-            let response = responseHandler(res as wx.RequestSuccessCallbackResult, obj, 'request');
+            let response = responseHandler.responseForRequest(res as wx.RequestSuccessCallbackResult, obj);
             if (response != null) {
                 return resolve(response);
             }
@@ -231,7 +231,7 @@ function uploadFile(obj: IUploadFileOption): any {
         if (config.mockJson) {
             let mockResponse = mockManager.get(obj);
             if (mockResponse) {
-                let response = responseHandler(mockResponse, obj, 'uploadFile');
+                let response = responseHandler.responseForUploadFile(mockResponse, obj);
                 return resolve(response);
             }
         }
@@ -239,7 +239,7 @@ function uploadFile(obj: IUploadFileOption): any {
         sessionManager.main(obj).then(() => {
             return doUploadFile(obj)
         }).then((res) => {
-            let response = responseHandler(res as wx.UploadFileSuccessCallbackResult, obj, 'uploadFile');
+            let response = responseHandler.responseForUploadFile(res as wx.UploadFileSuccessCallbackResult, obj);
             if (response != null) {
                 return resolve(response);
             }

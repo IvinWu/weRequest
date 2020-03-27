@@ -1,5 +1,5 @@
 <p align="center"><img src="./image/logo.png" alt="weRequest" height="160"/></p>
-<h2 align="center">v1.2.13</h2>
+<h2 align="center">v1.2.14</h2>
 <p align="center"><b>解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。</b></p>
 
 
@@ -433,9 +433,3 @@ weRequest.request({
 })
 ```
 此时，如果接口返回错误码，将触发这里定义的fail函数，且默认错误弹框将不会出现。
-
-## 贡献者
-<table><tbody><tr>
-<td><a target="_blank" href="https://github.com/IvinWu"><img width="60px" src="https://avatars0.githubusercontent.com/u/7484381?s=60&v=4"></a></td>
-<td><a target="_blank" href="https://github.com/godbasin"><img width="60px" src="https://avatars3.githubusercontent.com/u/11885123?s=60&v=4"></a></td>
-</tr></tbody></table>
