@@ -23,7 +23,8 @@
   "typings": "build/index.d.ts",
   "scripts": {
     "build": "webpack",
-    "commit": "git cz"
+    "commit": "git cz",
+    "pub": "npm publish --tag @2.x.x"
   },
   "dependencies": {},
   "devDependencies": {
