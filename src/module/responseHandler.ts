@@ -7,6 +7,7 @@ import durationReporter from './durationReporter'
 import sessionManager from './sessionManager'
 import { IRequestOption, IUploadFileOption } from '../interface'
 import url from '../util/url'
+import jsonSuperset from '../util/jsonSuperset'
 
 function responseForRequest(
     res: wx.RequestSuccessCallbackResult,
@@ -15,6 +16,14 @@ function responseForRequest(
     if (res.statusCode === 200) {
 
         durationReporter.end(obj);
+
+        // 请求格式为json，但返回了string，说明内容中可能存在导致使得JavaScript异常的字符
+        if (obj.dataType === 'json' && typeof res.data === 'string') {
+            res.data = jsonSuperset(res.data);
+            try {
+                res.data = JSON.parse(res.data);
+            } catch (e) {}
+        }
 
         if (config.loginTrigger!(res.data) && obj.reLoginCount !== undefined && obj.reLoginCount < config.reLoginLimit!) {
             // 登录态失效，且重试次数不超过配置
