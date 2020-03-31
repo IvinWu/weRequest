@@ -44,6 +44,8 @@ export interface IInitOption {
     errorContent?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
     /* 当请求为非GET时，不将登陆态等参数放在queryString上（默认都放queryString） */
     doNotUseQueryString?: boolean;
+    /* 当请求格式为JSON，但返回内容却意外是String时（JSON特殊字符在JS无法解析），回调该方法，可用于上报 */
+    getUnexpectedString?: Function;
 }
 
 export interface IRequestOption extends IRequestObject {

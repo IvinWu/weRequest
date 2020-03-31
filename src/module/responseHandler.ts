@@ -19,6 +19,9 @@ function responseForRequest(
 
         // 请求格式为json，但返回了string，说明内容中可能存在导致使得JavaScript异常的字符
         if (obj.dataType === 'json' && typeof res.data === 'string') {
+            if (typeof config.getUnexpectedString === 'function') {
+                config.getUnexpectedString(res.data)
+            }
             res.data = jsonSuperset(res.data);
             try {
                 res.data = JSON.parse(res.data);

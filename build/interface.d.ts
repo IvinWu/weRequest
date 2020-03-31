@@ -18,6 +18,7 @@ export interface IInitOption {
     errorTitle?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
     errorContent?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
     doNotUseQueryString?: boolean;
+    getUnexpectedString?: Function;
 }
 export interface IRequestOption extends IRequestObject {
     beforeSend?: Function;
