@@ -20,7 +20,7 @@
     "removeComments": true,
     "pretty": true,
     "strictPropertyInitialization": true,
-    "typeRoots": ["./src/typings"],
+    "typeRoots": ["typings"],
     "lib": ["es5", "es2015", "dom", "scripthost"],
     "declaration": true
   },
