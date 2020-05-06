@@ -1,6 +1,7 @@
 /// <reference types="wx" />
 export interface IInitOption {
     sessionName?: string;
+    setHeader?: (() => IAnyObject) | object;
     codeName?: string;
     getSession: (res: string | IAnyObject | ArrayBuffer) => string;
     urlPerfix?: string | (() => string);

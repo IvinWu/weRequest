@@ -1,6 +1,8 @@
 export interface IInitOption {
     /* 储存在localStorage的session名称，且CGI请求的data中会自动带上以此为名称的session值；可不配置，默认为session */
     sessionName?: string;
+    /* 设置请求头 */
+    setHeader?: (()=> IAnyObject) | object;
     /* 存放code的名称；可不配置，默认值为code */
     codeName?: string;
     // 后端在接口中返回登录成功后的第三方登录态

@@ -54,6 +54,16 @@ function initializeRequestObj(obj: IRequestOption, js_code: string|undefined) {
         obj.data = {};
     }
 
+    obj.header = obj.header ? obj.header : {};
+    if (typeof config.setHeader === 'function') {
+        let header = config.setHeader();
+        if (typeof header === 'object') {
+            obj.header = {...obj.header, ...header};
+        }
+    } else if (typeof config.setHeader === 'object') {
+        obj.header = {...obj.header, ...config.setHeader};
+    }
+
     if (js_code) {
         obj.data = {...obj.data as object, [config.codeName as string]: js_code};
     } else if (status.session) {
@@ -86,6 +96,16 @@ function initializeRequestObj(obj: IRequestOption, js_code: string|undefined) {
 function initializeUploadFileObj(obj: IUploadFileOption, js_code: string|undefined) {
     if (!obj.formData) {
         obj.formData = {};
+    }
+
+    obj.header = obj.header ? obj.header : {};
+    if (typeof config.setHeader === 'function') {
+        let header = config.setHeader();
+        if (typeof header === 'object') {
+            obj.header = {...obj.header, ...header};
+        }
+    } else if (typeof config.setHeader === 'object') {
+        obj.header = {...obj.header, ...config.setHeader};
     }
 
     if (js_code) {

@@ -12,6 +12,7 @@ const defaultConfig: IInitOption = {
     successTrigger() {
         return true
     },
+    setHeader: {},
     urlPerfix: "",
     successData(res: any) {
         return res
