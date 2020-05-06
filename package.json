@@ -20,7 +20,10 @@
     "url": "https://github.com/IvinWu/weRequest.git"
   },
   "main": "build/weRequest.js",
-  "typings": "build/index.d.ts",
+  "typings": [
+    "build/index.d.ts",
+    "typings"
+  ],
   "scripts": {
     "build": "webpack",
     "commit": "git cz",
