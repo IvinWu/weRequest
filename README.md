@@ -157,6 +157,7 @@ weRequest.request({
 |reLoginLimit|Int|否|3|登录重试次数，当连续请求登录接口返回失败次数超过这个次数，将不再重试登录|
 |successTrigger|Function|是||触发请求成功的条件；参数为CGI返回的数据，返回接口逻辑成功的条件|
 |successData|Function|否||成功之后返回数据；参数为CGI返回的数据，返回逻辑需要使用的数据|
+|successCallback|Function|否||接口请求成功时，会执行统一的回调函数，这里可以获取请求头相关信息|
 |errorTitle|String/Function|否|操作失败|接口逻辑失败时，错误弹窗的标题|
 |errorContent|String/Function|否||接口逻辑失败时，错误弹窗的内容|
 |errorCallback|Function|否||当出现接口逻辑错误时，会执行统一的回调函数，这里可以做统一的错误上报等处理|
@@ -228,6 +229,9 @@ weRequest.init({
     successData: function (res) {
         // 此处例子：返回数据中的字段data为业务接受到的数据
         return res.data;
+    },
+    successCallback: function (res) {
+        // 此处例子：返回数据res为cgi原始数据，包括请求header和body
     },
     // [可选] 当CGI返回错误时，弹框提示的标题文字
     errorTitle: function(res) {

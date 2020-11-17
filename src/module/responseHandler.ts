@@ -46,6 +46,11 @@ function responseForRequest(
             } catch (e) {
                 console.error("Function successData occur error: " + e);
             }
+
+            if (typeof config.successCallback === 'function') {
+                config.successCallback(obj, res);
+            }
+
             if (!obj.noCacheFlash) {
                 // 如果为了保证页面不闪烁，则不回调，只是缓存最新数据，待下次进入再用
                 if (typeof obj.success === "function") {
@@ -104,6 +109,10 @@ function responseForUploadFile(
                 }
             } catch (e) {
                 console.error("Function successData occur error: " + e);
+            }
+
+            if (typeof config.successCallback === 'function') {
+                config.successCallback(obj, res);
             }
 
             if (typeof obj.success === "function") {

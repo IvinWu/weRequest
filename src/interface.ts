@@ -12,6 +12,8 @@ export interface IInitOption {
     /* 登录重试次数，当连续请求登录接口返回失败次数超过这个次数，将不再重试登录 */
     reLoginLimit?: number;
     /* 当出现接口逻辑错误时，会执行统一的回调函数，这里可以做统一的错误上报等处理 */
+    successCallback?: ((obj: IAnyObject, res: string | IAnyObject | ArrayBuffer) => void) | null;
+    /* 当出现接口逻辑错误时，会执行统一的回调函数，这里可以做统一的错误上报等处理 */
     errorCallback?: ((obj: IAnyObject, res: string | IAnyObject | ArrayBuffer) => void) | null;
     /* 接口返回成功之后，会执行统一的回调函数，这里可以做统一的耗时上报等处理 */
     reportCGI?: boolean | ((

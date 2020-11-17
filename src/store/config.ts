@@ -12,6 +12,7 @@ const defaultConfig: IInitOption = {
     successTrigger() {
         return true
     },
+    successCallback: null,
     setHeader: {},
     urlPerfix: "",
     doNotCheckSession: false,
