@@ -14,7 +14,7 @@ function responseForRequest(
     if (res.statusCode === 200) {
 
         durationReporter.end(obj);
-
+        
         // 请求格式为json，但返回了string，说明内容中可能存在导致使得JavaScript异常的字符
         if (obj.dataType === 'json' && typeof res.data === 'string') {
             res.data = jsonSuperset(res.data);
@@ -43,9 +43,7 @@ function responseForRequest(
                 } else {
                     realData = res.data;
                 }
-            } catch (e) {
-                console.error("Function successData occur error: " + e);
-            }
+            } catch (e) {}
             if (!obj.noCacheFlash) {
                 // 如果为了保证页面不闪烁，则不回调，只是缓存最新数据，待下次进入再用
                 if (typeof obj.success === "function") {
@@ -102,9 +100,7 @@ function responseForUploadFile(
                 } else {
                     realData = res.data;
                 }
-            } catch (e) {
-                console.error("Function successData occur error: " + e);
-            }
+            } catch (e) {}
 
             if (typeof obj.success === "function") {
                 obj.success(realData);

@@ -13,7 +13,6 @@ let checkSessionPromise: any = null;
 function checkSession() {
     if (!checkSessionPromise) {
         checkSessionPromise = new Promise((resolve, reject) => {
-            console.log("wx.checkSession()");
             const start = new Date().getTime();
             wx.checkSession({
                 success() {
@@ -91,7 +90,6 @@ function doLogin() {
 
 function login() {
     return new Promise((resolve, reject) => {
-        console.log('wx.login');
         const start = new Date().getTime();
         wx.login({
             success(res) {

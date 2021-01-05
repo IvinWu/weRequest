@@ -24,8 +24,6 @@ function logicError(obj: IRequestOption | IUploadFileOption, res: wx.RequestSucc
     if (typeof config.errorCallback === "function") {
         config.errorCallback(obj, res);
     }
-
-    console.error(res);
 }
 
 function getErrorMsg(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult) {

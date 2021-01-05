@@ -4,14 +4,11 @@ import { IInitOption } from '../interface'
 
 export default (params: IInitOption) => {
     Object.assign(config, params);
+    console.log(config.errorTitle);
     try {
         status.session = wx.getStorageSync(config.sessionName!) || '';
-    } catch (e) {
-        console.error('wx.getStorageSync:fail, can not get session.')
-    }
+    } catch (e) {}
     try {
         status.sessionExpire = wx.getStorageSync(config.sessionExpireKey || "sessionExpireKey") || Infinity;
-    } catch (e) {
-        console.error('wx.getStorageSync:fail, can not get sessionExpire.')
-    }
+    } catch (e) {}
 }
