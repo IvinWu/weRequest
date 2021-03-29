@@ -12,6 +12,8 @@ function systemError(obj: IRequestOption | IUploadFileOption, res: wx.GeneralCal
 function logicError(obj: IRequestOption | IUploadFileOption, res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult) {
     if (typeof obj.fail === "function") {
         obj.fail(res);
+    } else if (typeof config.errorHandler === 'function') {
+        config.errorHandler(res.data);
     } else {
         const {title, content} = getErrorMsg(res);
         doError(title, content);
