@@ -15,7 +15,7 @@ function logicError(obj: IRequestOption | IUploadFileOption, res: wx.RequestSucc
     if (typeof obj.fail === "function") {
         obj.fail(res);
     } else {
-        const {title, content} = getErrorMsg(res);
+        const { title, content } = getErrorMsg(res);
         const retry = () => request(obj).then(obj._resolve).catch(obj._reject);
         doError(title, content, retry);
     }
@@ -47,10 +47,15 @@ function getErrorMsg(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccess
         content = config.errorContent;
     }
 
-    return {title, content}
+    return { title, content }
 }
 
-function doError(title: string, content: string, retry?: () => any) {
+function doError(title: string, content: string | Function, retry?: () => any) {
+    // 简单支持自定义错误处理
+    if (typeof content === 'function') {
+        return content();
+    }
+
     // 是否显示重试按钮
     const showErrorRetryBtn = config.errorRetryBtn && typeof retry === "function";
     wx.showModal(Object.assign({
