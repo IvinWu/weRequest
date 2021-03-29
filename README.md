@@ -1,5 +1,5 @@
 <p align="center"><img src="./image/logo.png" alt="weRequest" height="160"/></p>
-<h2 align="center">v2.0.16</h2>
+<h2 align="center">v2.1.0</h2>
 <p align="center"><b>解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。</b></p>
 
 
@@ -158,6 +158,7 @@ weRequest.request({
 |getSession|Function|是||后端在接口中返回登录成功后的第三方登录态|
 |successTrigger|Function|是||触发请求成功的条件；参数为CGI返回的数据，返回接口逻辑成功的条件|
 |successData|Function|否||成功之后返回数据；参数为CGI返回的数据，返回逻辑需要使用的数据|
+|errorHandler|Function|否||自定义错误处理函数，若被定义，则默认的报错弹窗将不再自动发生，下方的errorTitle和errorContent将被忽略|
 |errorTitle|String/Function|否|操作失败|接口逻辑失败时，错误弹窗的标题|
 |errorContent|String/Function|否||接口逻辑失败时，错误弹窗的内容|
 |errorCallback|Function|否||当出现接口逻辑错误时，会执行统一的回调函数，这里可以做统一的错误上报等处理|

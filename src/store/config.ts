@@ -28,7 +28,9 @@ const defaultConfig: IInitOption = {
     mockJson: false,
     globalData: false,
     // session在本地缓存的key
-    sessionExpireKey: "sessionExpireKey"
+    sessionExpireKey: "sessionExpireKey",
+    // 自定义错误处理函数
+    errorHandler: null
 };
 
 export default defaultConfig;

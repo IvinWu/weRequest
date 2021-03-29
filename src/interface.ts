@@ -48,6 +48,8 @@ export interface IInitOption {
     doNotUseQueryString?: boolean;
     /* 当请求格式为JSON，但返回内容却意外是String时（JSON特殊字符在JS无法解析），回调该方法，可用于上报 */
     getUnexpectedString?: Function;
+    /* 自定义错误处理函数 */
+    errorHandler?: Function | null;
 }
 
 export interface IRequestOption extends IRequestObject {
