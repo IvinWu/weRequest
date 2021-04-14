@@ -46,6 +46,8 @@ export interface IInitOption {
     errorRetryBtn?: boolean;
     /* 当请求为非GET时，不将登陆态等参数放在queryString上（默认都放queryString） */
     doNotUseQueryString?: boolean;
+    /* 自定义错误处理函数 */
+    errorHandler?: Function | null;
 }
 
 export interface ICodeToSessionOptions{

@@ -14,6 +14,8 @@ function systemError(obj: IRequestOption | IUploadFileOption, res: wx.GeneralCal
 function logicError(obj: IRequestOption | IUploadFileOption, res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult) {
     if (typeof obj.fail === "function") {
         obj.fail(res);
+    } else if (typeof config.errorHandler === 'function') {
+        config.errorHandler(res.data);
     } else {
         const {title, content} = getErrorMsg(res);
         const retry = () => request(obj).then(obj._resolve).catch(obj._reject);
@@ -50,6 +52,7 @@ function getErrorMsg(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccess
     return {title, content}
 }
 
+// 默认错误处理是弹窗
 function doError(title: string, content: string, retry?: () => any) {
     // 是否显示重试按钮
     const showErrorRetryBtn = config.errorRetryBtn && typeof retry === "function";

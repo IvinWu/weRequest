@@ -19,6 +19,7 @@ export interface IInitOption {
     errorContent?: string | ((res: string | IAnyObject | ArrayBuffer) => string);
     errorRetryBtn?: boolean;
     doNotUseQueryString?: boolean;
+    errorHandler?: Function | null;
 }
 export interface ICodeToSessionOptions {
     url: string;
