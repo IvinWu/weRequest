@@ -1,5 +1,5 @@
 import { IRequestOption, IUploadFileOption } from "../interface";
-declare type ThrowErrorType = 'upload-error' | 'logic-error' | 'http-error';
+declare type ThrowErrorType = 'logic-error' | 'http-error';
 interface ThrowError {
     type: ThrowErrorType;
     res: any;

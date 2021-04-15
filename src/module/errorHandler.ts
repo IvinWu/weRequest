@@ -21,11 +21,6 @@ function logicError(obj: IRequestOption | IUploadFileOption, res: wx.RequestSucc
         const retry = () => request(obj).then(obj._resolve).catch(obj._reject);
         doError(title, content, retry);
     }
-
-    // 如果有配置统一错误回调函数，则执行它
-    if (typeof config.errorCallback === "function") {
-        config.errorCallback(obj, res);
-    }
 }
 
 function getErrorMsg(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult) {
