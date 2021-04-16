@@ -18,13 +18,6 @@ function logicError(obj: IRequestOption | IUploadFileOption, res: wx.RequestSucc
         const {title, content} = getErrorMsg(res);
         doError(title, content);
     }
-
-    // 如果有配置统一错误回调函数，则执行它
-    if (typeof config.errorCallback === "function") {
-        config.errorCallback(obj, res);
-    }
-
-    console.warn(res);
 }
 
 function getErrorMsg(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult) {

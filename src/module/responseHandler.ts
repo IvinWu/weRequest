@@ -62,20 +62,11 @@ function responseForRequest(
             cacheManager.set(obj, realData);
         } else {
             // 接口返回失败码
-            if(obj.catchError) {
-                let msg = errorHandler.getErrorMsg(res);
-                throw new Error(msg.content);
-            } else {
-                errorHandler.logicError(obj, res);
-            }
+            throw { type: 'logic-error', res }
         }
     } else {
         // https返回状态码非200
-        if(obj.catchError) {
-            throw new Error(res.statusCode.toString());
-        } else {
-            errorHandler.logicError(obj, res);
-        }
+        throw { type: 'http-error', res }
     }
 }
 
@@ -132,20 +123,11 @@ function responseForUploadFile(
 
         } else {
             // 接口返回失败码
-            if(obj.catchError) {
-                let msg = errorHandler.getErrorMsg(res);
-                throw new Error(msg.content);
-            } else {
-                errorHandler.logicError(obj, res);
-            }
+            throw { type: 'logic-error', res }
         }
     } else {
         // https返回状态码非200
-        if(obj.catchError) {
-            throw new Error(res.statusCode.toString());
-        } else {
-            errorHandler.logicError(obj, res);
-        }
+        throw { type: 'http-error', res }
     }
 }
 

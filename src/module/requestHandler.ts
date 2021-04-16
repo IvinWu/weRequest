@@ -9,6 +9,7 @@ import durationReporter from './durationReporter'
 import url from '../util/url'
 import {IRequestOption, IUploadFileOption} from '../interface'
 import errorHandler from './errorHandler'
+import { catchHandler } from './catchHandler'
 
 // 格式化url
 function format(originUrl: string) {
@@ -223,7 +224,7 @@ function request(obj: IRequestOption): any {
             let response = responseHandler.responseForRequest(res as wx.RequestSuccessCallbackResult, obj);
             return resolve(response);
         }).catch((e: any) => {
-            return reject(e);
+            return catchHandler(e, obj, reject)
         })
 
     })
@@ -249,7 +250,7 @@ function uploadFile(obj: IUploadFileOption): any {
             let response = responseHandler.responseForUploadFile(res as wx.UploadFileSuccessCallbackResult, obj);
             return resolve(response);
         }).catch((e: any) => {
-            return reject(e);
+            return catchHandler(e, obj, reject)
         })
     })
 }
