@@ -1,5 +1,5 @@
 <p align="center"><img src="./image/logo.png" alt="weRequest" height="160"/></p>
-<h2 align="center">v2.1.0</h2>
+<h2 align="center">v2.1.1</h2>
 <p align="center"><b>解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。</b></p>
 
 
@@ -99,46 +99,13 @@ weRequest.request({
 
 ## 为什么需要它
 
-![登录时序图](https://res.wx.qq.com/wxdoc/dist/assets/img/api-login.2fcc9f35.jpg)
+参看[原理介绍](https://github.com/IvinWu/weRequest/blob/master/README.md#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%AE%83)
 
-上图是小程序官方文档中的**登录时序图**。此图涵盖了前后端，详细讲解了包括登录态的生成，维护，传输等各方面的问题。
+## 2.0 版本与 1.0 版本的区别
 
-具体到业务开发过程中的前端来说，我认为上图还不够完整，于是我画了下面这张以**前端逻辑**为出发点的、包含循环的**流程图**。
-我认为前端每一次**发起网络请求**，跟后台进行数据交互，都适用于下图的**流程**：
-![](https://raw.githubusercontent.com/IvinWu/weRequest/2.x.x/image/flow_login.png)
+从原理介绍中可知，1.0版本在本地无登录态的场景下，若要调用业务请求，首先需要执行一次登录流程，在拿到登录态后，才能真正地发起业务请求，整个过程涉及到多个网络来回。
 
-- **hasChecked：** 用一状态标识本生命周期内是否执行过`wx.checkSession`，判断该标识，若否，开始执行`wx.checkSession`，若是，进入下一步
-- **wx.checkSession()：** 调用接口判断登录态是否过期，若是，重新登录；若否，进入下一步
-> wx.checkSession()是小程序提供的检测登录态是否过期的接口，生命周期内只需调用一次即可。用户越久未使用小程序，用户登录态越有可能失效。反之如果用户一直在使用小程序，则用户登录态一直保持有效。具体时效逻辑由微信维护，对开发者透明
-
-- **wx.getStorage(session)：** 尝试获取本地的`session`。如果之前曾经登录过，则能获取到；否则，本地无`session`
-- **wx.login()：** 小程序提供的接口，用于获取`code`（code有效期为5分钟）
-- **wx.request(code)：** 将`code`通过后台提供的接口，换取`session`
-- **wx.setStorage(session)：** 将后台接口返回的`session`存入到localStorage，以备后续使用
-- **wx.request(session)：** 真正发起业务请求，请求中带上`session`
-- **parse(data)：** 对后台返回的数据进行预解析，若发现登录态失效，则重新执行登录；若成功，则真正获取到业务数据
-
-只要遵循上图的流程，我们就无需在业务逻辑中关注登录态的问题了，相当于把登录态的管理问题**耦合**到了发起网络请求当中，本组件则完成了上述流程的封装，让开发者不用再关心以上逻辑，把精力放回在业务的开发上。
-
-## 演示DEMO
-
-### 自动带上登录态参数
-
-通过`weRequest`发出的请求，将会自动带上登录态参数。
-对应的流程为下图中**红色**的指向：
-![自动带上登录态参数](https://raw.githubusercontent.com/IvinWu/weRequest/2.x.x/image/flow1.png)
-
-### 没有登录态时，自动登录
-
-当本地没有登录态时，按照流程图，`weRequest`将会自动执行`wx.login()`后的一系列流程，得到`code`并调用后台接口换取`session`，储存在localStorage之后，重新发起业务请求。
-对应的流程为下图中**红色**的指向：
-![没有登录态时，自动登录](https://raw.githubusercontent.com/IvinWu/weRequest/2.x.x/image/flow2.png)
-
-### 登录态过期时，自动重新登录
-
-对后台数据进行预解析之后，发现登录态过期，于是重新执行登录流程，获取新的`session`之后，重新发起请求。
-对应的流程为下图中**红色**的指向：
-![登录态过期时，自动重新登录](https://raw.githubusercontent.com/IvinWu/weRequest/2.x.x/image/flow3.png)
+而2.0版本针对这里进行了一个优化，在后端接口满足的前提下，2.0的版本在发起业务请求时，根据当下情况可能会附带登录态，也可能会附带`wx.login()`返回的`code`，后端根据场景可能会先执行登录流程，然后完成业务逻辑后，将登录态和业务数据一同返回，以节省一次网络的来回。也就是说，对于2.0版本而已，不需要专门的登录接口了，所有的业务请求接口都需要兼容登录逻辑。
 
 ## 文档
 
@@ -284,7 +251,7 @@ weRequest.init({
 |report|String|否||接口请求成功后将自动执行init()中配置的reportCGI函数，其中的name字段值为这里配置的值|是|
 |cache|Boolean|否||接口是否启用缓存机制，若为true，将以url为key将结果存储在storage中，下次带cache的请求优先返回缓存内容，success回调中第二个参数对象的isCache值将标识内容是否为缓存|是|
 |noCacheFlash|Boolean|否||当启用缓存时，决定除了返回缓存内容外，是否还返回接口实时内容，以防止页面多次渲染的抖动|是|
-|catchError|Boolean|否|false|当使用Promise模式时，开发者是否需要捕获错误（默认不捕获，统一自动处理错误）|否|
+|catchError|Boolean|否|false|当使用Promise模式时，开发者是否需要捕获错误（默认不捕获，统一自动处理错误）|是|
 
 #### 示例代码
 
@@ -324,7 +291,7 @@ weRequest.request({
 |complete|Function|否||接口调用结束的回调函数（调用成功、失败都会执行）||
 |showLoading|Boolean/String|否|false|请求过程页面是否展示全屏的loading，当值为字符串时，将展示相关文案的loading|是|
 |report|String|否||接口请求成功后将自动执行init()中配置的reportCGI函数，其中的name字段值为这里配置的值|是|
-|catchError|Boolean|否|false|当使用Promise模式时，开发者是否需要捕获错误（默认不捕获，统一自动处理错误）|否|
+|catchError|Boolean|否|false|当使用Promise模式时，开发者是否需要捕获错误（默认不捕获，统一自动处理错误）|是|
 
 ### .getSession()
 
@@ -390,8 +357,3 @@ weRequest.request({
 ```
 此时，如果接口返回错误码，将触发这里定义的fail函数，且默认错误弹框将不会出现。
 
-## 贡献者
-<table><tbody><tr>
-<td><a target="_blank" href="https://github.com/IvinWu"><img width="60px" src="https://avatars0.githubusercontent.com/u/7484381?s=60&v=4"></a></td>
-<td><a target="_blank" href="https://github.com/godbasin"><img width="60px" src="https://avatars3.githubusercontent.com/u/11885123?s=60&v=4"></a></td>
-</tr></tbody></table>
