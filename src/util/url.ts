@@ -1,5 +1,5 @@
 function getParams(url: string = "", queryStringIndex: number) {
-    let kvp: IAnyObject = {};
+    let kvp: WechatMiniprogram.IAnyObject = {};
     if (queryStringIndex >= 0) {
         const oldQueryString = url.substr(queryStringIndex + 1).split("&");
         // @ts-ignore
@@ -11,7 +11,7 @@ function getParams(url: string = "", queryStringIndex: number) {
     return kvp;
 }
 
-function joinUrl(kvp: IAnyObject, queryStringIndex: number, url: string) {
+function joinUrl(kvp: WechatMiniprogram.IAnyObject, queryStringIndex: number, url: string) {
     let queryString = '';
     if (Object.keys(kvp).length) {
         queryString = Object.keys(kvp).map(key => {

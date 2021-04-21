@@ -20,8 +20,8 @@
     "removeComments": true,
     "pretty": true,
     "strictPropertyInitialization": true,
-    "typeRoots": ["typings"],
-    "lib": ["es5", "es2015", "dom", "scripthost"],
+    "types": ["wechat-miniprogram"],
+    "lib": ["es5", "es6"],
     "declaration": true
   },
   "include": ["./src/**/*.ts"],

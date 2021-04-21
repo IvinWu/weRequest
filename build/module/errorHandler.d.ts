@@ -1,8 +1,7 @@
-/// <reference types="wx" />
 import { IRequestOption, IUploadFileOption } from "../interface";
-declare function systemError(obj: IRequestOption | IUploadFileOption, res: wx.GeneralCallbackResult): void;
-declare function logicError(obj: IRequestOption | IUploadFileOption, res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult): void;
-declare function getErrorMsg(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult): {
+declare function systemError(obj: IRequestOption | IUploadFileOption, res: WechatMiniprogram.GeneralCallbackResult): void;
+declare function logicError(obj: IRequestOption | IUploadFileOption, res: WechatMiniprogram.RequestSuccessCallbackResult | WechatMiniprogram.UploadFileSuccessCallbackResult): void;
+declare function getErrorMsg(res: WechatMiniprogram.RequestSuccessCallbackResult | WechatMiniprogram.UploadFileSuccessCallbackResult): {
     title: string;
     content: string;
 };

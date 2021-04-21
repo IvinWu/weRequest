@@ -1,4 +1,6 @@
-/// <reference types="wx" />
+/// <reference types="wechat-miniprogram" />
+export declare type Request = <TResp>(options: IRequestOption) => PromiseLike<TResp>;
+export declare type IAnyObject = WechatMiniprogram.IAnyObject;
 export interface IInitOption {
     sessionName?: string;
     setHeader?: (() => IAnyObject) | object;
@@ -33,7 +35,7 @@ export interface IRequestOption extends IRequestObject {
     fail?: (res: string | IAnyObject | ArrayBuffer) => void;
     catchError?: boolean;
 }
-export interface IRequestObject extends wx.RequestOption {
+export interface IRequestObject extends WechatMiniprogram.RequestOption {
     originUrl?: string;
     reLoginCount?: number;
     _reportStartTime?: number;
@@ -48,7 +50,7 @@ export interface IUploadFileOption extends IUploadFileObject {
     fail?: (res: string | IAnyObject | ArrayBuffer) => void;
     catchError?: boolean;
 }
-export interface IUploadFileObject extends wx.UploadFileOption {
+export interface IUploadFileObject extends WechatMiniprogram.UploadFileOption {
     originUrl?: string;
     reLoginCount?: number;
     _reportStartTime?: number;
@@ -62,7 +64,7 @@ export interface IGetConfigResult {
 }
 export interface weRequest {
     init: (obj: IInitOption) => void;
-    request: (option: IRequestOption) => Promise<object>;
+    request: Request;
     uploadFile: (option: IUploadFileOption) => Promise<object>;
     getSession: () => string;
     getConfig: () => IGetConfigResult;
