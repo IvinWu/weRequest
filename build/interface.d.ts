@@ -1,5 +1,5 @@
 /// <reference types="wechat-miniprogram" />
-export declare type Request = <TResp>(options: IRequestOption) => PromiseLike<TResp>;
+export declare type Request = <TResp>(options: IRequestOption) => Promise<TResp>;
 export declare type IAnyObject = WechatMiniprogram.IAnyObject;
 export interface IInitOption {
     sessionName?: string;

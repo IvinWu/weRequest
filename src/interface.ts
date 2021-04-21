@@ -1,4 +1,4 @@
-export type Request = <TResp>(options: IRequestOption) => PromiseLike<TResp>;
+export type Request = <TResp>(options: IRequestOption) => Promise<TResp>;
 
 export type IAnyObject = WechatMiniprogram.IAnyObject;
 

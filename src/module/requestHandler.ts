@@ -201,7 +201,7 @@ function doUploadFile(obj: IUploadFileOption, js_code: string|undefined) {
     })
 }
 
-function request<TResp>(obj: IRequestOption): PromiseLike<TResp> {
+function request<TResp>(obj: IRequestOption): Promise<TResp> {
 
     return new Promise((resolve, reject) => {
 
