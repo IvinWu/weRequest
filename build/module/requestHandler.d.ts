@@ -1,6 +1,6 @@
 import { IRequestOption, IUploadFileOption } from '../interface';
 declare function format(originUrl: string): string;
-declare function request(obj: IRequestOption): any;
+declare function request<TResp>(obj: IRequestOption): PromiseLike<TResp>;
 declare function uploadFile(obj: IUploadFileOption): any;
 declare const _default: {
     format: typeof format;

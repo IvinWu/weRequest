@@ -10,7 +10,7 @@ import url from '../util/url'
 import jsonSuperset from '../util/jsonSuperset'
 
 function responseForRequest(
-    res: wx.RequestSuccessCallbackResult,
+    res: WechatMiniprogram.RequestSuccessCallbackResult,
     obj: IRequestOption
 ): any {
     if (res.statusCode === 200) {
@@ -33,13 +33,13 @@ function responseForRequest(
             sessionManager.delSession();
             //  obj 移除登陆态
             if (obj.data) {
-                delete (obj.data as IAnyObject)[config.sessionName as string];
+                delete (obj.data as WechatMiniprogram.IAnyObject)[config.sessionName as string];
             }
             obj.url = url.delParams(obj.url, config.sessionName as string);
             return requestHandler.request(obj);
         } else if (config.successTrigger(res.data)) {
             // 接口返回成功码
-            let realData: string | IAnyObject | ArrayBuffer = "";
+            let realData: string | WechatMiniprogram.IAnyObject | ArrayBuffer = "";
 
             // 获取最新的登陆态
             getSession(res.data);
@@ -71,7 +71,7 @@ function responseForRequest(
 }
 
 function responseForUploadFile(
-    res: wx.UploadFileSuccessCallbackResult,
+    res: WechatMiniprogram.UploadFileSuccessCallbackResult,
     obj: IUploadFileOption
 ): any {
     if (res.statusCode === 200) {
@@ -103,7 +103,7 @@ function responseForUploadFile(
             return requestHandler.uploadFile(obj);
         } else if (config.successTrigger(res.data)) {
             // 接口返回成功码
-            let realData: string | IAnyObject | ArrayBuffer = "";
+            let realData: string | WechatMiniprogram.IAnyObject | ArrayBuffer = "";
 
             // 获取最新的登陆态
             getSession(res.data);
@@ -132,7 +132,7 @@ function responseForUploadFile(
 }
 
 // 获取最新的登陆态
-function getSession(data: string | IAnyObject | ArrayBuffer) {
+function getSession(data: string | WechatMiniprogram.IAnyObject | ArrayBuffer) {
     try {
         let session = config.getSession(data);
         if (session && session !== status.session) {

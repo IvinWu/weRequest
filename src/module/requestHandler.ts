@@ -57,7 +57,7 @@ function initializeRequestObj(obj: IRequestOption, js_code: string|undefined) {
 
     obj.header = obj.header ? obj.header : {};
     if (typeof config.setHeader === 'function') {
-        let header = config.setHeader();
+        let header = (config.setHeader as (()=> WechatMiniprogram.IAnyObject))();
         if (typeof header === 'object') {
             obj.header = {...obj.header, ...header};
         }
@@ -101,7 +101,7 @@ function initializeUploadFileObj(obj: IUploadFileOption, js_code: string|undefin
 
     obj.header = obj.header ? obj.header : {};
     if (typeof config.setHeader === 'function') {
-        let header = config.setHeader();
+        let header = (config.setHeader as (()=> WechatMiniprogram.IAnyObject))();
         if (typeof header === 'object') {
             obj.header = {...obj.header, ...header};
         }
@@ -147,6 +147,7 @@ function getGlobalData() {
 
 function doRequest(obj: IRequestOption, js_code: string|undefined) {
     obj = initializeRequestObj(obj, js_code);
+
     return new Promise((resolve, reject) => {
         wx.request({
             url: obj.url,
@@ -154,10 +155,10 @@ function doRequest(obj: IRequestOption, js_code: string|undefined) {
             method: obj.method,
             header: obj.header || {},
             dataType: obj.dataType || 'json',
-            success(res: wx.RequestSuccessCallbackResult) {
+            success(res: WechatMiniprogram.RequestSuccessCallbackResult) {
                 return resolve(res);
             },
-            fail(res: wx.GeneralCallbackResult) {
+            fail(res: WechatMiniprogram.GeneralCallbackResult) {
                 errorHandler.systemError(obj, res);
                 return reject(res);
             },
@@ -181,10 +182,10 @@ function doUploadFile(obj: IUploadFileOption, js_code: string|undefined) {
             filePath: obj.filePath || '',
             name: obj.name || '',
             formData: obj.formData,
-            success(res: wx.UploadFileSuccessCallbackResult) {
+            success(res: WechatMiniprogram.UploadFileSuccessCallbackResult) {
                 return resolve(res);
             },
-            fail(res: wx.GeneralCallbackResult) {
+            fail(res: WechatMiniprogram.GeneralCallbackResult) {
                 errorHandler.systemError(obj, res);
                 return reject(res);
             },
@@ -200,7 +201,7 @@ function doUploadFile(obj: IUploadFileOption, js_code: string|undefined) {
     })
 }
 
-function request(obj: IRequestOption): any {
+function request<TResp>(obj: IRequestOption): PromiseLike<TResp> {
 
     return new Promise((resolve, reject) => {
 
@@ -221,7 +222,7 @@ function request(obj: IRequestOption): any {
         sessionManager.main().then((js_code: any) => {
             return doRequest(obj, js_code)
         }).then((res: any) => {
-            let response = responseHandler.responseForRequest(res as wx.RequestSuccessCallbackResult, obj);
+            let response = responseHandler.responseForRequest(res as WechatMiniprogram.RequestSuccessCallbackResult, obj);
             return resolve(response);
         }).catch((e: any) => {
             return catchHandler(e, obj, reject)
@@ -247,7 +248,7 @@ function uploadFile(obj: IUploadFileOption): any {
         sessionManager.main().then((js_code: any) => {
             return doUploadFile(obj, js_code as any)
         }).then((res: any) => {
-            let response = responseHandler.responseForUploadFile(res as wx.UploadFileSuccessCallbackResult, obj);
+            let response = responseHandler.responseForUploadFile(res as WechatMiniprogram.UploadFileSuccessCallbackResult, obj);
             return resolve(response);
         }).catch((e: any) => {
             return catchHandler(e, obj, reject)
