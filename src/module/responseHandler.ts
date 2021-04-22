@@ -4,11 +4,11 @@ import errorHandler from './errorHandler'
 import cacheManager from './cacheManager'
 import durationReporter from './durationReporter'
 import sessionManager from './sessionManager'
-import { IRequestOption, IUploadFileOption } from "../interface";
+import { IRequestOption, IUploadFileOption, IAnyObject } from "../interface";
 import jsonSuperset from '../util/jsonSuperset'
 
 function responseForRequest(
-    res: wx.RequestSuccessCallbackResult,
+    res: WechatMiniprogram.RequestSuccessCallbackResult,
     obj: IRequestOption
 ): any {
     if (res.statusCode === 200) {
@@ -65,7 +65,7 @@ function responseForRequest(
 }
 
 function responseForUploadFile(
-    res: wx.UploadFileSuccessCallbackResult,
+    res: WechatMiniprogram.UploadFileSuccessCallbackResult,
     obj: IUploadFileOption
 ): any {
     if (res.statusCode === 200) {

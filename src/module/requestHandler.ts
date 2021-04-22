@@ -149,10 +149,10 @@ function doRequest(obj: IRequestOption) {
             method: obj.method,
             header: obj.header || {},
             dataType: obj.dataType || 'json',
-            success(res: wx.RequestSuccessCallbackResult) {
+            success(res: WechatMiniprogram.RequestSuccessCallbackResult) {
                 return resolve(res);
             },
-            fail(res: wx.GeneralCallbackResult) {
+            fail(res: WechatMiniprogram.GeneralCallbackResult) {
                 errorHandler.systemError(obj, res);
                 return reject(res);
             },
@@ -176,10 +176,10 @@ function doUploadFile(obj: IUploadFileOption) {
             filePath: obj.filePath || '',
             name: obj.name || '',
             formData: obj.formData,
-            success(res: wx.UploadFileSuccessCallbackResult) {
+            success(res: WechatMiniprogram.UploadFileSuccessCallbackResult) {
                 return resolve(res);
             },
-            fail(res: wx.GeneralCallbackResult) {
+            fail(res: WechatMiniprogram.GeneralCallbackResult) {
                 errorHandler.systemError(obj, res);
                 return reject(res);
             },
@@ -195,7 +195,7 @@ function doUploadFile(obj: IUploadFileOption) {
     })
 }
 
-function request(obj: IRequestOption): any {
+function request<TResp>(obj: IRequestOption): Promise<TResp> {
     return new Promise((resolve, reject) => {
         obj = preDo(obj, resolve, reject);
 
@@ -214,7 +214,7 @@ function request(obj: IRequestOption): any {
         sessionManager.main(obj).then(() => {
             return doRequest(obj)
         }).then((res) => {
-            let response = responseHandler.responseForRequest(res as wx.RequestSuccessCallbackResult, obj);
+            let response = responseHandler.responseForRequest(res as WechatMiniprogram.RequestSuccessCallbackResult, obj);
             if (response != null) {
                 return resolve(response);
             }
@@ -239,7 +239,7 @@ function uploadFile(obj: IUploadFileOption): any {
         sessionManager.main(obj).then(() => {
             return doUploadFile(obj)
         }).then((res) => {
-            let response = responseHandler.responseForUploadFile(res as wx.UploadFileSuccessCallbackResult, obj);
+            let response = responseHandler.responseForUploadFile(res as WechatMiniprogram.UploadFileSuccessCallbackResult, obj);
             if (response != null) {
                 return resolve(response);
             }

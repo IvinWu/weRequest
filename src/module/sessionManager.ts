@@ -153,7 +153,7 @@ function code2Session(code: string) {
             data,
             method: config.codeToSession.method || 'GET',
             header: typeof config.setHeader === 'function' ? config.setHeader(): config.setHeader,
-            success(res: wx.RequestSuccessCallbackResult) {
+            success(res: WechatMiniprogram.RequestSuccessCallbackResult) {
                 if (res.statusCode === 200) {
                     // 耗时上报
                     if (config.codeToSession.report) {
@@ -161,13 +161,13 @@ function code2Session(code: string) {
                         durationReporter.report(config.codeToSession.report, start, end)
                     }
 
-                    let s = "";
+                    let s;
                     try {
                         s = config.codeToSession.success(res.data);
                     } catch (e) {
                     }
 
-                    if (s) {
+                    if (typeof s === 'string') {
                         status.session = s;
                         // 换回来的session，不需要再checkSession
                         config.doNotCheckSession = true;
@@ -183,7 +183,7 @@ function code2Session(code: string) {
                             key: config.sessionName,
                             data: status.session
                         });
-                        return resolve();
+                        return resolve(s);
                     } else {
                         return reject(errorHandler.getErrorMsg(res));
                     }

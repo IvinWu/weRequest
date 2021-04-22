@@ -1,6 +1,6 @@
 {
   "name": "we-request",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "description": "本工具通过拓展小程序的wx.request，让开发者通过简单的配置，实现自动管理登录态等功能",
   "keywords": [
     "登录态",
@@ -20,17 +20,16 @@
     "url": "https://github.com/IvinWu/weRequest.git"
   },
   "main": "build/weRequest.js",
-  "typings": [
-    "build/index.d.ts",
-    "typings"
-  ],
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "webpack --display-error-details",
     "commit": "git cz",
     "pub": "npm publish",
     "test": "jest test"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@types/wechat-miniprogram": "^3.3.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/preset-env": "^7.12.7",

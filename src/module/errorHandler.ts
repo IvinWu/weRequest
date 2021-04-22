@@ -2,7 +2,7 @@ import config from '../store/config'
 import request from '../api/request';
 import { IRequestOption, IUploadFileOption } from "../interface";
 
-function systemError(obj: IRequestOption | IUploadFileOption, res: wx.GeneralCallbackResult) {
+function systemError(obj: IRequestOption | IUploadFileOption, res: WechatMiniprogram.GeneralCallbackResult) {
     if (typeof obj.fail === "function") {
         obj.fail(res);
     } else {
@@ -11,7 +11,7 @@ function systemError(obj: IRequestOption | IUploadFileOption, res: wx.GeneralCal
     }
 }
 
-function logicError(obj: IRequestOption | IUploadFileOption, res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult) {
+function logicError(obj: IRequestOption | IUploadFileOption, res: WechatMiniprogram.RequestSuccessCallbackResult | WechatMiniprogram.UploadFileSuccessCallbackResult) {
     if (typeof obj.fail === "function") {
         obj.fail(res);
     } else if (typeof config.errorHandler === 'function') {
@@ -23,7 +23,7 @@ function logicError(obj: IRequestOption | IUploadFileOption, res: wx.RequestSucc
     }
 }
 
-function getErrorMsg(res: wx.RequestSuccessCallbackResult | wx.UploadFileSuccessCallbackResult) {
+function getErrorMsg(res: WechatMiniprogram.RequestSuccessCallbackResult | WechatMiniprogram.UploadFileSuccessCallbackResult) {
     let title = "";
     if (typeof config.errorTitle === "function") {
         try {
@@ -59,7 +59,7 @@ function doError(title: string, content: string, retry?: () => any) {
     } : {
         showCancel: true,
         confirmText: '重试',
-        success(res: wx.ShowModalSuccessCallbackResult) {
+        success(res: WechatMiniprogram.ShowModalSuccessCallbackResult) {
             if (res.confirm && typeof retry === "function") retry();
         }
     }));

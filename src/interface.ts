@@ -1,3 +1,7 @@
+export type Request = <TResp>(options: IRequestOption) => Promise<TResp>;
+
+export type IAnyObject = WechatMiniprogram.IAnyObject;
+
 export interface IInitOption {
     /* 用code换取session的CGI配置 */
     codeToSession: ICodeToSessionOptions;
@@ -51,27 +55,27 @@ export interface IInitOption {
 }
 
 export interface ICodeToSessionOptions{
-    /* CGI的url */
-    url: string;
-    /* 调用该CGI的方法 */
-    method?: 'OPTIONS'
-        | 'GET'
-        | 'HEAD'
-        | 'POST'
-        | 'PUT'
-        | 'DELETE'
-        | 'TRACE'
-        | 'CONNECT' | 'string',
-    /* CGI中传参时，存放code的名称 */
-    codeName?: string;
-    /* 登录接口需要的其他参数 */
-    data?: string | Function | IAnyObject | ArrayBuffer;
-    /* 接口返回成功的函数；需要返回session的值 */
-    success: Function;
-    /* code换取session的接口逻辑出错时，执行的函数，若配置了此函数，则不再默认弹窗报错 */
-    fail?: Function;
-    /* codeToSession的上报字段名 */
-    report?: string;
+  /* CGI的url */
+  url: string;
+  /* 调用该CGI的方法 */
+  method?: 'OPTIONS'
+  | 'GET'
+  | 'HEAD'
+  | 'POST'
+  | 'PUT'
+  | 'DELETE'
+  | 'TRACE'
+  | 'CONNECT',
+  /* CGI中传参时，存放code的名称 */
+  codeName?: string;
+  /* 登录接口需要的其他参数 */
+  data?: string | Function | IAnyObject | ArrayBuffer;
+  /* 接口返回成功的函数；需要返回session的值 */
+  success: Function;
+  /* code换取session的接口逻辑出错时，执行的函数，若配置了此函数，则不再默认弹窗报错 */
+  fail?: Function;
+  /* codeToSession的上报字段名 */
+  report?: string;
 }
 
 export interface IRequestOption extends IRequestObject {
@@ -95,7 +99,7 @@ export interface IRequestOption extends IRequestObject {
     catchError?: boolean;
 }
 
-export interface IRequestObject extends wx.RequestOption{
+export interface IRequestObject extends WechatMiniprogram.RequestOption{
     /* 业务请求的原始url */
     originUrl?: string;
     /* 重登陆次数 */
@@ -127,7 +131,7 @@ export interface IUploadFileOption extends IUploadFileObject {
     catchError?: boolean;
 }
 
-export interface IUploadFileObject extends wx.UploadFileOption {
+export interface IUploadFileObject extends WechatMiniprogram.UploadFileOption {
     /* 业务请求的原始url */
     originUrl?: string;
     /* 重登陆次数 */
