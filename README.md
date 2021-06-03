@@ -1,5 +1,5 @@
 <p align="center"><img src="./image/logo.png" alt="weRequest" height="160"/></p>
-<h2 align="center">v1.4.0</h2>
+<h2 align="center">v1.4.1</h2>
 <p align="center"><b>解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。</b></p>
 
 
@@ -434,3 +434,20 @@ weRequest.request({
 })
 ```
 此时，如果接口返回错误码，将触发这里定义的fail函数，且默认错误弹框将不会出现。
+
+### 当配置 `catchError: true` 并触发请求失败时，我能捕获到哪些信息？
+
+当使用 Proimse 模式，并且开发者希望手动捕获错误时，就可以配置 `catchError: true`。此时触发请求失败时，就会抛出一个对象，里面包含了错误信息 `msg`（已通过配置的 `errorContent` 处理）和该请求最原始的返回包体 `data`。你可以通过 `msg` 直接用于上报或提示，也可以通过 `data` 来进行特殊的判断处理。
+
+```javascript
+weRequest.request({
+    url: 'order/detail',
+    showLoading: true,
+    data: { id: '123' }
+}).then(res => {
+    // 请求成功返回的数据 res
+}).catch(e => {
+    console.log(e.message); // 错误信息，已通过 `errorContent` 处理
+    console.log(e.data); // 错误请求返回包体
+})
+```
