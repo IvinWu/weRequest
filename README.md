@@ -1,5 +1,5 @@
 <p align="center"><img src="./image/logo.png" alt="weRequest" height="160"/></p>
-<h2 align="center">v2.2.2</h2>
+<h2 align="center">v2.3.0</h2>
 <p align="center"><b>解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。</b></p>
 
 
@@ -119,7 +119,7 @@ weRequest.request({
 | :-------- | :-------| :------ | :------ |:------ |
 |sessionName|String|否|session|储存在localStorage的session名称，且CGI请求的data中会自动带上以此为名称的session值；可不配置，默认为session|
 |codeName|String|否|code|CGI中传参时，存放code的名称；可不配置，默认值为code|
-|urlPerfix|String or Function|否||请求URL的固定前缀，如果配置了，后续请求的URL都会自动加上这个前缀，如果是函数，则为函数的返回值|
+|urlPerfix|String/Function|否||请求URL的固定前缀，如果配置了，后续请求的URL都会自动加上这个前缀，如果是函数，则为函数的返回值|
 |loginTrigger|Function|是||触发重新登录的条件；参数为CGI返回的数据，返回需要重新登录的条件|
 |reLoginLimit|Int|否|3|登录重试次数，当连续请求登录接口返回失败次数超过这个次数，将不再重试登录|
 |getSession|Function|是||后端在接口中返回登录成功后的第三方登录态|
@@ -137,14 +137,22 @@ weRequest.request({
 |sessionExpireKey|String|否|sessionExpireKey|如果为用户登陆态设置了本地缓存时间，则过期时间将以此值为key存储在Storage中|
 |doNotUseQueryString|Boolean|否|false|默认情况下，POST请求，登陆态除了带在请求body中，也会带在queryString上，如果配置了这个为true，则登陆态不带在queryString中|
 |setHeader|Object/Function|否||所有请求的header都会带上此对象中的字段|
+|beforeSend|Function|否||请求发送前的hook，开发者可在发送前自行处理数据|
 
-##### reportCGI返回参数说明
+##### reportCGI函数参数说明
 |参数名|类型|说明|
 | :-------- | :-------| :------ |
 |name|String|调用的接口名字，可在request接口的report字段配置|
 |startTime|Int|发起请求时的时间戳|
 |endTime|Int|请求返回时的时间戳|
 |request|Function|请求方法，可用于上报|
+
+##### beforeSend函数参数说明
+|参数名|类型|说明|
+| :-------- | :-------| :------ |
+|obj|Object|请求对象，包含url,data,header，开发者可自行修改，并最后将obj对象返回|
+|code|String|wx.login()返回的用户登录凭证（有效期五分钟），用于初始登录，开发者可按需放入obj中|
+|session|String|登录态票据，开发者可按需将票据放入obj中|
 
 #### 示例代码
 
@@ -371,5 +379,24 @@ weRequest.request({
 }).catch(e => {
     console.log(e.message); // 错误信息，已通过 `errorContent` 处理
     console.log(e.data); // 错误请求返回包体
+})
+```
+
+### 业务登录态票据希望放在header里，需要怎么办？
+
+可在调用`init`方法时，在钩子`beforeSend`中实现，举例如下：
+```javascript
+weRequest.init({
+    // ...
+    beforeSend(obj, code, session) {
+        if (code) {
+            obj.header.code = code;
+        } else if (session) {
+            obj.header.session = session;
+        }
+        // 切记修改完后，需要将obj返回
+        return obj;
+    },
+    // ...
 })
 ```

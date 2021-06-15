@@ -23,6 +23,7 @@ export interface IInitOption {
     doNotUseQueryString?: boolean;
     getUnexpectedString?: Function;
     errorHandler?: Function | null;
+    beforeSend?: Function | null;
 }
 export interface IRequestOption extends IRequestObject {
     beforeSend?: Function;

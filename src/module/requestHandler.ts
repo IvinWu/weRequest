@@ -147,7 +147,9 @@ function getGlobalData() {
 
 function doRequest(obj: IRequestOption, js_code: string|undefined) {
     obj = initializeRequestObj(obj, js_code);
-
+    if (typeof config.beforeSend === "function") {
+        obj = config.beforeSend(obj, js_code, status.session);
+    }
     return new Promise((resolve, reject) => {
         wx.request({
             url: obj.url,
@@ -167,7 +169,7 @@ function doRequest(obj: IRequestOption, js_code: string|undefined) {
                     obj.complete();
                 }
                 if (obj.showLoading) {
-                    loading.hide()
+                    loading.hide();
                 }
             }
         })
@@ -176,6 +178,9 @@ function doRequest(obj: IRequestOption, js_code: string|undefined) {
 
 function doUploadFile(obj: IUploadFileOption, js_code: string|undefined) {
     obj = initializeUploadFileObj(obj, js_code);
+    if (typeof config.beforeSend === "function") {
+        obj = config.beforeSend(obj, js_code, status.session);
+    }
     return new Promise((resolve, reject) => {
         wx.uploadFile({
             url: obj.url,
@@ -194,7 +199,7 @@ function doUploadFile(obj: IUploadFileOption, js_code: string|undefined) {
                     obj.complete();
                 }
                 if (obj.showLoading) {
-                    loading.hide()
+                    loading.hide();
                 }
             }
         })
