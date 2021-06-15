@@ -28,7 +28,9 @@ const defaultConfig: IInitOption = {
     // session在本地缓存的key
     sessionExpireKey: "sessionExpireKey",
     // 自定义错误处理函数
-    errorHandler: null
+    errorHandler: null,
+    // 请求发送前，提供hook给开发者自定义修改发送内容
+    beforeSend: null
 };
 
 export default defaultConfig;

@@ -22,6 +22,7 @@ export interface IInitOption {
     errorRetryBtn?: boolean;
     doNotUseQueryString?: boolean;
     errorHandler?: Function | null;
+    beforeSend?: Function | null;
 }
 export interface ICodeToSessionOptions {
     url: string;

@@ -52,6 +52,8 @@ export interface IInitOption {
     doNotUseQueryString?: boolean;
     /* 自定义错误处理函数 */
     errorHandler?: Function | null;
+    /* 请求发送前，提供hook给开发者自定义修改发送内容 */
+    beforeSend?: Function | null;
 }
 
 export interface ICodeToSessionOptions{
