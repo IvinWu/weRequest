@@ -5,7 +5,7 @@ export type IAnyObject = WechatMiniprogram.IAnyObject;
 export interface IInitOption {
     /* 用code换取session的CGI配置 */
     codeToSession: ICodeToSessionOptions;
-    /* 储存在localStorage的session名称，且CGI请求的data中会自动带上以此为名称的session值；可不配置，默认为session */
+    /* 所有请求会带上以此为key的票据；可不配置，票据名默认为session */
     sessionName: string;
     /* 设置请求头 */
     setHeader?: (()=> IAnyObject) | object;
@@ -32,9 +32,9 @@ export interface IInitOption {
     mockJson?: any;
     /** 所有请求都会自动带上这里的参数 */
     globalData?: boolean | object | Function;
-    /** session在本地缓存的key */
+    /** 如果为用户登陆态设置了本地缓存时间，则过期时间将以此值为key存储在Storage中 */
     sessionExpireKey?: string;
-    /* session在本地缓存的有效时间（单位ms） */
+    /* 为用户登陆态设置本地缓存时间（单位为ms），一旦过期，直接废弃缓存中的登陆态 */
     sessionExpireTime?: number;
     /* 触发重新登录的条件；参数为CGI返回的数据，返回需要重新登录的条件 */
     loginTrigger?: (res: string | IAnyObject | ArrayBuffer) => boolean;
