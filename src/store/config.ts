@@ -6,8 +6,8 @@ const defaultConfig: IInitOption = {
     loginTrigger() {
         return false
     },
-    getSession(res: any) {
-        return res;
+    getSession() {
+        return "";
     },
     successTrigger() {
         return true

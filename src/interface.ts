@@ -10,7 +10,7 @@ export interface IInitOption {
   /* 存放code的名称；可不配置，默认值为code */
   codeName?: string;
   // 后端在接口中返回登录成功后的第三方登录态
-  getSession: (res: string | IAnyObject | ArrayBuffer) => string;
+  getSession: (res: string | IAnyObject | ArrayBuffer, rawRes?: WechatMiniprogram.RequestSuccessCallbackResult) => string;
   /* 请求URL的固定前缀，如果配置了，后续请求的URL都会自动加上这个前缀，如果是函数，则为函数的返回值 */
   urlPerfix?: string | (() => string);
   /* 是否需要调用checkSession，验证小程序的登录态过期；若业务不需要使用到session_key，则可配置为true */

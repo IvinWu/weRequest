@@ -5,7 +5,7 @@ export interface IInitOption {
     sessionName?: string;
     setHeader?: (() => IAnyObject) | object;
     codeName?: string;
-    getSession: (res: string | IAnyObject | ArrayBuffer) => string;
+    getSession: (res: string | IAnyObject | ArrayBuffer, rawRes?: WechatMiniprogram.RequestSuccessCallbackResult) => string;
     urlPerfix?: string | (() => string);
     doNotCheckSession?: boolean;
     reLoginLimit?: number;

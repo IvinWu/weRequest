@@ -42,7 +42,7 @@ function responseForRequest(
             let realData: string | WechatMiniprogram.IAnyObject | ArrayBuffer = "";
 
             // 获取最新的登陆态
-            getSession(res.data);
+            getSession(res.data, res);
 
             // 获取业务数据
             try {
@@ -132,9 +132,9 @@ function responseForUploadFile(
 }
 
 // 获取最新的登陆态
-function getSession(data: string | WechatMiniprogram.IAnyObject | ArrayBuffer) {
+function getSession(data: string | WechatMiniprogram.IAnyObject | ArrayBuffer, rawData?: WechatMiniprogram.RequestSuccessCallbackResult) {
     try {
-        let session = config.getSession(data);
+        let session = config.getSession(data, rawData);
         if (session && session !== status.session) {
             sessionManager.setSession(session);
         }
