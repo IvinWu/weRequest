@@ -1,5 +1,5 @@
 <p align="center"><img src="./image/logo.png" alt="weRequest" height="160"/></p>
-<h2 align="center">v1.5.0</h2>
+<h2 align="center">v1.5.1</h2>
 <p align="center"><b>解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。</b></p>
 
 
@@ -184,7 +184,7 @@ weRequest.request({
 |url|String|是||CGI的url|
 |method|String|否|GET|调用改CGI的方法|
 |codeName|String|否|code|CGI中传参时，存放code的名称|
-|data|Object|否||登录接口需要的其他参数|
+|data|Object/Function|否||登录接口需要的其他参数，当类型是Function时，第一个参数是code|
 |success|Function|是||接口返回成功的函数；需要返回session的值|
 
 ##### reportCGI函数参数说明

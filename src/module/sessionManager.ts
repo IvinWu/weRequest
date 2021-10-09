@@ -136,7 +136,7 @@ function code2Session(code: string) {
     let data: any;
     // codeToSession.data支持函数
     if (typeof config.codeToSession.data === "function") {
-        data = config.codeToSession.data();
+        data = config.codeToSession.data(code);
     } else {
         data = config.codeToSession.data || {};
     }
