@@ -1,4 +1,4 @@
-const weRequest = require('./request');
+import weRequest from './request';
 
 Page({
     data: {},
@@ -11,23 +11,12 @@ Page({
             data: {
                 id: id
             },
+            enableHttp2: true,
+            timeout: 1000,
             showLoading: true,
             success: function (data) {
                 console.log(data);
             },
-            codeToSessionFail: function() {
-
-            },
-            fail:function(obj, res) {
-                if(codeToSessionFail) {
-
-                } else {
-
-                }
-                // code to session
-
-                // ...
-            }
         })
     },
     upload: function() {

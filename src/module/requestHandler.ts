@@ -152,11 +152,7 @@ function doRequest(obj: IRequestOption, js_code: string|undefined) {
     }
     return new Promise((resolve, reject) => {
         wx.request({
-            url: obj.url,
-            data: obj.data,
-            method: obj.method,
-            header: obj.header || {},
-            dataType: obj.dataType || 'json',
+            ...obj,
             success(res: WechatMiniprogram.RequestSuccessCallbackResult) {
                 return resolve(res);
             },
