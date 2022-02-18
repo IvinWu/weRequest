@@ -163,7 +163,7 @@ function code2Session(code: string) {
 
                     let s;
                     try {
-                        s = config.codeToSession.success(res.data);
+                        s = config.codeToSession.success(res.data, res);
                     } catch (e) {
                     }
 
