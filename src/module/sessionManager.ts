@@ -146,13 +146,20 @@ function code2Session(code: string) {
         data.code = code;
     }
 
+    let obj = {
+        url: requestHandler.format(config.codeToSession.url),
+        data,
+        method: config.codeToSession.method || 'GET',
+        header: typeof config.setHeader === 'function' ? config.setHeader(): config.setHeader,
+    }
+    if (typeof config.beforeSend === "function") {
+        obj = config.beforeSend(obj);
+    }
+
     return new Promise((resolve, reject) => {
         let start = new Date().getTime();
         wx.request({
-            url: requestHandler.format(config.codeToSession.url),
-            data,
-            method: config.codeToSession.method || 'GET',
-            header: typeof config.setHeader === 'function' ? config.setHeader(): config.setHeader,
+            ...obj,
             success(res: WechatMiniprogram.RequestSuccessCallbackResult) {
                 if (res.statusCode === 200) {
                     // 耗时上报
