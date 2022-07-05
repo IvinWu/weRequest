@@ -44,6 +44,8 @@ function responseForRequest(
                     realData = res.data;
                 }
             } catch (e) {}
+            // 缓存存储
+            cacheManager.set(obj, realData);
             if (!obj.noCacheFlash) {
                 // 如果为了保证页面不闪烁，则不回调，只是缓存最新数据，待下次进入再用
                 if (typeof obj.success === "function") {
@@ -52,8 +54,6 @@ function responseForRequest(
                     return realData;
                 }
             }
-            // 缓存存储
-            cacheManager.set(obj, realData);
         } else {
             // 接口返回失败码
             throw { type: 'logic-error', res }
