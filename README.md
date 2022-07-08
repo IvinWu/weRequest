@@ -182,7 +182,7 @@ weRequest.request({
 |参数名|类型|必填|默认值|说明|
 | :-------- | :-------| :------ | :------ |:------ |
 |url|String|是||CGI的url|
-|method|String|否|GET|调用改CGI的方法|
+|method|String|否|GET|调用CGI的方法|
 |codeName|String|否|code|CGI中传参时，存放code的名称|
 |data|Object/Function|否||登录接口需要的其他参数，当类型是Function时，第一个参数是code|
 |success|Function|是||接口返回成功的函数（回调参数有两个，分别为接口返回的数据，以及接口回包对象本身）；需要返回session的值|
