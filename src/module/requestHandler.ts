@@ -26,14 +26,15 @@ function format(originUrl: string) {
 
 // 所有请求发出前需要做的事情
 function preDo<T extends IRequestOption | IUploadFileOption>(obj: T): T {
-    if (typeof obj.beforeSend === "function") {
-        obj.beforeSend();
-    }
     // 登录态失效，重复登录计数
     if (typeof obj.reLoginCount === "undefined") {
         obj.reLoginCount = 0;
     } else {
         obj.reLoginCount++;
+    }
+
+    if (obj.reLoginCount === 0 && typeof obj.beforeSend === "function") {
+        obj.beforeSend();
     }
 
     if (obj.showLoading) {
@@ -147,7 +148,7 @@ function getGlobalData() {
 
 function doRequest(obj: IRequestOption, js_code: string|undefined) {
     obj = initializeRequestObj(obj, js_code);
-    if (typeof config.beforeSend === "function") {
+    if (obj.reLoginCount === 0 && typeof config.beforeSend === "function") {
         obj = config.beforeSend(obj, js_code, status.session);
     }
     return new Promise((resolve, reject) => {
@@ -174,7 +175,7 @@ function doRequest(obj: IRequestOption, js_code: string|undefined) {
 
 function doUploadFile(obj: IUploadFileOption, js_code: string|undefined) {
     obj = initializeUploadFileObj(obj, js_code);
-    if (typeof config.beforeSend === "function") {
+    if (obj.reLoginCount === 0 && typeof config.beforeSend === "function") {
         obj = config.beforeSend(obj, js_code, status.session);
     }
     return new Promise((resolve, reject) => {
