@@ -20,8 +20,8 @@ class ErrorWithData extends Error {
 function catchHandler(e: ThrowError, obj: IRequestOption | IUploadFileOption, reject: (reason?: any) => void) {
     const { type, res } = e;
 
-    // 如果有配置统一错误回调函数，则执行它（仅逻辑错误）
-    if (typeof config.errorCallback === "function" && type === 'logic-error') {
+    // 如果有配置统一错误回调函数，则执行它
+    if (typeof config.errorCallback === "function") {
         config.errorCallback(obj, res);
     }
 

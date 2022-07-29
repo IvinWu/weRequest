@@ -1,6 +1,6 @@
 {
   "name": "we-request",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "本工具通过拓展小程序的wx.request，让开发者通过简单的配置，实现自动管理登录态等功能",
   "keywords": [
     "登录态",
