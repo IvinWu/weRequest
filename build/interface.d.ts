@@ -72,3 +72,7 @@ export interface weRequest {
     setSession: (x: string) => void;
     version: string;
 }
+export interface IErrorObject {
+    type: 'logic-error' | 'http-error' | 'system-error';
+    res: WechatMiniprogram.RequestSuccessCallbackResult | WechatMiniprogram.GeneralCallbackResult;
+}

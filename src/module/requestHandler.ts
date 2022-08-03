@@ -7,8 +7,7 @@ import sessionManager from './sessionManager'
 import responseHandler from './responseHandler'
 import durationReporter from './durationReporter'
 import url from '../util/url'
-import {IRequestOption, IUploadFileOption} from '../interface'
-import errorHandler from './errorHandler'
+import {IRequestOption, IUploadFileOption, IErrorObject} from '../interface'
 import { catchHandler } from './catchHandler'
 
 // 格式化url
@@ -158,8 +157,7 @@ function doRequest(obj: IRequestOption, js_code: string|undefined) {
                 return resolve(res);
             },
             fail(res: WechatMiniprogram.GeneralCallbackResult) {
-                errorHandler.systemError(obj, res);
-                return reject(res);
+                return reject({ type: 'system-error', res });
             },
             complete() {
                 if (typeof obj.complete === "function") {
@@ -188,8 +186,7 @@ function doUploadFile(obj: IUploadFileOption, js_code: string|undefined) {
                 return resolve(res);
             },
             fail(res: WechatMiniprogram.GeneralCallbackResult) {
-                errorHandler.systemError(obj, res);
-                return reject(res);
+                return reject({ type: 'system-error', res });
             },
             complete() {
                 if (typeof obj.complete === "function") {
@@ -221,12 +218,12 @@ function request<TResp>(obj: IRequestOption): Promise<TResp> {
             cacheManager.get(obj);
         }
 
-        sessionManager.main().then((js_code: any) => {
+        sessionManager.main().then((js_code: string) => {
             return doRequest(obj, js_code)
-        }).then((res: any) => {
-            let response = responseHandler.responseForRequest(res as WechatMiniprogram.RequestSuccessCallbackResult, obj);
+        }).then((res: WechatMiniprogram.RequestSuccessCallbackResult) => {
+            let response = responseHandler.responseForRequest(res, obj);
             return resolve(response);
-        }).catch((e: any) => {
+        }).catch((e: IErrorObject) => {
             return catchHandler(e, obj, reject)
         })
 
@@ -247,12 +244,12 @@ function uploadFile(obj: IUploadFileOption): any {
             }
         }
 
-        sessionManager.main().then((js_code: any) => {
-            return doUploadFile(obj, js_code as any)
-        }).then((res: any) => {
-            let response = responseHandler.responseForUploadFile(res as WechatMiniprogram.UploadFileSuccessCallbackResult, obj);
+        sessionManager.main().then((js_code: string) => {
+            return doUploadFile(obj, js_code);
+        }).then((res: WechatMiniprogram.UploadFileSuccessCallbackResult) => {
+            let response = responseHandler.responseForUploadFile(res, obj);
             return resolve(response);
-        }).catch((e: any) => {
+        }).catch((e: IErrorObject) => {
             return catchHandler(e, obj, reject)
         })
     })

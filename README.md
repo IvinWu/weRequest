@@ -1,5 +1,4 @@
 <p align="center"><img src="./image/logo.png" alt="weRequest" height="160"/></p>
-<h2 align="center">v2.3.3</h2>
 <p align="center"><b>解决繁琐的小程序会话管理，一款自带登录态管理的网络请求组件。</b></p>
 
 
@@ -159,6 +158,12 @@ weRequest.request({
 | :-------- | :-------| :------ |
 |res|string/Object/Arraybuffer|请求返回的数据|
 |rawRes|Object|wx.request返回的response原始对象，内含header等信息。（注意：由于wx.uploadFile接口返回内容不支持header，故不建议将登录态放在header内返回）|
+
+##### errorCallback函数参数说明
+|参数名|类型|说明|
+| :-------- | :-------| :------ |
+|obj|Object|请求对象，包含url,data,header等内容|
+|res|Object|请求返回的错误信息，包含errMsg等信息|
 
 #### 示例代码
 

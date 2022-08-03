@@ -1,7 +1,6 @@
 import status from '../store/status'
 import config from '../store/config'
 import requestHandler from './requestHandler'
-import errorHandler from './errorHandler'
 import cacheManager from './cacheManager'
 import durationReporter from './durationReporter'
 import sessionManager from './sessionManager'
@@ -81,12 +80,7 @@ function responseForUploadFile(
             try {
                 res.data = JSON.parse(res.data);
             } catch (e) {
-                if(obj.catchError) {
-                    throw new Error(e);
-                } else {
-                    errorHandler.logicError(obj, res);
-                    return;
-                }
+                throw { type: 'logic-error', res }
             }
         }
 

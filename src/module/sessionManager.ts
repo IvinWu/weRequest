@@ -1,14 +1,14 @@
 import status from '../store/status'
 import config from '../store/config'
-import errorHandler from './errorHandler'
 import durationReporter from './durationReporter'
+import {IErrorObject} from '../interface'
 
 /* 生命周期内只做一次的checkSession */
 let checkSessionPromise: any = null;
 
 function checkSession() {
     if (!checkSessionPromise) {
-        checkSessionPromise = new Promise((resolve) => {
+        checkSessionPromise = new Promise<void>((resolve) => {
             // 如果本地无登录态，就不需要checkSession了
             if (isSessionExpireOrEmpty()) {
                 return resolve();
@@ -60,8 +60,8 @@ function login() {
                 if (res.code) {
                     return resolve(res.code);
                 } else {
-                    errorHandler.doError("登录失败", "请稍后重试[code 获取失败]");
-                    return reject({title: "登录失败", "content": "请稍后重试[code 获取失败]"});
+                    const error: IErrorObject = {type: "system-error", res: { errMsg: "请稍后重试[code 获取失败]"}};
+                    return reject(error);
                 }
             },
             complete() {
@@ -69,8 +69,8 @@ function login() {
                 durationReporter.report('wx_login', start, end);
             },
             fail(res) {
-                errorHandler.doError("登录失败", res.errMsg);
-                return reject({title: "登录失败", "content": res.errMsg});
+                const error: IErrorObject = {type: "system-error", res};
+                return reject(error);
             }
         })
     })
