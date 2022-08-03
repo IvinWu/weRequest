@@ -177,3 +177,8 @@ export interface weRequest {
     /* 获取weRequest版本 */
     version: string;
 }
+
+export interface IErrorObject {
+  type: 'logic-error' | 'http-error' | 'system-error'
+  res: WechatMiniprogram.RequestSuccessCallbackResult | WechatMiniprogram.GeneralCallbackResult,
+}

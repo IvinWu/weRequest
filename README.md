@@ -200,6 +200,12 @@ weRequest.request({
 |obj|Object|请求对象，包含url,data,header，开发者可自行修改，并最后将obj对象返回|
 |session|String|登录态票据，开发者可按需将票据放入obj中|
 
+##### errorCallback函数参数说明
+|参数名|类型|说明|
+| :-------- | :-------| :------ |
+|obj|Object|请求对象，包含url,data,header等内容|
+|res|Object|请求返回的错误信息，包含errMsg等信息|
+
 #### 示例代码
 
 ```javascript

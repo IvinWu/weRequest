@@ -7,8 +7,7 @@ import sessionManager from './sessionManager'
 import responseHandler from './responseHandler'
 import durationReporter from "./durationReporter"
 import url from '../util/url'
-import { IRequestOption, IUploadFileOption } from "../interface"
-import errorHandler from "./errorHandler";
+import { IRequestOption, IUploadFileOption, IErrorObject } from "../interface"
 import { catchHandler } from './catchHandler';
 
 // 格式化url
@@ -146,15 +145,14 @@ function doRequest(obj: IRequestOption) {
     if (obj.reLoginCount === 0 && typeof config.beforeSend === "function") {
         obj = config.beforeSend(obj, status.session);
     }
-    return new Promise((resolve, reject) => {
+    return new Promise<WechatMiniprogram.RequestSuccessCallbackResult>((resolve, reject) => {
         wx.request({
             ...obj,
-            success(res: WechatMiniprogram.RequestSuccessCallbackResult) {
+            success(res) {
                 return resolve(res);
             },
-            fail(res: WechatMiniprogram.GeneralCallbackResult) {
-                errorHandler.systemError(obj, res);
-                return reject(res);
+            fail(res) {
+                return reject({ type: 'system-error', res });
             },
             complete() {
                 if (typeof obj.complete === "function") {
@@ -173,15 +171,14 @@ function doUploadFile(obj: IUploadFileOption) {
     if (obj.reLoginCount === 0 && typeof config.beforeSend === "function") {
         obj = config.beforeSend(obj, status.session);
     }
-    return new Promise((resolve, reject) => {
+    return new Promise<WechatMiniprogram.UploadFileSuccessCallbackResult>((resolve, reject) => {
         wx.uploadFile({
             ...obj,
-            success(res: WechatMiniprogram.UploadFileSuccessCallbackResult) {
+            success(res) {
                 return resolve(res);
             },
-            fail(res: WechatMiniprogram.GeneralCallbackResult) {
-                errorHandler.systemError(obj, res);
-                return reject(res);
+            fail(res) {
+                return reject({ type: 'system-error', res });
             },
             complete() {
                 if (typeof obj.complete === "function") {
@@ -213,12 +210,12 @@ function request<TResp>(obj: IRequestOption): Promise<TResp> {
 
         sessionManager.main(obj).then(() => {
             return doRequest(obj)
-        }).then((res) => {
-            let response = responseHandler.responseForRequest(res as WechatMiniprogram.RequestSuccessCallbackResult, obj);
+        }).then((res: WechatMiniprogram.RequestSuccessCallbackResult) => {
+            let response = responseHandler.responseForRequest(res, obj);
             if (response != null) {
                 return resolve(response);
             }
-        }).catch((e) => {
+        }).catch((e: IErrorObject) => {
             return catchHandler(e, obj, reject)
         })
     })
@@ -238,12 +235,12 @@ function uploadFile(obj: IUploadFileOption): any {
 
         sessionManager.main(obj).then(() => {
             return doUploadFile(obj)
-        }).then((res) => {
-            let response = responseHandler.responseForUploadFile(res as WechatMiniprogram.UploadFileSuccessCallbackResult, obj);
+        }).then((res: WechatMiniprogram.UploadFileSuccessCallbackResult) => {
+            let response = responseHandler.responseForUploadFile(res, obj);
             if (response != null) {
                 return resolve(response);
             }
-        }).catch((e) => {
+        }).catch((e: IErrorObject) => {
             catchHandler(e, obj, reject)
         })
     })

@@ -12,7 +12,7 @@ let checkSessionPromise: any = null;
 
 function checkSession() {
     if (!checkSessionPromise) {
-        checkSessionPromise = new Promise((resolve, reject) => {
+        checkSessionPromise = new Promise<void>((resolve, reject) => {
             const start = new Date().getTime();
             wx.checkSession({
                 success() {
@@ -53,7 +53,7 @@ function isSessionExpireOrEmpty() {
 }
 
 function checkLogin() {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         if (isSessionExpireOrEmpty()) {
             // 没有登陆态，不需要再checkSession
             config.doNotCheckSession = true;
@@ -74,7 +74,7 @@ let loginPromise: any = null;
 
 function doLogin() {
     if (!loginPromise) {
-        loginPromise = new Promise((resolve, reject) => {
+        loginPromise = new Promise<void>((resolve, reject) => {
             login().then(() => {
                 loginPromise = null;
                 return resolve();
@@ -89,7 +89,7 @@ function doLogin() {
 }
 
 function login() {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         const start = new Date().getTime();
         wx.login({
             success(res) {
@@ -100,7 +100,7 @@ function login() {
                         return reject(res);
                     })
                 } else {
-                    return reject({title: "登录失败", "content": "请稍后重试[code 获取失败]"});
+                    return reject({type: "system-error", res});
                 }
             },
             complete() {
@@ -108,7 +108,7 @@ function login() {
                 durationReporter.report('wx_login', start, end);
             },
             fail(res) {
-                return reject({title: "登录失败", "content": res.errMsg});
+                return reject({type: "system-error", res});
             }
         })
     })
@@ -195,13 +195,13 @@ function code2Session(code: string) {
                         return reject(errorHandler.getErrorMsg(res));
                     }
                 } else {
-                    return reject({title: "登录失败", "content": "请稍后重试"});
+                    return reject({type: "http-error", res});
                 }
             },
             complete() {
             },
-            fail: () => {
-                return reject({title: "登录失败", "content": "请稍后重试"});
+            fail: (res) => {
+                return reject({type: "system-error", res});
             }
         })
     })
@@ -222,7 +222,7 @@ function delSession() {
 }
 
 function main(relatedRequestObj?: IRequestOption | IUploadFileOption) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         let retry = !relatedRequestObj
             // 如果没有关联的请求，重试即调用自身
             ? () => main().then(resolve).catch(reject)
