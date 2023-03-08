@@ -52,7 +52,7 @@ function doError(title: string, content: string, retry?: () => any) {
     // 是否显示重试按钮
     const showErrorRetryBtn = config.errorRetryBtn && typeof retry === "function";
     wx.showModal(Object.assign({
-        title,
+        title: title || "",
         content: content || "网络或服务异常，请稍后重试",
     }, !showErrorRetryBtn ? {
         showCancel: false
