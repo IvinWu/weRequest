@@ -46,7 +46,7 @@ function getErrorMsg(res: WechatMiniprogram.RequestSuccessCallbackResult | Wecha
 
 function doError(title: string, content: string) {
     wx.showModal({
-        title,
+        title: title || "",
         content: content || "网络或服务异常，请稍后重试",
         showCancel: false
     })
