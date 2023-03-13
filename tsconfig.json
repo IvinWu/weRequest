@@ -20,7 +20,7 @@
     "removeComments": true,
     "pretty": true,
     "strictPropertyInitialization": true,
-    "types": ["wechat-miniprogram"],
+    "types": ["miniprogram-api-typings"],
     "lib": ["es5", "es6"],
     "declaration": true
   },
