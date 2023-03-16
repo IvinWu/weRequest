@@ -28,7 +28,7 @@
     "test": "jest test"
   },
   "dependencies": {
-    "@types/wechat-miniprogram": "^3.3.0"
+    "miniprogram-api-typings": "^3.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
