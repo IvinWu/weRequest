@@ -1,8 +1,11 @@
 import init from "../../src/api/init";
 import login from "../../src/api/login";
-
-const beforeLogoinMock = jest.fn().mockReturnValue({
+import sessionManager from "../../src/module/sessionManager";
+const beforeLogoinMock = jest.fn().mockReturnValueOnce({
   data: "hello_world"
+});
+const beforeLogoinMock2 = jest.fn().mockReturnValueOnce({
+  data: "hi! nike"
 });
 
 const initOption = {
@@ -57,13 +60,9 @@ const initOption = {
   reportCGI(){}
 };
 
-beforeAll(()=>{
-  // 以下所有测试用例执行前，需提前执行初始化
-  init(initOption);
-});
-
-describe("login", () => {
-  test("call login with async data",  async () => {
+describe("login", async () => {
+  await test("call login with async data",  async () => {
+    init(initOption);
     await login();
     expect(beforeLogoinMock).toBeCalled();
     expect(wx.request).toBeCalledTimes(1);
@@ -72,5 +71,61 @@ describe("login", () => {
       js_code: "js_code_xxxxxxxx",
       data: "hello_world",
     })
+  });
+
+  await test("call login with object data",  async () => {
+    // 执行用例，调用删除session接口
+    sessionManager.delSession();
+    const newInitOption1 = JSON.parse(JSON.stringify(initOption));
+    newInitOption1.codeToSession = {
+      url: "https://sample.com/code2Session",
+      codeName: "js_code",
+      // @ts-ignore
+      data: {
+        test: 1,
+        test2: 2,
+      },
+      report: "codeToSession",
+      success: () =>{
+        return "xxxx"
+      }
+    };
+    init(newInitOption1);
+
+    await login();
+    expect(wx.request).toBeCalledTimes(1);
+    // // @ts-ignore
+    expect(wx.request.mock.calls[0][0].data).toEqual({
+      js_code: "js_code_xxxxxxxx",
+      test: 1,
+      test2: 2,
+    });
+  });
+
+  await test("call login with normal data",  async () => {
+    // 执行用例，调用删除session接口
+    sessionManager.delSession();
+    const newInitOption2 = JSON.parse(JSON.stringify(initOption));
+    newInitOption2.codeToSession = {
+      url: "https://sample.com/code2Session",
+      codeName: "js_code",
+      // @ts-ignore
+      data: () => {
+        return beforeLogoinMock2();
+      },
+      report: "codeToSession",
+      success: () =>{
+        return "xxxx"
+      }
+    };
+    init(newInitOption2);
+    await login();
+    expect(beforeLogoinMock2).toBeCalled();
+    expect(wx.request).toBeCalledTimes(1);
+    // // @ts-ignore
+    expect(wx.request.mock.calls[0][0].data).toEqual({
+      js_code: "js_code_xxxxxxxx",
+      data: "hi! nike",
+    });
   });
 });
