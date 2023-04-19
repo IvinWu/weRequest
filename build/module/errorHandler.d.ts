@@ -1,4 +1,3 @@
-/// <reference types="wechat-miniprogram" />
 import { IRequestOption, IUploadFileOption } from "../interface";
 declare function systemError(obj: IRequestOption | IUploadFileOption, res: WechatMiniprogram.GeneralCallbackResult): void;
 declare function logicError(obj: IRequestOption | IUploadFileOption, res: WechatMiniprogram.RequestSuccessCallbackResult | WechatMiniprogram.UploadFileSuccessCallbackResult): void;

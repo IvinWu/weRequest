@@ -24,6 +24,7 @@ export interface IInitOption {
     getUnexpectedString?: Function;
     errorHandler?: Function | null;
     beforeSend?: Function | null;
+    systemErrorHandler?: Function | null;
 }
 export interface IRequestOption extends IRequestObject {
     beforeSend?: Function;
