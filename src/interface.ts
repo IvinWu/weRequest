@@ -54,6 +54,8 @@ export interface IInitOption {
     errorHandler?: Function | null;
     /* 请求发送前，提供hook给开发者自定义修改发送内容 */
     beforeSend?: Function | null;
+    /* 自定义系统错误处理函数 */
+    systemErrorHandler?: Function | null;
 }
 
 export interface ICodeToSessionOptions{
