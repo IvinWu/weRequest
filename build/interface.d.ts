@@ -23,6 +23,7 @@ export interface IInitOption {
     doNotUseQueryString?: boolean;
     errorHandler?: Function | null;
     beforeSend?: Function | null;
+    systemErrorHandler?: Function | null;
 }
 export interface ICodeToSessionOptions {
     url: string;
