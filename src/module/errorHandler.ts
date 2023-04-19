@@ -4,8 +4,10 @@ import { IRequestOption, IUploadFileOption } from "../interface";
 function systemError(obj: IRequestOption | IUploadFileOption, res: WechatMiniprogram.GeneralCallbackResult) {
     if (typeof obj.fail === "function") {
         obj.fail(res);
+    } else if (typeof config.systemErrorHandler === 'function') {
+        config.systemErrorHandler(res);
     } else {
-        doError("", res.errMsg);
+        doError("", "");
     }
 }
 
