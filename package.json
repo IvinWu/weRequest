@@ -27,7 +27,7 @@
     "pub": "npm publish --tag @2.x.x"
   },
   "dependencies": {
-    "@types/wechat-miniprogram": "^3.3.0"
+    "miniprogram-api-typings": "^3.6.0"
   },
   "devDependencies": {
     "commitizen": "^3.0.5",

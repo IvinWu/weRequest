@@ -1,4 +1,4 @@
-/// <reference types="wechat-miniprogram" />
+/// <reference types="miniprogram-api-typings" />
 export declare type Request = <TResp>(options: IRequestOption) => Promise<TResp>;
 export declare type IAnyObject = WechatMiniprogram.IAnyObject;
 export interface IInitOption {
