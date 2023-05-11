@@ -44,7 +44,14 @@ function delParams(url: string = "", key: string) {
     return joinUrl(kvp, queryStringIndex, url);
 }
 
+function replaceDomain(url: string = "", domain: string = "") {
+    // 保证domain只包含域名，没有 http(s) 前缀 和 / 后缀
+    domain = domain.replace(/^http(s)?:\/\//, '').replace(/\/$/, '');
+    return url.replace(/^http(s)?:\/\/(.*?)\//, `https://${domain}/`);
+}
+
 export default {
     setParams,
-    delParams
+    delParams,
+    replaceDomain,
 };

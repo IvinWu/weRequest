@@ -88,6 +88,11 @@ function initializeRequestObj(obj: IRequestOption, js_code: string|undefined) {
         obj.url = url.setParams(obj.url, gd);
     }
 
+    // 备用域名逻辑
+    if (status.isEnableBackupDomain && config.backupDomain) {
+        obj.url = url.replaceDomain(obj.url, config.backupDomain);
+    }
+
     durationReporter.start(obj);
 
     return obj;
@@ -130,6 +135,11 @@ function initializeUploadFileObj(obj: IUploadFileOption, js_code: string|undefin
         obj.url = url.setParams(obj.url, gd);
     }
 
+    // 备用域名逻辑
+    if (status.isEnableBackupDomain && config.backupDomain) {
+        obj.url = url.replaceDomain(obj.url, config.backupDomain);
+    }
+
     durationReporter.start(obj);
 
     return obj;
@@ -157,6 +167,13 @@ function doRequest(obj: IRequestOption, js_code: string|undefined) {
                 return resolve(res);
             },
             fail(res: WechatMiniprogram.GeneralCallbackResult) {
+                // 如果主域名不可用，且配置了备份域名，且本次请求未使用备份域名
+                if (res?.errMsg?.indexOf('CONNECTION_REFUSED') >= 0 && config.backupDomain && obj.url.indexOf(config.backupDomain) < 0) {
+                    // 开启备份域名
+                    enableBackupDomain();
+                    // 重试一次
+                    return doRequest(obj, js_code).then((res)=> resolve(res));
+                }
                 return reject({ type: 'system-error', res });
             },
             complete() {
@@ -186,6 +203,13 @@ function doUploadFile(obj: IUploadFileOption, js_code: string|undefined) {
                 return resolve(res);
             },
             fail(res: WechatMiniprogram.GeneralCallbackResult) {
+                // 如果主域名不可用，且配置了备份域名，且本次请求未使用备份域名
+                if (res?.errMsg?.indexOf('CONNECTION_REFUSED') >= 0 && config.backupDomain && obj.url.indexOf(config.backupDomain) < 0) {
+                    // 开启备份域名
+                    enableBackupDomain();
+                    // 重试一次
+                    return doUploadFile(obj, js_code).then((res)=> resolve(res));
+                }
                 return reject({ type: 'system-error', res });
             },
             complete() {
@@ -253,6 +277,15 @@ function uploadFile(obj: IUploadFileOption): any {
             return catchHandler(e, obj, reject)
         })
     })
+}
+
+function enableBackupDomain() {
+    if (!status.isEnableBackupDomain) {
+        status.isEnableBackupDomain = true;
+        if (typeof config.backupDomainEnableCallback === 'function') {
+            config.backupDomainEnableCallback();
+        }
+    }
 }
 
 export default {

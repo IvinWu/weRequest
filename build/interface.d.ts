@@ -25,6 +25,8 @@ export interface IInitOption {
     errorHandler?: Function | null;
     beforeSend?: Function | null;
     systemErrorHandler?: Function | null;
+    backupDomain?: string;
+    backupDomainEnableCallback?: Function;
 }
 export interface IRequestOption extends IRequestObject {
     beforeSend?: Function;
