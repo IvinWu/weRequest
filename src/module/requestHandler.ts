@@ -87,6 +87,11 @@ function initializeRequestObj(obj: IRequestOption) {
         obj.url = url.setParams(obj.url, gd);
     }
 
+    // 备用域名逻辑
+    if (status.isEnableBackupDomain && config.backupDomain) {
+        obj.url = url.replaceDomain(obj.url, config.backupDomain);
+    }
+
     durationReporter.start(obj);
 
     return obj;
@@ -125,6 +130,11 @@ function initializeUploadFileObj(obj: IUploadFileOption) {
         obj.url = url.setParams(obj.url, gd);
     }
 
+    // 备用域名逻辑
+    if (status.isEnableBackupDomain && config.backupDomain) {
+        obj.url = url.replaceDomain(obj.url, config.backupDomain);
+    }
+
     durationReporter.start(obj);
 
     return obj;
@@ -152,6 +162,13 @@ function doRequest(obj: IRequestOption) {
                 return resolve(res);
             },
             fail(res) {
+                // 如果主域名不可用，且配置了备份域名，且本次请求未使用备份域名
+                if (res?.errMsg?.indexOf('CONNECTION_REFUSED') >= 0 && config.backupDomain && obj.url.indexOf(config.backupDomain) < 0) {
+                    // 开启备份域名
+                    enableBackupDomain();
+                    // 重试一次
+                    return doRequest(obj).then((res)=> resolve(res));
+                }
                 return reject({ type: 'system-error', res });
             },
             complete() {
@@ -178,6 +195,13 @@ function doUploadFile(obj: IUploadFileOption) {
                 return resolve(res);
             },
             fail(res) {
+                // 如果主域名不可用，且配置了备份域名，且本次请求未使用备份域名
+                if (res?.errMsg?.indexOf('CONNECTION_REFUSED') >= 0 && config.backupDomain && obj.url.indexOf(config.backupDomain) < 0) {
+                    // 开启备份域名
+                    enableBackupDomain();
+                    // 重试一次
+                    return doUploadFile(obj).then((res)=> resolve(res));
+                }
                 return reject({ type: 'system-error', res });
             },
             complete() {
@@ -244,6 +268,15 @@ function uploadFile(obj: IUploadFileOption): any {
             catchHandler(e, obj, reject)
         })
     })
+}
+
+function enableBackupDomain() {
+    if (!status.isEnableBackupDomain) {
+        status.isEnableBackupDomain = true;
+        if (typeof config.backupDomainEnableCallback === 'function') {
+            config.backupDomainEnableCallback();
+        }
+    }
 }
 
 export default {

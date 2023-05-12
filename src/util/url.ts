@@ -25,6 +25,13 @@ function setParams(url: string = "", params: object) {
     }
 }
 
+function replaceDomain(url: string = "", domain: string = "") {
+    // 保证domain只包含域名，没有 http(s) 前缀 和 / 后缀
+    domain = domain.replace(/^http(s)?:\/\//, '').replace(/\/$/, '');
+    return url.replace(/^http(s)?:\/\/(.*?)\//, `https://${domain}/`);
+}
+
 export default {
-    setParams
+    setParams,
+    replaceDomain,
 };
