@@ -24,6 +24,8 @@ export interface IInitOption {
     errorHandler?: Function | null;
     beforeSend?: Function | null;
     systemErrorHandler?: Function | null;
+    backupDomain?: string;
+    backupDomainEnableCallback?: Function;
 }
 export interface ICodeToSessionOptions {
     url: string;

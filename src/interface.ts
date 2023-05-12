@@ -56,6 +56,10 @@ export interface IInitOption {
     beforeSend?: Function | null;
     /* 自定义系统错误处理函数 */
     systemErrorHandler?: Function | null;
+    /* 备用域名 */
+    backupDomain?: string;
+    /* 备用域名启用时回调函数 */
+    backupDomainEnableCallback?: Function;
 }
 
 export interface ICodeToSessionOptions{
