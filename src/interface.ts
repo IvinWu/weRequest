@@ -59,7 +59,7 @@ export interface IInitOption {
   /* 自定义系统错误处理函数 */
   systemErrorHandler?: Function | null;
   /* 备用域名 */
-  backupDomain?: string;
+  backupDomainList?: IAnyObject;
   /* 备用域名启用时回调函数 */
   backupDomainEnableCallback?: Function;
 }
