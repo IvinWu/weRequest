@@ -1,3 +1,6 @@
+import config from '../store/config'
+import status from '../store/status'
+
 function setParams(url: string = "", params: object) {
     const queryStringIndex: number = url.indexOf("?");
     let kvp: any = {};
@@ -25,13 +28,33 @@ function setParams(url: string = "", params: object) {
     }
 }
 
-function replaceDomain(url: string = "", domain: string = "") {
-    // 保证domain只包含域名，没有 http(s) 前缀 和 / 后缀
-    domain = domain.replace(/^http(s)?:\/\//, '').replace(/\/$/, '');
-    return url.replace(/^http(s)?:\/\/(.*?)\//, `https://${domain}/`);
+function replaceDomain(url: string = "") {
+    if (status.isEnableBackupDomain && config.backupDomainList && typeof config.backupDomainList === 'object') {
+        for(const origin in config.backupDomainList) {
+            if (url.indexOf(origin) >= 0) {
+                url = url.replace(origin, config.backupDomainList[origin]);
+                break;
+            }
+        }
+    }
+    return url;
+}
+
+function isInBackupDomainList(url: string = "") {
+    let res = false;
+    if (config.backupDomainList && typeof config.backupDomainList === 'object') {
+        for(const origin in config.backupDomainList) {
+            if (url.indexOf(origin) >= 0) {
+                res = true;
+                break;
+            }
+        }
+    }
+    return res;
 }
 
 export default {
     setParams,
     replaceDomain,
+    isInBackupDomainList
 };

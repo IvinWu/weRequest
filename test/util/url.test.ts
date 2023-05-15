@@ -12,16 +12,4 @@ describe("setParams", () => {
     sample = url.setParams(sample, { test2: 2 });
     expect(sample).toBe("https://www.example.com?test=1&test2=2");
   });
-
-  test("replace domain with host", () => {
-    let sample = "https://example.com/dosomething";
-    sample = url.replaceDomain(sample, "example2.com");
-    expect(sample).toBe("https://example2.com/dosomething");
-  })
-
-  test("replace domain with origin", () => {
-    let sample = "https://example.com/dosomething";
-    sample = url.replaceDomain(sample, "https://example2.com/");
-    expect(sample).toBe("https://example2.com/dosomething");
-  })
 });
