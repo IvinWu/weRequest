@@ -5,6 +5,7 @@ import durationReporter from './durationReporter'
 import requestHandler from './requestHandler'
 import loading from '../util/loading'
 import request from '../api/request'
+import url from '../util/url'
 import { IRequestOption, IUploadFileOption } from "../interface";
 
 /* 生命周期内只做一次的checkSession */
@@ -156,6 +157,9 @@ async function code2Session(code: string) {
         obj = config.beforeSend(obj);
     }
 
+    // 备用域名逻辑
+    obj.url = url.replaceDomain(obj.url);
+
     return new Promise((resolve, reject) => {
         let start = new Date().getTime();
         wx.request({
@@ -201,6 +205,13 @@ async function code2Session(code: string) {
             complete() {
             },
             fail: (res) => {
+                // 如果主域名不可用，且配置了备份域名，且本次请求未使用备份域名
+                if (res?.errMsg?.indexOf('CONNECTION_REFUSED') >= 0 && url.isInBackupDomainList(obj.url)) {
+                    // 开启备份域名
+                    requestHandler.enableBackupDomain(obj.url);
+                    // 重试一次
+                    return code2Session(code).then((res)=> resolve(res));
+                }
                 return reject({type: "system-error", res});
             }
         })
