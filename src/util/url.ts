@@ -1,3 +1,6 @@
+import config from '../store/config'
+import status from '../store/status'
+
 function getParams(url: string = "", queryStringIndex: number) {
     let kvp: WechatMiniprogram.IAnyObject = {};
     if (queryStringIndex >= 0) {
@@ -44,14 +47,34 @@ function delParams(url: string = "", key: string) {
     return joinUrl(kvp, queryStringIndex, url);
 }
 
-function replaceDomain(url: string = "", domain: string = "") {
-    // 保证domain只包含域名，没有 http(s) 前缀 和 / 后缀
-    domain = domain.replace(/^http(s)?:\/\//, '').replace(/\/$/, '');
-    return url.replace(/^http(s)?:\/\/(.*?)\//, `https://${domain}/`);
+function replaceDomain(url: string = "") {
+    if (status.isEnableBackupDomain && config.backupDomainList && typeof config.backupDomainList === 'object') {
+        for(const origin in config.backupDomainList) {
+            if (url.indexOf(origin) >= 0) {
+                url = url.replace(origin, config.backupDomainList[origin]);
+                break;
+            }
+        }
+    }
+    return url;
+}
+
+function isInBackupDomainList(url: string = "") {
+    let res = false;
+    if (config.backupDomainList && typeof config.backupDomainList === 'object') {
+        for(const origin in config.backupDomainList) {
+            if (url.indexOf(origin) >= 0) {
+                res = true;
+                break;
+            }
+        }
+    }
+    return res;
 }
 
 export default {
     setParams,
     delParams,
     replaceDomain,
+    isInBackupDomainList,
 };
