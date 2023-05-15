@@ -230,9 +230,14 @@ function main(relatedRequestObj?: IRequestOption | IUploadFileOption) {
             : () => request(relatedRequestObj).then(relatedRequestObj._resolve).catch(relatedRequestObj._reject);
         return checkLogin().then(() => {
             return config.doNotCheckSession ? Promise.resolve() : checkSession()
-        }, ({title, content}) => {
-            errorHandler.doError(title, content, retry);
-            return reject({title, content});
+        }, (e) => {
+            if (typeof config.codeToSession.fail === 'function') {
+                config.codeToSession.fail(e.res || e);
+            } else {
+                errorHandler.doError(e.title, e.content, retry);
+            }
+
+            return reject({title: e.title, content: e.content});
         }).then(() => {
             return resolve();
         }, ({title, content})=> {
