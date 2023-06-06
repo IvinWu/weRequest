@@ -164,7 +164,7 @@ function doRequest(obj: IRequestOption, js_code: string|undefined) {
             },
             fail(res: WechatMiniprogram.GeneralCallbackResult) {
                 // 如果主域名不可用，且配置了备份域名，且本次请求未使用备份域名
-                if (res?.errMsg?.indexOf('CONNECTION_REFUSED') >= 0 && url.isInBackupDomainList(obj.url)) {
+                if ((res?.errMsg?.indexOf('CONNECTION_REFUSED') >= 0 || res?.errMsg?.indexOf('ERR_CONNECTION_RESET') >= 0) && url.isInBackupDomainList(obj.url)) {
                     // 开启备份域名
                     enableBackupDomain(obj.url);
                     // 重试一次
@@ -200,7 +200,7 @@ function doUploadFile(obj: IUploadFileOption, js_code: string|undefined) {
             },
             fail(res: WechatMiniprogram.GeneralCallbackResult) {
                 // 如果主域名不可用，且配置了备份域名，且本次请求未使用备份域名
-                if (res?.errMsg?.indexOf('CONNECTION_REFUSED') >= 0 && url.isInBackupDomainList(obj.url)) {
+                if ((res?.errMsg?.indexOf('CONNECTION_REFUSED') >= 0 || res?.errMsg?.indexOf('ERR_CONNECTION_RESET') >= 0) && url.isInBackupDomainList(obj.url)) {
                     // 开启备份域名
                     enableBackupDomain(obj.url);
                     // 重试一次
