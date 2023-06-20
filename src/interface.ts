@@ -60,6 +60,8 @@ export interface IInitOption {
   systemErrorHandler?: Function | null;
   /* 备用域名 */
   backupDomainList?: IAnyObject;
+  /* 是否需要启用备份域名 */
+  domainChangeTrigger?: Function;
   /* 备用域名启用时回调函数 */
   backupDomainEnableCallback?: Function;
 }
