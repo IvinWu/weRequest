@@ -60,6 +60,8 @@ export interface IInitOption {
     backupDomainList?: IAnyObject;
     /* 备用域名启用时回调函数 */
     backupDomainEnableCallback?: Function;
+    /* 是否需要启用备用域名 */
+    domainChangeTrigger?: Function;
 }
 
 export interface ICodeToSessionOptions{
