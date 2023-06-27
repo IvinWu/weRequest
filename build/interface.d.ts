@@ -28,6 +28,7 @@ export interface IInitOption {
     backupDomainList?: IAnyObject;
     backupDomainEnableCallback?: Function;
     domainChangeTrigger?: Function;
+    isFixSuccessCompleteTiming: boolean;
 }
 export interface ICodeToSessionOptions {
     url: string;

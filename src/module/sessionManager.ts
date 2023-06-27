@@ -202,8 +202,6 @@ async function code2Session(code: string) {
                     return reject({type: "http-error", res});
                 }
             },
-            complete() {
-            },
             fail: (res) => {
                 // 如果主域名不可用，且配置了备份域名，且本次请求未使用备份域名
                 if ((config.domainChangeTrigger && config.domainChangeTrigger(res)) && url.isInBackupDomainList(obj.url)) {
