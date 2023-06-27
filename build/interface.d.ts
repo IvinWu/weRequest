@@ -1,6 +1,7 @@
 /// <reference types="miniprogram-api-typings" />
-export declare type Request = <TResp>(options: IRequestOption) => Promise<TResp>;
-export declare type IAnyObject = WechatMiniprogram.IAnyObject;
+/// <reference types="miniprogram-api-typings" />
+export type Request = <TResp>(options: IRequestOption) => Promise<TResp>;
+export type IAnyObject = WechatMiniprogram.IAnyObject;
 export interface IInitOption {
     sessionName?: string;
     setHeader?: (() => IAnyObject) | object;
@@ -26,6 +27,7 @@ export interface IInitOption {
     beforeSend?: Function | null;
     systemErrorHandler?: Function | null;
     backupDomainList?: IAnyObject;
+    domainChangeTrigger?: Function;
     backupDomainEnableCallback?: Function;
 }
 export interface IRequestOption extends IRequestObject {

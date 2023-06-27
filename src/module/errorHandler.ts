@@ -1,4 +1,4 @@
-import config from '../store/config'
+import config from '../store/config';
 import { IRequestOption, IUploadFileOption } from "../interface";
 
 function systemError(obj: IRequestOption | IUploadFileOption, res: WechatMiniprogram.GeneralCallbackResult) {
