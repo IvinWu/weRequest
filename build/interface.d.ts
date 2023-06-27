@@ -29,6 +29,7 @@ export interface IInitOption {
     backupDomainList?: IAnyObject;
     domainChangeTrigger?: Function;
     backupDomainEnableCallback?: Function;
+    isFixSuccessCompleteTiming: boolean;
 }
 export interface IRequestOption extends IRequestObject {
     beforeSend?: Function;
