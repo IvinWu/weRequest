@@ -62,6 +62,8 @@ export interface IInitOption {
     backupDomainEnableCallback?: Function;
     /* 是否需要启用备用域名 */
     domainChangeTrigger?: Function;
+    /* 是否修复请求的success/complete的时序问题，详见README的QA部分 */
+    isFixSuccessCompleteTiming: boolean;
 }
 
 export interface ICodeToSessionOptions{
