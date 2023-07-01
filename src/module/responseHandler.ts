@@ -131,6 +131,7 @@ function getSession(data: string | WechatMiniprogram.IAnyObject | ArrayBuffer, r
         let session = config.getSession(data, rawData);
         if (session && session !== status.session) {
             sessionManager.setSession(session);
+            status.isLoginning = false;
         }
     } catch (e) {
         console.error("Function getSession occur error: " + e);

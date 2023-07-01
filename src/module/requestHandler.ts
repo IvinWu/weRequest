@@ -220,8 +220,20 @@ function doUploadFile(obj: IUploadFileOption, js_code: string|undefined) {
     })
 }
 
-function request<TResp>(obj: IRequestOption): Promise<TResp> {
+let lastRequest = Promise.resolve();
 
+async function request<TResp>(obj: IRequestOption): Promise<TResp> {
+    // 如果处于登录流程中，所有请求排队等候，直到登录流程结束，避免多并发导致多次请求wx.login
+    if (status.isLoginning) {
+        await lastRequest;
+    } else {
+        lastRequest = requestMain(obj);
+        return lastRequest as Promise<TResp>;
+    }
+    return requestMain(obj);
+}
+
+function requestMain<TResp>(obj: IRequestOption): Promise<TResp> {
     return new Promise((resolve, reject) => {
 
         obj = preDo(obj);
@@ -250,8 +262,18 @@ function request<TResp>(obj: IRequestOption): Promise<TResp> {
     })
 }
 
-function uploadFile(obj: IUploadFileOption): any {
+async function uploadFile(obj: IUploadFileOption): Promise<any> {
+    // 如果处于登录流程中，所有请求排队等候，直到登录流程结束，避免多并发导致多次请求wx.login
+    if (status.isLoginning) {
+        await lastRequest;
+    } else {
+        lastRequest = uploadFileMain(obj);
+        return lastRequest;
+    }
+    return uploadFileMain(obj);
+}
 
+function uploadFileMain(obj: IUploadFileOption): any {
     return new Promise((resolve, reject) => {
 
         obj = preDo(obj);
