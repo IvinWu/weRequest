@@ -53,7 +53,7 @@ function login() {
     // 请求新的登陆态，不需要再checkSession
     config.doNotCheckSession = true;
     return new Promise((resolve, reject) => {
-        console.log('wx.login');
+        status.isLoginning = true;
         const start = new Date().getTime();
         wx.login({
             success(res) {
