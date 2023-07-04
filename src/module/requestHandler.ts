@@ -147,11 +147,18 @@ function getGlobalData() {
 }
 
 function doRequest(obj: IRequestOption) {
-    obj = initializeRequestObj(obj);
-    if (obj.reLoginCount === 0 && typeof config.beforeSend === "function") {
-        obj = config.beforeSend(obj, status.session);
-    }
-    return new Promise<WechatMiniprogram.RequestSuccessCallbackResult>((resolve, reject) => {
+    return new Promise<WechatMiniprogram.RequestSuccessCallbackResult>(async (resolve, reject) => {
+        // 由于真正发请求时经过了异步处理流程，中途可能存在session被清除的情况，需要再次checkLogin
+        try {
+            await sessionManager.checkLogin();
+        } catch (error) {
+            return reject(error);
+        }
+    
+        obj = initializeRequestObj(obj);
+        if (obj.reLoginCount === 0 && typeof config.beforeSend === "function") {
+            obj = config.beforeSend(obj, status.session);
+        }
         wx.request({
             ...obj,
             success(res) {

@@ -254,5 +254,6 @@ function main(relatedRequestObj?: IRequestOption | IUploadFileOption) {
 export default {
     main,
     setSession,
-    delSession
+    delSession,
+    checkLogin
 }
