@@ -72,6 +72,8 @@ export interface IInitOption {
   httpDNSErrorCallback?: Function;
   /* 是否需要自行判定 HTTPDNS 失败条件 */
   httpDNSErrorTrigger?: Function;
+  /* 是否修复请求的success/complete的时序问题，详见README的QA部分 */
+  isFixSuccessCompleteTiming: boolean;
 }
 
 export interface IRequestOption extends IRequestObject {

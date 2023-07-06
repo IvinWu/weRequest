@@ -33,6 +33,7 @@ export interface IInitOption {
     httpDNSServiceId?: string;
     httpDNSErrorCallback?: Function;
     httpDNSErrorTrigger?: Function;
+    isFixSuccessCompleteTiming: boolean;
 }
 export interface IRequestOption extends IRequestObject {
     beforeSend?: Function;

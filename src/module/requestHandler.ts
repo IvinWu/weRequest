@@ -197,11 +197,22 @@ function doRequest(obj: IRequestOption, js_code: string|undefined) {
                 return reject({ type: 'system-error', res });
             },
             complete() {
-                if (typeof obj.complete === "function") {
-                    obj.complete();
-                }
-                if (obj.showLoading) {
-                    loading.hide();
+                if (config.isFixSuccessCompleteTiming) {
+                    setTimeout(()=>{
+                        if (typeof obj.complete === "function") {
+                            obj.complete();
+                        }
+                        if (obj.showLoading) {
+                            loading.hide();
+                        }
+                    }, 0)
+                } else {
+                    if (typeof obj.complete === "function") {
+                        obj.complete();
+                    }
+                    if (obj.showLoading) {
+                        loading.hide();
+                    }
                 }
             }
         })
@@ -233,11 +244,22 @@ function doUploadFile(obj: IUploadFileOption, js_code: string|undefined) {
                 return reject({ type: 'system-error', res });
             },
             complete() {
-                if (typeof obj.complete === "function") {
-                    obj.complete();
-                }
-                if (obj.showLoading) {
-                    loading.hide();
+                if (config.isFixSuccessCompleteTiming) {
+                    setTimeout(()=>{
+                        if (typeof obj.complete === "function") {
+                            obj.complete();
+                        }
+                        if (obj.showLoading) {
+                            loading.hide();
+                        }
+                    }, 0)
+                } else {
+                    if (typeof obj.complete === "function") {
+                        obj.complete();
+                    }
+                    if (obj.showLoading) {
+                        loading.hide();
+                    }
                 }
             }
         })
