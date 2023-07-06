@@ -21,7 +21,7 @@
     "pretty": true,
     "strictPropertyInitialization": true,
     "types": ["miniprogram-api-typings"],
-    "lib": ["es5", "es6"],
+    "lib": ["es5", "es6", "ES2016"],
     "declaration": true
   },
   "include": ["./src/**/*.ts"],

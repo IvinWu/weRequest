@@ -91,6 +91,16 @@ function initializeRequestObj(obj: IRequestOption, js_code: string|undefined) {
     // 备用域名逻辑
     obj.url = url.replaceDomain(obj.url);
 
+    // 检查是否启用 HTTPDNS
+    // 当次生命周期使用 HTTPDNS 调用失败会通过 status.isEnableHttpDNS 切回 localDNS
+    if (config.enableHttpDNS && config.httpDNSServiceId) {
+        obj.enableHttpDNS = config.enableHttpDNS;
+        obj.httpDNSServiceId = config.httpDNSServiceId;
+    }else {
+        delete obj.enableHttpDNS;
+        delete obj.httpDNSServiceId;
+    }
+
     durationReporter.start(obj);
 
     return obj;
@@ -163,6 +173,20 @@ function doRequest(obj: IRequestOption, js_code: string|undefined) {
                 return resolve(res);
             },
             fail(res: WechatMiniprogram.GeneralCallbackResult) {
+                // 如果调用失败，且开启了 enableHttpDNS，需要检查一下是否是 HTTPDNS 相关的失败，是的话切回 localDNS
+                if (config.enableHttpDNS && 
+                    (
+                        (typeof config.httpDNSErrorTrigger === 'function' && config.httpDNSErrorTrigger(res)) || 
+                        isHTTPDNSError(res as WechatMiniprogram.Err & { errCode: number })
+                    )
+                ) {
+                    // 关闭 enableHttpDNS
+                    disableHttpDNS(res as WechatMiniprogram.GeneralCallbackResult & { errCode: number });
+
+                    // 重试一次
+                    return doRequest(obj, js_code).then((res)=> resolve(res));
+                }
+
                 // 如果主域名不可用，且配置了备份域名，且本次请求未使用备份域名，给使用者判断是否需要降级处理
                 if ((config.domainChangeTrigger && config.domainChangeTrigger(res)) && url.isInBackupDomainList(obj.url)) {
                     // 开启备份域名
@@ -281,6 +305,27 @@ function enableBackupDomain(url: string = "") {
         if (typeof config.backupDomainEnableCallback === 'function') {
             config.backupDomainEnableCallback(url);
         }
+    }
+}
+
+function isHTTPDNSError(res: WechatMiniprogram.Err & {errCode: number}) {
+    const { errMsg = '', errno, errCode } = res;
+
+    // 官方提供的 HTTPDNS 错误码
+    // https://developers.weixin.qq.com/miniprogram/dev/framework/ability/HTTPDNS.html
+    const HTTPDNSErrorList = [600000,602000,602001,602002,602101,602102,602103,602104,602105,602106,602107,602108,
+    ];
+
+    // 1. 用户挂了代理，使用 HTTPDNS 会返回 ERR_PROXY_CONNECTION_FAILED 错误
+    // 2. fail 返回的错误码可能是 errno 或 errCode
+    return errMsg.indexOf('ERR_PROXY_CONNECTION_FAILED') >= 0 || HTTPDNSErrorList.includes(errCode) || HTTPDNSErrorList.includes(errno);
+}
+
+function disableHttpDNS(res: WechatMiniprogram.GeneralCallbackResult & { errCode: number }) {
+    config.enableHttpDNS = false;
+    config.httpDNSServiceId = '';
+    if (typeof config.httpDNSErrorCallback === 'function'){
+        config.httpDNSErrorCallback(res);
     }
 }
 
