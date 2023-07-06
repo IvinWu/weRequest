@@ -42,7 +42,9 @@ const defaultConfig: IInitOption = {
             return true;
         }
         return false;
-    }
+    },
+    // 是否修复请求的success/complete的时序问题，详见README的QA部分
+    isFixSuccessCompleteTiming: false
 };
 
 export default defaultConfig;
