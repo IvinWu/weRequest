@@ -147,6 +147,10 @@ function getGlobalData() {
 }
 
 function doRequest(obj: IRequestOption) {
+    // 真正发请求时，再次判断一次是否有登陆态
+    if(!status.session) {
+        return request(obj) as Promise<WechatMiniprogram.RequestSuccessCallbackResult>;
+    }
     obj = initializeRequestObj(obj);
     if (obj.reLoginCount === 0 && typeof config.beforeSend === "function") {
         obj = config.beforeSend(obj, status.session);
@@ -191,6 +195,10 @@ function doRequest(obj: IRequestOption) {
 }
 
 function doUploadFile(obj: IUploadFileOption) {
+    // 真正发请求时，再次判断一次是否有登陆态
+    if(!status.session) {
+        return uploadFile(obj) as Promise<WechatMiniprogram.UploadFileSuccessCallbackResult>;
+    }
     obj = initializeUploadFileObj(obj);
     if (obj.reLoginCount === 0 && typeof config.beforeSend === "function") {
         obj = config.beforeSend(obj, status.session);
@@ -250,7 +258,7 @@ function request<TResp>(obj: IRequestOption): Promise<TResp> {
             cacheManager.get(obj);
         }
 
-        sessionManager.main(obj).then(() => {
+        sessionManager.main().then(() => {
             return doRequest(obj)
         }).then((res: WechatMiniprogram.RequestSuccessCallbackResult) => {
             let response = responseHandler.responseForRequest(res, obj);
@@ -275,7 +283,7 @@ function uploadFile(obj: IUploadFileOption): any {
             }
         }
 
-        sessionManager.main(obj).then(() => {
+        sessionManager.main().then(() => {
             return doUploadFile(obj)
         }).then((res: WechatMiniprogram.UploadFileSuccessCallbackResult) => {
             let response = responseHandler.responseForUploadFile(res, obj);
