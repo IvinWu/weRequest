@@ -25,7 +25,7 @@ function checkSession() {
                     delSession();
                     return doLogin().then(() => {
                         return resolve();
-                    }, (res: any)=>{
+                    }, (res: any) => {
                         return reject(res);
                     });
                 },
@@ -60,7 +60,7 @@ function checkLogin() {
             config.doNotCheckSession = true;
             return doLogin().then(() => {
                 return resolve();
-            }, (res: any)=>{
+            }, (res: any) => {
                 return reject(res);
             })
         } else {
@@ -101,7 +101,7 @@ function login() {
                         return reject(res);
                     })
                 } else {
-                    return reject({type: "system-error", res});
+                    return reject({ type: "system-error", res });
                 }
             },
             complete() {
@@ -109,7 +109,7 @@ function login() {
                 durationReporter.report('wx_login', start, end);
             },
             fail(res) {
-                return reject({type: "system-error", res});
+                return reject({ type: "system-error", res });
             }
         })
     })
@@ -151,7 +151,7 @@ async function code2Session(code: string) {
         url: requestHandler.format(config.codeToSession.url),
         data,
         method: config.codeToSession.method || 'GET',
-        header: typeof config.setHeader === 'function' ? config.setHeader(): config.setHeader,
+        header: typeof config.setHeader === 'function' ? config.setHeader() : config.setHeader,
     }
     if (typeof config.beforeSend === "function") {
         obj = config.beforeSend(obj);
@@ -199,7 +199,7 @@ async function code2Session(code: string) {
                         return reject(errorHandler.getErrorMsg(res));
                     }
                 } else {
-                    return reject({type: "http-error", res});
+                    return reject({ type: "http-error", res });
                 }
             },
             complete() {
@@ -210,9 +210,9 @@ async function code2Session(code: string) {
                     // 开启备份域名
                     requestHandler.enableBackupDomain(obj.url);
                     // 重试一次
-                    return code2Session(code).then((res)=> resolve(res));
+                    return code2Session(code).then((res) => resolve(res)).catch(reject);
                 }
-                return reject({type: "system-error", res});
+                return reject({ type: "system-error", res });
             }
         })
     })
@@ -241,14 +241,24 @@ function main(relatedRequestObj?: IRequestOption | IUploadFileOption) {
             : () => request(relatedRequestObj).then(relatedRequestObj._resolve).catch(relatedRequestObj._reject);
         return checkLogin().then(() => {
             return config.doNotCheckSession ? Promise.resolve() : checkSession()
-        }, ({title, content}) => {
-            errorHandler.doError(title, content, retry);
-            return reject({title, content});
+        }, ({ title, content }) => {
+            if (typeof config.codeToSession.fail === 'function') {
+                typeof config.codeToSession.fail();
+            } else {
+                errorHandler.doError(title, content, retry);
+            }
+
+            return reject({ title, content });
         }).then(() => {
             return resolve();
-        }, ({title, content})=> {
-            errorHandler.doError(title, content, retry);
-            return reject({title, content});
+        }, ({ title, content }) => {
+            if (typeof config.codeToSession.fail === 'function') {
+                typeof config.codeToSession.fail();
+            } else {
+                errorHandler.doError(title, content, retry);
+            }
+
+            return reject({ title, content });
         })
     })
 }
