@@ -33,6 +33,16 @@ const defaultConfig: IInitOption = {
     beforeSend: null,
     // 自定义系统错误处理函数（网络错误）
     systemErrorHandler: null,
+    // 默认降级处理函数
+    domainChangeTrigger: (res: WechatMiniprogram.GeneralCallbackResult) => {
+        // -101 和 -102 默认自动降级
+        if ((res?.errMsg?.indexOf('CONNECTION_REFUSED') >= 0 || res?.errMsg?.indexOf('ERR_CONNECTION_RESET') >= 0)) {
+            return true;
+        }
+        return false;
+    },
+    // 是否修复请求的success/complete的时序问题，详见README的QA部分
+    isFixSuccessCompleteTiming: false
 };
 
 export default defaultConfig;

@@ -483,3 +483,17 @@ weRequest.init({
     // ...
 })
 ```
+
+### 回调的success和complete的时序怎么和wx.request的时序不一致？
+
+早期请求库引入promise能力时，由于代码缺陷导致success/complete执行的顺序与官方wx.request的success/complete执行顺序是相反的。（正确的顺序应该是先执行success回调，再执行complete回调）。
+由于这个问题存在比较久且很细微，可能大部分业务在使用的时候也没有太留意。
+请求库在`1.7.5`版本中对其进行了修复，但是为了不影响之前使用了本库的业务，所以增加了一个配置项`isFixSuccessCompleteTiming`，用于指定修复这个问题。
+若不配置这个项，则仍保持这个错误的回调顺序，若业务希望顺序跟官方保持一致，则需要在初始化时配置这个配置项，示例如下：
+```javascript
+weRequest.init({
+    // ...
+    isFixSuccessCompleteTiming: true
+    // 省略其他配置项...
+})
+```
