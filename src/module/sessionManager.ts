@@ -208,7 +208,7 @@ async function code2Session(code: string) {
                     // 开启备份域名
                     requestHandler.enableBackupDomain(obj.url);
                     // 重试一次
-                    return code2Session(code).then((res)=> resolve(res));
+                    return code2Session(code).then((res)=> resolve(res)).catch(reject);;
                 }
                 return reject({type: "system-error", res});
             }
@@ -240,12 +240,20 @@ function main(relatedRequestObj?: IRequestOption | IUploadFileOption) {
         return checkLogin().then(() => {
             return config.doNotCheckSession ? Promise.resolve() : checkSession()
         }, ({title, content}) => {
-            errorHandler.doError(title, content, retry);
+            if (typeof config.codeToSession.fail === 'function') {
+                typeof config.codeToSession.fail();
+            } else {
+                errorHandler.doError(title, content, retry);
+            }
             return reject({title, content});
         }).then(() => {
             return resolve();
         }, ({title, content})=> {
-            errorHandler.doError(title, content, retry);
+            if (typeof config.codeToSession.fail === 'function') {
+                typeof config.codeToSession.fail();
+            } else {
+                errorHandler.doError(title, content, retry);
+            }
             return reject({title, content});
         })
     })

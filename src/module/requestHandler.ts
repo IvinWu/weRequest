@@ -163,7 +163,7 @@ function doRequest(obj: IRequestOption) {
                     // 开启备份域名
                     enableBackupDomain(obj.url);
                     // 重试一次
-                    return doRequest(obj).then((res)=> resolve(res));
+                    return doRequest(obj).then((res)=> resolve(res)).catch(reject);;
                 }
                 return reject({ type: 'system-error', res });
             },
@@ -207,7 +207,7 @@ function doUploadFile(obj: IUploadFileOption) {
                     // 开启备份域名
                     enableBackupDomain(obj.url);
                     // 重试一次
-                    return doUploadFile(obj).then((res)=> resolve(res));
+                    return doUploadFile(obj).then((res)=> resolve(res)).catch(reject);;
                 }
                 return reject({ type: 'system-error', res });
             },
