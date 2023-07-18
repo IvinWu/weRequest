@@ -91,14 +91,18 @@ function initializeRequestObj(obj: IRequestOption, js_code: string|undefined) {
     // 备用域名逻辑
     obj.url = url.replaceDomain(obj.url);
 
-    // 检查是否启用 HTTPDNS
-    // 当次生命周期使用 HTTPDNS 调用失败会通过 status.isEnableHttpDNS 切回 localDNS
-    if (config.enableHttpDNS && config.httpDNSServiceId) {
-        obj.enableHttpDNS = config.enableHttpDNS;
-        obj.httpDNSServiceId = config.httpDNSServiceId;
-    }else {
-        delete obj.enableHttpDNS;
-        delete obj.httpDNSServiceId;
+    // 检查是否启用 HTTPDNS,当次生命周期使用 HTTPDNS 调用失败会切回 localDNS
+    // 1. 如果全局开启 enableHttpDNS，则以全局配置的为准
+    // 2. 如果全局没有声明 enableHttpDNS，则什么都不做，此时使用 weRequest.request 方法可自行像 wx.request 一样为单个请求开启 enableHttpDNS
+    // 3. 如果全局有声明 enableHttpDNS，且为 false，则全局关闭 enableHttpDNS
+    if (typeof config.enableHttpDNS !== 'undefined') {
+        if (config.enableHttpDNS && config.httpDNSServiceId) {
+            obj.enableHttpDNS = config.enableHttpDNS;
+            obj.httpDNSServiceId = config.httpDNSServiceId;
+        } else {
+            delete obj.enableHttpDNS;
+            delete obj.httpDNSServiceId;
+        }
     }
 
     durationReporter.start(obj);
