@@ -91,18 +91,11 @@ function initializeRequestObj(obj: IRequestOption, js_code: string|undefined) {
     // 备用域名逻辑
     obj.url = url.replaceDomain(obj.url);
 
-    // 检查是否启用 HTTPDNS,当次生命周期使用 HTTPDNS 调用失败会切回 localDNS
-    // 1. 如果全局开启 enableHttpDNS，则以全局配置的为准
-    // 2. 如果全局没有声明 enableHttpDNS，则什么都不做，此时使用 weRequest.request 方法可自行像 wx.request 一样为单个请求开启 enableHttpDNS
-    // 3. 如果全局有声明 enableHttpDNS，且为 false，则全局关闭 enableHttpDNS
-    if (typeof config.enableHttpDNS !== 'undefined') {
-        if (config.enableHttpDNS && config.httpDNSServiceId) {
-            obj.enableHttpDNS = config.enableHttpDNS;
-            obj.httpDNSServiceId = config.httpDNSServiceId;
-        } else {
-            delete obj.enableHttpDNS;
-            delete obj.httpDNSServiceId;
-        }
+    // 检查是否全局启用 HTTPDNS,当次生命周期使用 HTTPDNS 调用失败会切回 localDNS
+    // 如果是单个请求中开启 HTTPDNS，则以单个的为准
+    if (typeof config.enableHttpDNS !== 'undefined' && !obj.enableHttpDNS && !obj.httpDNSServiceId) {
+        obj.enableHttpDNS = config.enableHttpDNS;
+        obj.httpDNSServiceId = config.httpDNSServiceId;
     }
 
     durationReporter.start(obj);
@@ -185,7 +178,7 @@ function doRequest(obj: IRequestOption, js_code: string|undefined) {
                     )
                 ) {
                     // 关闭 enableHttpDNS
-                    disableHttpDNS(res as WechatMiniprogram.GeneralCallbackResult & { errCode: number });
+                    obj = disableHttpDNS(res as WechatMiniprogram.GeneralCallbackResult & { errCode: number }, obj);
 
                     // 重试一次
                     return doRequest(obj, js_code).then((res)=> resolve(res));
@@ -346,12 +339,16 @@ function isHTTPDNSError(res: WechatMiniprogram.Err & {errCode: number}) {
     return errMsg.indexOf('ERR_PROXY_CONNECTION_FAILED') >= 0 || HTTPDNSErrorList.includes(errCode) || HTTPDNSErrorList.includes(errno);
 }
 
-function disableHttpDNS(res: WechatMiniprogram.GeneralCallbackResult & { errCode: number }) {
+function disableHttpDNS(res: WechatMiniprogram.GeneralCallbackResult & { errCode: number }, obj: IRequestOption) {
     config.enableHttpDNS = false;
     config.httpDNSServiceId = '';
+    delete obj.enableHttpDNS;
+    delete obj.httpDNSServiceId;
     if (typeof config.httpDNSErrorCallback === 'function'){
         config.httpDNSErrorCallback(res);
     }
+
+    return obj;
 }
 
 export default {
