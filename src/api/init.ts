@@ -4,7 +4,6 @@ import { IInitOption } from '../interface'
 
 export default (params: IInitOption) => {
     Object.assign(config, params);
-    console.log(config.errorTitle);
     try {
         status.session = wx.getStorageSync(config.sessionName!) || '';
     } catch (e) {}

@@ -1,12 +1,10 @@
 import status from '../store/status'
 import config from '../store/config'
-import errorHandler from './errorHandler'
 import durationReporter from './durationReporter'
 import requestHandler from './requestHandler'
 import loading from '../util/loading'
-import request from '../api/request'
 import url from '../util/url'
-import { IRequestOption, IUploadFileOption } from "../interface";
+import { IErrorObject } from "../interface"
 
 /* 生命周期内只做一次的checkSession */
 let checkSessionPromise: any = null;
@@ -178,25 +176,11 @@ async function code2Session(code: string) {
                     } catch (e) {
                     }
 
-                    if (typeof s === 'string') {
-                        status.session = s;
-                        // 换回来的session，不需要再checkSession
-                        config.doNotCheckSession = true;
-                        // 如果有设置本地session过期时间
-                        if (config.sessionExpireTime && config.sessionExpireKey) {
-                            status.sessionExpire = new Date().getTime() + config.sessionExpireTime;
-                            wx.setStorage({
-                                key: config.sessionExpireKey,
-                                data: String(status.sessionExpire)
-                            })
-                        }
-                        wx.setStorage({
-                            key: config.sessionName,
-                            data: status.session
-                        });
+                    if (typeof s === 'string' && s) {
+                        setSession(s);
                         return resolve(s);
                     } else {
-                        return reject(errorHandler.getErrorMsg(res));
+                        return reject({type: "logic-error", res});
                     }
                 } else {
                     return reject({type: "http-error", res});
@@ -230,23 +214,14 @@ function delSession() {
     }
 }
 
-function main(relatedRequestObj?: IRequestOption | IUploadFileOption) {
+function main() {
     return new Promise<void>((resolve, reject) => {
-        let retry = !relatedRequestObj
-            // 如果没有关联的请求，重试即调用自身
-            ? () => main().then(resolve).catch(reject)
-            // 如果有关联的请求，重试即调用所关联的请求
-            : () => request(relatedRequestObj).then(relatedRequestObj._resolve).catch(relatedRequestObj._reject);
         return checkLogin().then(() => {
             return config.doNotCheckSession ? Promise.resolve() : checkSession()
-        }, ({title, content}) => {
-            errorHandler.doError(title, content, retry);
-            return reject({title, content});
         }).then(() => {
             return resolve();
-        }, ({title, content})=> {
-            errorHandler.doError(title, content, retry);
-            return reject({title, content});
+        }).catch((e: IErrorObject) => {
+            return reject(e);
         })
     })
 }
