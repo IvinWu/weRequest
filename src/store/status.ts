@@ -3,5 +3,7 @@ export default {
     // session过期的时间点
     sessionExpire: Infinity as number,
     // 是否启用备用域名
-    isEnableBackupDomain: false
+    isEnableBackupDomain: false,
+    // 是否全局启用 HTTPDNS
+    isGlobalEnableHttpDNS: false,
 } as any

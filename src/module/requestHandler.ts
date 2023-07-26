@@ -93,7 +93,11 @@ function initializeRequestObj(obj: IRequestOption, js_code: string|undefined) {
 
     // 检查是否全局启用 HTTPDNS,当次生命周期使用 HTTPDNS 调用失败会切回 localDNS
     // 如果是单个请求中开启 HTTPDNS，则以单个的为准
-    if (typeof config.enableHttpDNS !== 'undefined' && !obj.enableHttpDNS && !obj.httpDNSServiceId) {
+    // isGlobalEnableHttpDNS 用于当单个 request 开启 HTTPDNS 时，区别于全局，不予以兜底重试
+    if (obj.enableHttpDNS && obj.httpDNSServiceId) {
+        status.isGlobalEnableHttpDNS = false;
+    } else if (typeof config.enableHttpDNS !== 'undefined') {
+        status.isGlobalEnableHttpDNS = true;
         obj.enableHttpDNS = config.enableHttpDNS;
         obj.httpDNSServiceId = config.httpDNSServiceId;
     }
@@ -170,8 +174,8 @@ function doRequest(obj: IRequestOption, js_code: string|undefined) {
                 return resolve(res);
             },
             fail(res: WechatMiniprogram.GeneralCallbackResult) {
-                // 如果调用失败，且开启了 enableHttpDNS，需要检查一下是否是 HTTPDNS 相关的失败，是的话切回 localDNS
-                if (config.enableHttpDNS && 
+                // 如果调用失败，且全局开启了 enableHttpDNS，需要检查一下是否是 HTTPDNS 相关的失败，是的话切回 localDNS
+                if (status.isGlobalEnableHttpDNS && config.enableHttpDNS && 
                     (
                         (typeof config.httpDNSErrorTrigger === 'function' && config.httpDNSErrorTrigger(res)) || 
                         isHTTPDNSError(res as WechatMiniprogram.Err & { errCode: number })
