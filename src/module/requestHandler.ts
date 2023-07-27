@@ -177,8 +177,7 @@ function doRequest(obj: IRequestOption, js_code: string|undefined) {
                 // 如果调用失败，且全局开启了 enableHttpDNS，需要检查一下是否是 HTTPDNS 相关的失败，是的话切回 localDNS
                 if (status.isGlobalEnableHttpDNS && config.enableHttpDNS && 
                     (
-                        (typeof config.httpDNSErrorTrigger === 'function' && config.httpDNSErrorTrigger(res)) || 
-                        isHTTPDNSError(res as WechatMiniprogram.Err & { errCode: number })
+                        (typeof config.httpDNSErrorTrigger === 'function' && config.httpDNSErrorTrigger(res))
                     )
                 ) {
                     // 关闭 enableHttpDNS
@@ -329,18 +328,6 @@ function enableBackupDomain(url: string = "") {
             config.backupDomainEnableCallback(url);
         }
     }
-}
-
-function isHTTPDNSError(res: WechatMiniprogram.Err & {errCode: number}) {
-    const { errMsg = '', errno, errCode } = res;
-
-    // 官方提供的 HTTPDNS 错误码
-    // https://developers.weixin.qq.com/miniprogram/dev/framework/ability/HTTPDNS.html
-    const HTTPDNSErrorList = [600000,602000,602001,602002,602101,602102,602103,602104,602105,602106,602107,602108];
-
-    // 1. 用户挂了代理，使用 HTTPDNS 会返回 ERR_PROXY_CONNECTION_FAILED 错误
-    // 2. fail 返回的错误码可能是 errno 或 errCode
-    return errMsg.indexOf('ERR_PROXY_CONNECTION_FAILED') >= 0 || HTTPDNSErrorList.includes(errCode) || HTTPDNSErrorList.includes(errno);
 }
 
 function disableHttpDNS(res: WechatMiniprogram.GeneralCallbackResult & { errCode: number }, obj: IRequestOption) {
