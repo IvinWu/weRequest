@@ -29,6 +29,10 @@ export interface IInitOption {
     backupDomainList?: IAnyObject;
     domainChangeTrigger?: Function;
     backupDomainEnableCallback?: Function;
+    enableHttpDNS?: boolean;
+    httpDNSServiceId?: string;
+    httpDNSErrorCallback?: Function;
+    httpDNSErrorTrigger?: Function;
     isFixSuccessCompleteTiming: boolean;
 }
 export interface IRequestOption extends IRequestObject {

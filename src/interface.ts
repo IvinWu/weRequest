@@ -64,6 +64,14 @@ export interface IInitOption {
   domainChangeTrigger?: Function;
   /* 备用域名启用时回调函数 */
   backupDomainEnableCallback?: Function;
+  /* 是否启用 HTTPDNS */
+  enableHttpDNS?: boolean;
+  /* 启用 HTTPDNS 时的服务商 service id */
+  httpDNSServiceId?: string;
+  /* HTTPDNS 请求失败时的回调 */
+  httpDNSErrorCallback?: Function;
+  /* 是否需要自行判定 HTTPDNS 失败条件 */
+  httpDNSErrorTrigger?: Function;
   /* 是否修复请求的success/complete的时序问题，详见README的QA部分 */
   isFixSuccessCompleteTiming: boolean;
 }

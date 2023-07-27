@@ -137,6 +137,9 @@ weRequest.request({
 |doNotUseQueryString|Boolean|否|false|默认情况下，POST请求，登陆态除了带在请求body中，也会带在queryString上，如果配置了这个为true，则登陆态不带在queryString中|
 |setHeader|Object/Function|否||所有请求的header都会带上此对象中的字段|
 |beforeSend|Function|否||请求发送前的hook，开发者可在发送前自行处理数据|
+|enableHttpDNS|Boolean|否||开启 HttpDNS|
+|httpDNSServiceId|String|否||服务商提供的 ServiceId|
+|httpDNSErrorCallback|Function|否||HttpDNS 解析失败时的回调
 
 ##### reportCGI函数参数说明
 |参数名|类型|说明|
