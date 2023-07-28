@@ -1,5 +1,5 @@
 /*!
- * weRequest 1.8.0
+ * weRequest 1.8.1
  * https://github.com/IvinWu/weRequest
  */
 module.exports =
@@ -1425,7 +1425,7 @@ exports.default = {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.version = void 0;
-var version = "1.8.0";
+var version = "1.8.1";
 exports.version = version;
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidmVyc2lvbi5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uL3NyYy92ZXJzaW9uLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUVBLElBQU0sT0FBTyxHQUFHLFdBQVcsQ0FBQztBQUVuQiwwQkFBTyIsInNvdXJjZXNDb250ZW50IjpbImRlY2xhcmUgY29uc3QgX19WRVJTSU9OX186IHN0cmluZztcblxuY29uc3QgdmVyc2lvbiA9IF9fVkVSU0lPTl9fO1xuXG5leHBvcnQgeyB2ZXJzaW9uIH07XG4iXX0=
 
