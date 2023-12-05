@@ -38,6 +38,8 @@ export interface IInitOption {
     sessionExpireTime?: number;
     /* 触发重新登录的条件；参数为CGI返回的数据，返回需要重新登录的条件 */
     loginTrigger?: (res: string | IAnyObject | ArrayBuffer) => boolean;
+    /* 是否基于 HTTP 状态代码触发重新登录 */
+    isLoginTriggerByStatusCode?: boolean;
     /* 触发请求成功的条件；参数为CGI返回的数据，返回接口逻辑成功的条件 */
     successTrigger: (res: string | IAnyObject | ArrayBuffer) => boolean;
     /* 成功之后返回数据；参数为CGI返回的数据，返回逻辑需要使用的数据 */
