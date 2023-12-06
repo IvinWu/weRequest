@@ -5,6 +5,7 @@ const defaultConfig: IInitOption = {
     loginTrigger() {
         return false
     },
+    isLoginTriggerByStatusCode: false,
     codeToSession: {
         url: "",
         success: ()=> {}

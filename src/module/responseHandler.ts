@@ -24,7 +24,10 @@ function responseForRequest(
             }
         }
 
-        if (config.loginTrigger!(res.data) && obj.reLoginCount !== undefined && obj.reLoginCount < config.reLoginLimit!) {
+        // 当前需要重新登录
+        const needReLogin = !config.isLoginTriggerByStatusCode && config.loginTrigger!(res.data);
+
+        if (needReLogin && (obj.reLoginCount !== undefined && obj.reLoginCount < config.reLoginLimit!)) {
             // 登录态失效，且重试次数不超过配置
             sessionManager.delSession();
             return requestHandler.request(obj);
@@ -53,6 +56,11 @@ function responseForRequest(
             throw { type: 'logic-error', res }
         }
     } else {
+        const needReLogin = config.isLoginTriggerByStatusCode && config.loginTrigger!('' + res.statusCode);
+        if (needReLogin && (obj.reLoginCount !== undefined && obj.reLoginCount < config.reLoginLimit!)) {
+            sessionManager.delSession();
+            return requestHandler.request(obj);
+        }
         // https返回状态码非200
         throw { type: 'http-error', res }
     }
@@ -76,7 +84,10 @@ function responseForUploadFile(
             }
         }
 
-        if (config.loginTrigger!(res.data) && obj.reLoginCount !== undefined && obj.reLoginCount < config.reLoginLimit!) {
+        // 当前需要重新登录
+        const needReLogin = !config.isLoginTriggerByStatusCode && config.loginTrigger!(res.data);
+
+        if (needReLogin && obj.reLoginCount !== undefined && obj.reLoginCount < config.reLoginLimit!) {
             // 登录态失效，且重试次数不超过配置
             sessionManager.delSession();
             return requestHandler.uploadFile(obj);
@@ -101,6 +112,12 @@ function responseForUploadFile(
             throw { type: 'logic-error', res }
         }
     } else {
+        const needReLogin = config.isLoginTriggerByStatusCode && config.loginTrigger!('' + res.statusCode);
+        if (needReLogin && (obj.reLoginCount !== undefined && obj.reLoginCount < config.reLoginLimit!)) {
+            // 登录态失效，且重试次数不超过配置
+            sessionManager.delSession();
+            return requestHandler.uploadFile(obj);
+        }
         // https返回状态码非200
         throw { type: 'http-error', res }
     }
